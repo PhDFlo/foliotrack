@@ -1,1 +1,1 @@
-__all__ = ["ETF"]
+__all__ = ["ETF", "PortfolioETF"]

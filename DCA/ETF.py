@@ -10,7 +10,6 @@ class ETF:
         currency (str): The currency in which the ETF is traded.
         price (float): The current price of the ETF.
         fees (float): The annual fees (in percentage) associated with the ETF.
-        portfolio_share (float): The share of the ETF in the portfolio.
     """
 
     def __init__(
@@ -19,8 +18,7 @@ class ETF:
         ticker: str = "DCAM",
         currency: str = "Euro",
         price: float = 500.0,
-        fees: float = 0.2,
-        portfolio_share: float = 1.0
+        fees: float = 0.2
     ):
         """
         Initialize an ETF instance.
@@ -31,14 +29,12 @@ class ETF:
             currency (str, optional): The trading currency. Defaults to "Euro".
             price (float, optional): The price of the ETF. Defaults to 500.0.
             fees (float, optional): The annual fees in percent. Defaults to 0.2.
-            portfolio_share (float, optional): The share in the portfolio. Defaults to 1.0.
         """
         self.name = name
         self.ticker = ticker
         self.currency = currency
         self.price = price
         self.fees = fees
-        self.portfolio_share = portfolio_share
 
     def __repr__(self):
         """
@@ -48,7 +44,7 @@ class ETF:
             str: String representation of the ETF.
         """
         return (f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-                f"price={self.price}, fees={self.fees}, portfolio_share={self.portfolio_share})")
+                f"price={self.price}, fees={self.fees})")
 
     def get_info(self):
         """
@@ -62,6 +58,5 @@ class ETF:
             "ticker": self.ticker,
             "currency": self.currency,
             "price": self.price,
-            "fees": self.fees,
-            "portfolio_share": self.portfolio_share
+            "fees": self.fees
         }
