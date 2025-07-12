@@ -44,7 +44,7 @@ class ETF:
             str: String representation of the ETF.
         """
         return (f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-                f"price={self.price}, fees={self.fees})")
+                f"price={self.price}€, fees={self.fees*100}%)")
 
     def get_info(self):
         """
@@ -57,6 +57,6 @@ class ETF:
             "name": self.name,
             "ticker": self.ticker,
             "currency": self.currency,
-            "price": self.price,
-            "fees": self.fees
+            "price": f"{self.price}€",
+            "fees": f"{self.fees}%"
         }

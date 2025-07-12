@@ -1,6 +1,6 @@
 # This code is describing the portfolio class for the management system for ETFs (Exchange-Traded Funds).
 
-from ETF import ETF
+from .ETF import ETF
 
 class PortfolioETF:
     """
@@ -30,6 +30,7 @@ class PortfolioETF:
             "portfolio_share": portfolio_share,
             "amount_invested": amount_invested
         })
+        print(f"ETF '{etf.name}' added to portfolio with share {portfolio_share}.")
 
     def get_portfolio_info(self):
         """
@@ -44,3 +45,20 @@ class PortfolioETF:
              "amount_invested": item["amount_invested"]}
             for item in self.etfs
         ]
+
+    def verify_shares_sum(self):
+        """
+        Verify if the sum of all portfolio shares is equal to 1.
+        If not, print each ETF name with its associated share.
+        Also print if the portfolio is complete or not.
+        """
+        print()
+        print("Verifying portfolio shares...")
+        total_share = sum(item["portfolio_share"] for item in self.etfs)
+        if abs(total_share - 1.0) > 1e-6:
+            print("Portfolio shares do not sum to 1. Details:")
+            for item in self.etfs:
+                print(f"  {item['etf'].name}: {item['portfolio_share']}")
+            print(f"Portfolio is NOT complete. (Sum: {total_share})")
+        else:
+            print("Portfolio shares sum equal to 1. Portfolio is complete.")
