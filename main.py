@@ -12,7 +12,7 @@ def main():
     portfolio = PortfolioETF()
     portfolio.add_etf(etf1, portfolio_share=0.5, amount_invested=1000.0)
     portfolio.add_etf(etf2, portfolio_share=0.3, amount_invested=600.0)
-    #portfolio.add_etf(etf3, portfolio_share=0.2, amount_invested=400.0)
+    portfolio.add_etf(etf3, portfolio_share=0.2, amount_invested=400.0)
     
     # Verify portfolio shares
     portfolio.verify_shares_sum()
