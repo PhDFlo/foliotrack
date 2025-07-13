@@ -14,6 +14,11 @@ def main():
     portfolio.add_etf(etf2, portfolio_share=0.3, amount_invested=600.0)
     portfolio.add_etf(etf3, portfolio_share=0.2, amount_invested=400.0)
     
+    # Compute actual shares based on invested amounts
+    actual_shares = portfolio.compute_actual_shares()
+    
+    print(actual_shares)
+    
     # Verify portfolio shares
     portfolio.verify_shares_sum()
 

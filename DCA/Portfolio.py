@@ -62,3 +62,26 @@ class PortfolioETF:
             print(f"Portfolio is NOT complete. (Sum: {total_share})")
         else:
             print("Portfolio shares sum equal to 1. Portfolio is complete.")
+
+    def compute_actual_shares(self):
+        """
+        Compute the actual portfolio share of each ETF based on the amount invested.
+
+        Returns:
+            list: A list of dictionaries containing ETF info and its actual share in the portfolio.
+        """
+        total_invested = sum(item["amount_invested"] for item in self.etfs)
+        if total_invested == 0:
+            # Avoid division by zero, return zeros
+            return [
+                {**item["etf"].get_info(),
+                 "actual_share": 0.0,
+                 "amount_invested": item["amount_invested"]}
+                for item in self.etfs
+            ]
+        return [
+            {**item["etf"].get_info(),
+             "actual_share": item["amount_invested"] / total_invested,
+             "amount_invested": item["amount_invested"]}
+            for item in self.etfs
+        ]
