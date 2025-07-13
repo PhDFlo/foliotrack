@@ -68,8 +68,3 @@ Clone the repository and use the code directly, or copy the `DCA` directory into
 ## License
 
 MIT License
-
-
-## Author
-
-Florian
