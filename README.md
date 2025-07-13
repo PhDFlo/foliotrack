@@ -1,7 +1,7 @@
-# python-DCA
+# DCA-Equilibrium-Tool
 
 
-python-DCA is a Python module for managing portfolios of Exchange-Traded Funds (ETFs) with Dollar Cost Averaging (DCA) strategies. It allows you to define ETF objects, build and manage a portfolio, and verify portfolio allocations.
+DCA-Equilibrium-Tool is a Python module for managing portfolios of Exchange-Traded Funds (ETFs) with Dollar Cost Averaging (DCA) strategies. It allows you to define ETF objects, build and manage a portfolio, and verify portfolio allocations.
 
 
 ## Features
