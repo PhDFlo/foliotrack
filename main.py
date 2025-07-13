@@ -17,7 +17,10 @@ def main():
     # Compute actual shares based on invested amounts
     actual_shares = portfolio.compute_actual_shares()
     
-    print(actual_shares)
+    # Show for portfolio equilibrium
+    pmatrix = portfolio.generate_shares_matrix(etf1)
+    
+    print(pmatrix)
     
     # Verify portfolio shares
     portfolio.verify_shares_sum()

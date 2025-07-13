@@ -1,6 +1,7 @@
 # This code is describing the portfolio class for the management system for ETFs (Exchange-Traded Funds).
 
 from .ETF import ETF
+import numpy as np
 
 class PortfolioETF:
     """
@@ -85,3 +86,28 @@ class PortfolioETF:
              "amount_invested": item["amount_invested"]}
             for item in self.etfs
         ]
+
+    def generate_shares_matrix(self, exclude_etf: ETF = None):
+        """
+        Generate a square matrix of dimension n (number of ETFs in the portfolio minus one if exclude_etf is provided).
+        The diagonal values are 1 - p, where p is the portfolio share of the ETF.
+        All off-diagonal values are -p.
+        The ETF given by exclude_etf is not included in the matrix.
+
+        Args:
+            exclude_etf (ETF, optional): ETF instance to exclude from the matrix. Defaults to None.
+
+        Returns:
+            np.ndarray: The generated matrix as a NumPy array.
+        """
+        filtered_etfs = [item for item in self.etfs if (exclude_etf is None or item["etf"] != exclude_etf)]
+        n = len(filtered_etfs)
+        matrix = np.zeros((n, n))
+        for i in range(n):
+            p = filtered_etfs[i]["portfolio_share"]
+            for j in range(n):
+                if i == j:
+                    matrix[i, j] = 1 - p
+                else:
+                    matrix[i, j] = -p
+        return matrix
