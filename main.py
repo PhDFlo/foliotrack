@@ -1,5 +1,7 @@
 from DCA.ETF import ETF
 from DCA.Portfolio import PortfolioETF
+import numpy as np
+import matplotlib.pyplot as plt
 
 def main():
     
@@ -16,7 +18,7 @@ def main():
     
     # Solve for equilibrium
     #equilibrium = portfolio.solve_equilibrium(etf3, 0.)
-    equilibrium = portfolio.solve_equilibrium(etf2, 250.)
+    equilibrium = portfolio.solve_equilibrium(etf1, 20.)
     
     for elem in equilibrium:
         print(f"ETF: {elem['etf'].name}")
@@ -24,6 +26,22 @@ def main():
         print(f"   Amount Invested: {elem['amount_invested']}€, Amount to Invest: {elem['amount_to_invest']}€")
 
     print(f"Total to invest: {portfolio.total_to_invest}€")
+    
+    # # Loop over the invested moment
+    # Select_ETF = etf1
+    # Tot_invest_list = []
+    # Invest_val = np.linspace(0., 1000., 100)
+    
+    # for val in Invest_val:
+    #     equilibrium = portfolio.solve_equilibrium(Select_ETF, val)
+    #     print("")
+    #     Tot_invest_list.append(portfolio.total_to_invest)
+        
+    # # Plot evolution
+    # plt.figure()
+    # plt.plot(Invest_val, Tot_invest_list)
+    # plt.savefig("test.png")
+        
 
 if __name__ == "__main__":
     main()

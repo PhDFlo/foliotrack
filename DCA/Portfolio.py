@@ -189,8 +189,6 @@ class PortfolioETF:
         inv_matrix = self.inverse_shares_matrix(fixed_etf)
         invested_vector = self.generate_invested_vector(fixed_etf, investment_fixed_etf)
         result_vector = inv_matrix @ invested_vector
-        
-        print(result_vector)
 
         # Compute actual shares
         self.compute_actual_shares()  # Update actual shares before computing amounts to invest
