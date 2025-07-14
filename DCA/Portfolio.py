@@ -69,23 +69,21 @@ class PortfolioETF:
         Compute the actual portfolio share of each ETF based on the amount invested.
 
         Returns:
-            list: A list of dictionaries containing ETF info and its actual share in the portfolio.
+            list: A list of dictionaries containing ETF info, its actual share in the portfolio, and updates the portfolio dicts with 'actual_share'.
         """
         total_invested = sum(item["amount_invested"] for item in self.etfs)
-        if total_invested == 0:
-            # Avoid division by zero, return zeros
-            return [
-                {**item["etf"].get_info(),
-                 "actual_share": 0.0,
-                 "amount_invested": item["amount_invested"]}
-                for item in self.etfs
-            ]
-        return [
-            {**item["etf"].get_info(),
-             "actual_share": item["amount_invested"] / total_invested,
-             "amount_invested": item["amount_invested"]}
-            for item in self.etfs
-        ]
+        result = []
+        for item in self.etfs:
+            if total_invested == 0:
+                actual_share = 0.0
+            else:
+                actual_share = round(item["amount_invested"] / total_invested,2)
+            item["actual_share"] = actual_share
+            info = {**item["etf"].get_info(),
+                    "actual_share": actual_share,
+                    "amount_invested": item["amount_invested"]}
+            result.append(info)
+        return result
 
     def generate_shares_matrix(self, exclude_etf: ETF = None):
         """
@@ -123,16 +121,26 @@ class PortfolioETF:
         Returns:
             np.ndarray: The generated vector as a NumPy array.
         """
-        filtered_etfs = [item for item in self.etfs if (exclude_etf is None or item["etf"] != exclude_etf)]
-        n = len(filtered_etfs)
+
+        # Number of etf in the portfolio
+        n = len(self.etfs)
         
         vector = np.zeros(n)
         
-        for i in range(n+1):
+        for i in range(n):
+            
+            if self.etfs[i]['etf'] == exclude_etf:
+                index_excluded_etf = i
+            
             p = self.etfs[i]["portfolio_share"]
             x0 = self.etfs[i]["amount_invested"]
             
-            vector = vector + x0 * np.array([p-1 if j == i else filtered_etfs[j]["portfolio_share"] for j in range(n)])
+            # Sum(i) x0i* (p0, ..., p(j-1), p(j=i)-1, p(j+1), ..., pn)
+            vector = vector + x0 * np.array([p-1 if j == i else self.etfs[j]["portfolio_share"] for j in range(n)])
+            
+        # Remove the line of the excluded etf if it exist
+        if (exclude_etf is not None):
+            vector = np.delete(vector, index_excluded_etf)
         
         return vector
 
@@ -166,6 +174,9 @@ class PortfolioETF:
 
         filtered_etfs = [item for item in self.etfs if (exclude_etf is None or item["etf"] != exclude_etf)]
 
+        self.compute_actual_shares()  # Update actual shares before computing amounts to invest
+        print(self.etfs)
+
         idx = 0
         result = []
         total_future_invested = sum(item["amount_invested"] for item in self.etfs)
@@ -179,6 +190,8 @@ class PortfolioETF:
                 idx += 1
             future_invested = item["amount_invested"] + amount_to_invest
             final_share = 0.0 if total_future_invested == 0 else round(future_invested / total_future_invested,2)
+            item["final_share"] = final_share
+            item["amount_to_invest"] = amount_to_invest
             result.append({
                 **item["etf"].get_info(),
                 "portfolio_share": item["portfolio_share"],
@@ -186,4 +199,4 @@ class PortfolioETF:
                 "amount_to_invest": amount_to_invest,
                 "final_share": final_share
             })
-        return result
+        return self.etfs

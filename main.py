@@ -27,12 +27,12 @@ def main():
     #invested_vector = portfolio.generate_invested_vector(etf1)
     
     # Solve for equilibrium
-    equilibrium = portfolio.solve_equilibrium(etf1)
+    equilibrium = portfolio.solve_equilibrium(etf2)
     
     for elem in equilibrium:
         #print(elem)
-        print(f"ETF: {elem['name']}")
-        print(f"   Share: {elem['portfolio_share']}, Final Share: {elem['final_share']}")
+        print(f"ETF: {elem['etf'].name}")
+        print(f"   Target share: {elem['portfolio_share']},  Actual share: {elem['actual_share']}, Final Share: {elem['final_share']}")
         print(f"   Amount Invested: {elem['amount_invested']}€, Amount to Invest: {elem['amount_to_invest']}€")
 
 
