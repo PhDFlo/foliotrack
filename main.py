@@ -16,7 +16,7 @@ def main():
     
     # Solve for equilibrium
     #equilibrium = portfolio.solve_equilibrium(etf3, 0.)
-    equilibrium = portfolio.solve_equilibrium(etf1, 50.)
+    equilibrium = portfolio.solve_equilibrium(etf2, 250.)
     
     for elem in equilibrium:
         #print(elem)
