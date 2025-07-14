@@ -110,30 +110,39 @@ class PortfolioETF:
                     matrix[i, j] = -p
         return matrix
 
-    def generate_invested_vector(self, exclude_etf: ETF = None):
+    def generate_invested_vector(self, exclude_etf: ETF = None, investment_excluded_etf: float = 0.):
         """
         Generate a vector of size n (number of ETFs in the portfolio minus one if exclude_etf is provided).
         The vector is the sum of the amount invested times the unit vector (i.e., the invested amounts for each ETF).
 
         Args:
             exclude_etf (ETF, optional): ETF instance to exclude from the vector. Defaults to None.
+            investment_excluded_etf (float, optional): Investment value for the excluded ETF. Defaults set to 0.
 
         Returns:
             np.ndarray: The generated vector as a NumPy array.
         """
 
-        # Number of etf in the portfolio
+        # Number of ETF in the portfolio
         n = len(self.portfolio)
         
-        vector = np.zeros(n)
+        # Fixed ETF investment planned
+        fixed_etf_invest = 0.
         
+        vector = np.zeros(n)
         for i in range(n):
+            
+            # Share of ETF i
+            p = self.portfolio[i]["portfolio_share"]
+            
+            # Amount invested of ETF i
+            x0 = 0.
             
             if self.portfolio[i]['etf'] == exclude_etf:
                 index_excluded_etf = i
+                x0 = investment_excluded_etf
             
-            p = self.portfolio[i]["portfolio_share"]
-            x0 = self.portfolio[i]["amount_invested"]
+            x0 = x0 + self.portfolio[i]["amount_invested"]
             
             # Sum(i) x0i* (p0, ..., p(j-1), p(j=i)-1, p(j+1), ..., pn)
             vector = vector + x0 * np.array([p-1 if j == i else self.portfolio[j]["portfolio_share"] for j in range(n)])
@@ -157,13 +166,14 @@ class PortfolioETF:
         matrix = self.generate_shares_matrix(exclude_etf)
         return np.linalg.inv(matrix)
 
-    def solve_equilibrium(self, exclude_etf: ETF = None):
+    def solve_equilibrium(self, exclude_etf: ETF = None, investment_excluded_etf: float = 0.):
         """
         Compute and update the amount to be invested for each ETF in the portfolio.
         For the excluded ETF, set the amount to be invested to 0.
 
         Args:
             exclude_etf (ETF, optional): ETF instance to exclude from the computation. Defaults to None.
+            investment_excluded_etf (float, optional): Investment value for the excluded ETF. Defaults set to 0.
 
         Returns:
             list: A list of dictionaries containing ETF info and the amount to invest for each ETF.
@@ -174,21 +184,22 @@ class PortfolioETF:
         
         # Compute the equilibrium 
         inv_matrix = self.inverse_shares_matrix(exclude_etf)
-        invested_vector = self.generate_invested_vector(exclude_etf)
+        invested_vector = self.generate_invested_vector(exclude_etf, investment_excluded_etf)
         result_vector = inv_matrix @ invested_vector
-
-        filtered_portfolio = [item for item in self.portfolio if (exclude_etf is None or item["etf"] != exclude_etf)]
 
         # Compute actual shares
         self.compute_actual_shares()  # Update actual shares before computing amounts to invest
 
-        idx = 0
+        # Sum all investment already performed
         total_future_invested = sum(item["amount_invested"] for item in self.portfolio)
         # Add the sum of all amounts to invest
-        total_future_invested += sum(round(float(result_vector[i]),2) for i in range(len(result_vector)))
+        total_future_invested += sum(float(result_vector[i]) for i in range(len(result_vector))) + investment_excluded_etf
+        
+        # Fill the portfolio dictionnary with final share and amount to invest keys and their values
+        idx = 0
         for item in self.portfolio:
             if exclude_etf is not None and item["etf"] == exclude_etf:
-                amount_to_invest = 0.0
+                amount_to_invest = investment_excluded_etf
             else:
                 amount_to_invest = round(float(result_vector[idx]),2)
                 idx += 1

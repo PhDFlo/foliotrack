@@ -15,7 +15,8 @@ def main():
     portfolio.add_etf(etf3, portfolio_share=0.3, amount_invested=300.0)
     
     # Solve for equilibrium
-    equilibrium = portfolio.solve_equilibrium(etf2)
+    #equilibrium = portfolio.solve_equilibrium(etf3, 0.)
+    equilibrium = portfolio.solve_equilibrium(etf1, 50.)
     
     for elem in equilibrium:
         #print(elem)
