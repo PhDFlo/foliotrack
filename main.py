@@ -14,18 +14,6 @@ def main():
     portfolio.add_etf(etf2, portfolio_share=0.2, amount_invested=800.0)
     portfolio.add_etf(etf3, portfolio_share=0.3, amount_invested=300.0)
     
-    # Compute actual shares based on invested amounts
-    actual_shares = portfolio.compute_actual_shares()
-    
-    # Verify portfolio shares
-    portfolio.verify_shares_sum()
-    
-    # Show for portfolio equilibrium
-    #pmatrix = portfolio.generate_shares_matrix(etf1)
-    
-    # Generate vector of shares
-    #invested_vector = portfolio.generate_invested_vector(etf1)
-    
     # Solve for equilibrium
     equilibrium = portfolio.solve_equilibrium(etf2)
     

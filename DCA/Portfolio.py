@@ -8,14 +8,14 @@ class PortfolioETF:
     A class to represent a portfolio of ETFs.
 
     Attributes:
-        etfs (list[tuple[ETF, float]]): A list of tuples (ETF instance, portfolio_share).
+        portfolio (list[tuple[ETF, float]]): A list of tuples (ETF instance, portfolio_share).
     """
 
     def __init__(self):
         """
         Initialize an empty portfolio of ETFs.
         """
-        self.etfs: list[dict[str, object]] = []
+        self.portfolio: list[dict[str, object]] = []
 
     def add_etf(self, etf: ETF, portfolio_share: float = 1.0, amount_invested: float = 0.0):
         """
@@ -26,7 +26,7 @@ class PortfolioETF:
             portfolio_share (float, optional): The share in the portfolio. Defaults to 1.0.
             amount_invested (float, optional): The amount of money already invested in this ETF. Defaults to 0.0.
         """
-        self.etfs.append({
+        self.portfolio.append({
             "etf": etf,
             "portfolio_share": portfolio_share,
             "amount_invested": amount_invested
@@ -44,7 +44,7 @@ class PortfolioETF:
             {**item["etf"].get_info(), 
              "portfolio_share": item["portfolio_share"],
              "amount_invested": item["amount_invested"]}
-            for item in self.etfs
+            for item in self.portfolio
         ]
 
     def verify_shares_sum(self):
@@ -55,10 +55,10 @@ class PortfolioETF:
         """
         print()
         print("Verifying portfolio shares...")
-        total_share = sum(item["portfolio_share"] for item in self.etfs)
+        total_share = sum(item["portfolio_share"] for item in self.portfolio)
         if abs(total_share - 1.0) > 1e-6:
             print("Portfolio shares do not sum to 1. Details:")
-            for item in self.etfs:
+            for item in self.portfolio:
                 print(f"  {item['etf'].name}: {item['portfolio_share']}")
             print(f"Portfolio is NOT complete. (Sum: {total_share})")
         else:
@@ -71,9 +71,9 @@ class PortfolioETF:
         Returns:
             list: A list of dictionaries containing ETF info, its actual share in the portfolio, and updates the portfolio dicts with 'actual_share'.
         """
-        total_invested = sum(item["amount_invested"] for item in self.etfs)
+        total_invested = sum(item["amount_invested"] for item in self.portfolio)
         result = []
-        for item in self.etfs:
+        for item in self.portfolio:
             if total_invested == 0:
                 actual_share = 0.0
             else:
@@ -98,11 +98,11 @@ class PortfolioETF:
         Returns:
             np.ndarray: The generated matrix as a NumPy array.
         """
-        filtered_etfs = [item for item in self.etfs if (exclude_etf is None or item["etf"] != exclude_etf)]
-        n = len(filtered_etfs)
+        filtered_portfolio = [item for item in self.portfolio if (exclude_etf is None or item["etf"] != exclude_etf)]
+        n = len(filtered_portfolio)
         matrix = np.zeros((n, n))
         for i in range(n):
-            p = filtered_etfs[i]["portfolio_share"]
+            p = filtered_portfolio[i]["portfolio_share"]
             for j in range(n):
                 if i == j:
                     matrix[i, j] = 1 - p
@@ -123,20 +123,20 @@ class PortfolioETF:
         """
 
         # Number of etf in the portfolio
-        n = len(self.etfs)
+        n = len(self.portfolio)
         
         vector = np.zeros(n)
         
         for i in range(n):
             
-            if self.etfs[i]['etf'] == exclude_etf:
+            if self.portfolio[i]['etf'] == exclude_etf:
                 index_excluded_etf = i
             
-            p = self.etfs[i]["portfolio_share"]
-            x0 = self.etfs[i]["amount_invested"]
+            p = self.portfolio[i]["portfolio_share"]
+            x0 = self.portfolio[i]["amount_invested"]
             
             # Sum(i) x0i* (p0, ..., p(j-1), p(j=i)-1, p(j+1), ..., pn)
-            vector = vector + x0 * np.array([p-1 if j == i else self.etfs[j]["portfolio_share"] for j in range(n)])
+            vector = vector + x0 * np.array([p-1 if j == i else self.portfolio[j]["portfolio_share"] for j in range(n)])
             
         # Remove the line of the excluded etf if it exist
         if (exclude_etf is not None):
@@ -168,21 +168,25 @@ class PortfolioETF:
         Returns:
             list: A list of dictionaries containing ETF info and the amount to invest for each ETF.
         """
+        
+        # Verify that the shares sum is equal to one
+        self.verify_shares_sum()
+        
+        # Compute the equilibrium 
         inv_matrix = self.inverse_shares_matrix(exclude_etf)
         invested_vector = self.generate_invested_vector(exclude_etf)
         result_vector = inv_matrix @ invested_vector
 
-        filtered_etfs = [item for item in self.etfs if (exclude_etf is None or item["etf"] != exclude_etf)]
+        filtered_portfolio = [item for item in self.portfolio if (exclude_etf is None or item["etf"] != exclude_etf)]
 
+        # Compute actual shares
         self.compute_actual_shares()  # Update actual shares before computing amounts to invest
-        print(self.etfs)
 
         idx = 0
-        result = []
-        total_future_invested = sum(item["amount_invested"] for item in self.etfs)
+        total_future_invested = sum(item["amount_invested"] for item in self.portfolio)
         # Add the sum of all amounts to invest
         total_future_invested += sum(round(float(result_vector[i]),2) for i in range(len(result_vector)))
-        for item in self.etfs:
+        for item in self.portfolio:
             if exclude_etf is not None and item["etf"] == exclude_etf:
                 amount_to_invest = 0.0
             else:
@@ -192,11 +196,5 @@ class PortfolioETF:
             final_share = 0.0 if total_future_invested == 0 else round(future_invested / total_future_invested,2)
             item["final_share"] = final_share
             item["amount_to_invest"] = amount_to_invest
-            result.append({
-                **item["etf"].get_info(),
-                "portfolio_share": item["portfolio_share"],
-                "amount_invested": item["amount_invested"],
-                "amount_to_invest": amount_to_invest,
-                "final_share": final_share
-            })
-        return self.etfs
+
+        return self.portfolio
