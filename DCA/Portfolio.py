@@ -16,6 +16,7 @@ class PortfolioETF:
         Initialize an empty portfolio of ETFs.
         """
         self.portfolio: list[dict[str, object]] = []
+        self.total_to_invest = 0.
 
     def add_etf(self, etf: ETF, portfolio_share: float = 1.0, amount_invested: float = 0.0):
         """
@@ -138,6 +139,8 @@ class PortfolioETF:
             # Amount invested of ETF i
             x0 = 0.
             
+            # If the index corresponds to the fixed ETF, then the index is saved
+            # and the amount of invested x0 is set to investment_fixed_etf
             if self.portfolio[i]['etf'] == fixed_etf:
                 index_fixed_etf = i
                 x0 = investment_fixed_etf
@@ -186,14 +189,19 @@ class PortfolioETF:
         inv_matrix = self.inverse_shares_matrix(fixed_etf)
         invested_vector = self.generate_invested_vector(fixed_etf, investment_fixed_etf)
         result_vector = inv_matrix @ invested_vector
+        
+        print(result_vector)
 
         # Compute actual shares
         self.compute_actual_shares()  # Update actual shares before computing amounts to invest
+        
+        # Set the total amount to invest
+        self.total_to_invest = sum(float(result_vector[i]) for i in range(len(result_vector))) + investment_fixed_etf
 
         # Sum all investment already performed
         total_future_invested = sum(item["amount_invested"] for item in self.portfolio)
         # Add the sum of all amounts to invest
-        total_future_invested += sum(float(result_vector[i]) for i in range(len(result_vector))) + investment_fixed_etf
+        total_future_invested += self.total_to_invest 
         
         # Fill the portfolio dictionnary with final share and amount to invest keys and their values
         idx = 0
@@ -201,10 +209,10 @@ class PortfolioETF:
             if fixed_etf is not None and item["etf"] == fixed_etf:
                 amount_to_invest = investment_fixed_etf
             else:
-                amount_to_invest = round(float(result_vector[idx]),2)
+                amount_to_invest = round(float(result_vector[idx]), 2)
                 idx += 1
             future_invested = item["amount_invested"] + amount_to_invest
-            final_share = 0.0 if total_future_invested == 0 else round(future_invested / total_future_invested,2)
+            final_share = 0.0 if total_future_invested == 0 else round(future_invested / total_future_invested, 2)
             item["final_share"] = final_share
             item["amount_to_invest"] = amount_to_invest
 

@@ -19,12 +19,11 @@ def main():
     equilibrium = portfolio.solve_equilibrium(etf2, 250.)
     
     for elem in equilibrium:
-        #print(elem)
         print(f"ETF: {elem['etf'].name}")
         print(f"   Target share: {elem['portfolio_share']},  Actual share: {elem['actual_share']}, Final Share: {elem['final_share']}")
         print(f"   Amount Invested: {elem['amount_invested']}€, Amount to Invest: {elem['amount_to_invest']}€")
 
-
+    print(f"Total to invest: {portfolio.total_to_invest}€")
 
 if __name__ == "__main__":
     main()
