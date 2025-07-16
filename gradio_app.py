@@ -87,7 +87,7 @@ with gr.Blocks() as demo:
     btn_refresh.click(update_table_from_file, inputs=inp, outputs=etf_table)
      
     # Input for new investment amount
-    new_investment = gr.Number(label="New Investment Amount", value=500.0)
+    new_investment = gr.Number(label="New Investment Amount (€)", value=500.0)
 
     # Dataframe to display equilibrium results
     equilibrium_table = gr.Dataframe(
