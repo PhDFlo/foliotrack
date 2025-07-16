@@ -1,6 +1,6 @@
 [project]
-name = "python-dca"
-version = "0.1.0"
+name = "ETF-Optmizer"
+version = "1.0.0"
 description = "Compute DCA ETF deposit equilibrium based on existing investment"
 readme = "README.md"
 requires-python = ">=3.12"

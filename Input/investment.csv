@@ -1,0 +1,4 @@
+Name,Ticker,Currency,Price,Fees,Target Share,Amount Invested
+Amundi MSCI World UCITS ETF,AMDW,Euro,500,0.2,0.5,2000
+Vanguard S&P 500 UCITS ETF,VUSA,USD,300,0.1,0.2,800
+iShares Core MSCI Emerging Markets IMI UCITS ETF,EIMI,Euro,200,0.25,0.3,300
