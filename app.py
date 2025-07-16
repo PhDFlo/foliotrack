@@ -30,17 +30,23 @@ def optimize_portfolio(etf_data, new_investment):
     info = portfolio.get_portfolio_info()
     
     # Format output for Gradio
-    result = ""
+    portfolio_data = []
     for etf_info in info:
-        result += "ETF:\n"
-        for k, v in etf_info.items():
-            result += f"  {k}: {v}\n"
-        result += "\n"
-    return result
+        portfolio_data.append({
+            "Name": etf_info.get("name"), 
+            "Price": etf_info.get("price"), 
+            "Target Share": etf_info.get("target_share"),
+            "Amount Invested": etf_info.get("amount_invested"), 
+            "Actual Share": etf_info.get("actual_share"),
+            "Number to buy": etf_info.get("number_to_buy"),
+            "Final Share": etf_info.get("final_share"),
+        })
+    
+    portfolio_data = pd.DataFrame(portfolio_data)
+    return portfolio_data
 
 def update_table_from_file(inp):
     # Read initial data from CSV or create an empty DataFrame
-    print(inp)
     df = pd.read_csv(inp, delimiter=",")
     df = df.to_numpy()  # Convert DataFrame to numpy array for Gradio compatibility
     return df.tolist()
@@ -62,13 +68,20 @@ with gr.Blocks() as demo:
         label="ETF List (add or edit rows)",
         column_widths=['10%', '5%', '5%', '5%', '5%', '5%', '5%']  # Adjusted widths for better visibility
     )
-        
+
     btn_refresh = gr.Button("Fill Table from CSV (optional)")
     btn_refresh.click(update_table_from_file, inputs=inp, outputs=etf_table)
      
     new_investment = gr.Number(label="New Investment Amount", value=500.0)
-    output = gr.Textbox(label="Optimized Portfolio Info", lines=15)
+
+    equilibrium_table = gr.Dataframe(
+        headers=["Name", "Price", "Target Share", "Amount Invested", "Actual Share", "Number to buy", "Final Share"],
+        datatype=["str", "number", "number", "number", "number", "number", "number"],
+        label="Equilibrium Portfolio",
+        visible=True,
+    )   
+
     run_btn = gr.Button("Optimize Portfolio")
-    run_btn.click(optimize_portfolio, inputs=[etf_table, new_investment], outputs=output)
+    run_btn.click(optimize_portfolio, inputs=[etf_table, new_investment], outputs=equilibrium_table)
 
 demo.launch()
