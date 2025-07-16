@@ -28,7 +28,7 @@ ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Fund
 - `DCA/Portfolio.py`: Defines the `PortfolioETF` class and optimization logic.
 - `pyproject.toml`: Project metadata and dependencies.
 
-## Gradio interface
+## Gradio interface Usage
 
 To facilitate the ETF-Optimizer tool a Gradio interface is available. To start it:
 
@@ -42,12 +42,12 @@ To facilitate the ETF-Optimizer tool a Gradio interface is available. To start i
 2. Open the url in your favorite browser.
 
 <p align="center">
-  <img src="images/gradio_interface.png" alt="ETF-Optimizer Logo" width="80%">
+  <img src="images/gradio_interface.png" alt="ETF-Optimizer Logo" width="100%">
 </p>
 
 3. To create your ETF portfolio, create in the `Inputs` directory a .csv based on the `investment.csv` file.
 
-4. Refresh the list of available files by clicking on the `Refresh` button and select your file
+4. Refresh the list of available files by clicking on the `Refresh available files` button and select your file
 
 5. Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
 
@@ -55,7 +55,7 @@ To facilitate the ETF-Optimizer tool a Gradio interface is available. To start i
 
 7. Finally, compute the optimization to reach the share you planned. 
 
-## Example Usage
+## Python Example Usage
 
 ```python
 from DCA.ETF import ETF
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     main()
 ```
 
-## Example Output
+## Python Example Output
 ```
 ETF 'Amundi MSCI World UCITS ETF' added to portfolio with share 0.5.
 ETF 'Vanguard S&P 500 UCITS ETF' added to portfolio with share 0.2.
