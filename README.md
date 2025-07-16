@@ -42,7 +42,7 @@ To facilitate the ETF-Optimizer tool a Gradio interface is available. To start i
 2. Open the url in your favorite browser.
 
 <p align="center">
-  <img src="images/gradi_interface.png" alt="ETF-Optimizer Logo" width="80%">
+  <img src="images/gradio_interface.png" alt="ETF-Optimizer Logo" width="80%">
 </p>
 
 3. To create your ETF portfolio, create in the `Inputs` directory a .csv based on the `investment.csv` file.
