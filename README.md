@@ -1,7 +1,7 @@
-# DCA-Equilibrium-Tool
+# ETF-Optimizer
 
 
-DCA-Equilibrium-Tool is a Python module for managing portfolios of Exchange-Traded Funds (ETFs) and computing the optimal investment distribution for Dollar Cost Averaging (DCA) strategies. It uses mathematical optimization to help you reach your target ETF allocations based on your current investments.
+ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Funds (ETFs) and computing the optimal investment distribution for Dollar Cost Averaging (DCA) strategies. It uses Mixed-Integer Quadratic Programming (MIQP) to optimize your ETF allocations. The convex optimization problem is performed with [CVXPY](https://www.cvxpy.org/) and [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) for the solver.
 
 
 ## Features
