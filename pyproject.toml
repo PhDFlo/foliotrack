@@ -5,5 +5,7 @@ description = "Compute DCA ETF deposit equilibrium based on existing investment"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "numpy"
+    "numpy",
+    "pyscipopt",
+    "cvxpy"
 ]
