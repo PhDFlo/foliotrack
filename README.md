@@ -125,6 +125,8 @@ Clone the repository and use the code directly, or copy the `DCA` directory into
 - numpy
 - cvxpy
 - pyscipopt
+- gradio
+- pandas
 
 
 ## License
