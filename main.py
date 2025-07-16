@@ -11,13 +11,24 @@ def main():
     
     # Create a PortfolioETF instance
     portfolio = PortfolioETF()
-    portfolio.add_etf(etf1, portfolio_share=0.5, amount_invested=2000.0)
-    portfolio.add_etf(etf2, portfolio_share=0.2, amount_invested=800.0)
-    portfolio.add_etf(etf3, portfolio_share=0.3, amount_invested=300.0)
+    portfolio.add_etf(etf1, target_share=0.5, amount_invested=2000.0)
+    portfolio.add_etf(etf2, target_share=0.2, amount_invested=800.0)
+    portfolio.add_etf(etf3, target_share=0.3, amount_invested=300.0)
+    
+    # Compute the actual share
+    portfolio.compute_actual_shares()
     
     # Solve for equilibrium
-    #equilibrium = portfolio.solve_equilibrium(etf3, 0.)
-    equilibrium = portfolio.solve_equilibrium(1000.0)
+    portfolio.solve_equilibrium(1000.0)
+    
+    # Print portfolio info and its keys/values
+    info = portfolio.get_portfolio_info()
+    print("\nPortfolio info:")
+    for etf_info in info:
+        print("ETF:")
+        for k, v in etf_info.items():
+            print(f"  {k}: {v}")
+    
         
 
 if __name__ == "__main__":
