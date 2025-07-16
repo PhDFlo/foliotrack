@@ -14,7 +14,7 @@ class PortfolioETF:
 
     def __init__(self):
         """
-        Initialize an empty portfolio of ETFs.
+        Initializes an empty portfolio for ETF management.
         """
         self.portfolio: list[dict[str, object]] = []
         self.total_to_invest = 0.
@@ -22,12 +22,13 @@ class PortfolioETF:
 
     def add_etf(self, etf: ETF, target_share: float = 1.0, amount_invested: float = 0.0):
         """
-        Add an ETF to the portfolio with its portfolio share and invested amount.
+        Adds an ETF to the portfolio with its target share and invested amount.
+        Also initializes fields for actual share, number to buy, and final share.
 
         Args:
-            etf (ETF): An instance of the ETF class to be added to the portfolio.
-            target_share (float, optional): The share in the portfolio. Defaults to 1.0.
-            amount_invested (float, optional): The amount of money already invested in this ETF. Defaults to 0.0.
+            etf (ETF): The ETF instance to add.
+            target_share (float, optional): Desired share of this ETF in the portfolio. Defaults to 1.0.
+            amount_invested (float, optional): Amount already invested in this ETF. Defaults to 0.0.
         """
         self.portfolio.append({
             "etf": etf,
@@ -42,10 +43,11 @@ class PortfolioETF:
 
     def get_portfolio_info(self):
         """
-        Get a summary of all ETFs in the portfolio.
+        Returns a summary of all ETFs in the portfolio, including their info,
+        target share, amount invested, actual share, number to buy, and final share.
 
         Returns:
-            list: A list of dictionaries containing information about each ETF, its portfolio share, and amount invested.
+            list: List of dictionaries with ETF details and portfolio metrics.
         """
         return [
             {**item["etf"].get_info(), 
@@ -61,9 +63,11 @@ class PortfolioETF:
 
     def verify_target_share_sum(self):
         """
-        Verify if the sum of the target portfolio shares is equal to 1.
-        If not, print each ETF name with its associated share.
-        Also print if the portfolio is complete or not.
+        Checks if the sum of target shares for all ETFs equals 1.
+        Prints details and completeness status.
+
+        Returns:
+            bool: True if sum equals 1, False otherwise.
         """
         print()
         print("Verifying portfolio shares...")
@@ -81,10 +85,11 @@ class PortfolioETF:
 
     def compute_actual_shares(self):
         """
-        Compute the actual portfolio share of each ETF based on the amount invested.
+        Computes and updates the actual share of each ETF in the portfolio
+        based on the amount invested. Requires the portfolio to be complete.
 
-        Returns:
-            list: A list of dictionaries containing ETF info, its actual share in the portfolio, and updates the portfolio dicts with 'actual_share'.
+        Raises:
+            Exception: If the portfolio target shares do not sum to 1.
         """
         
         # Verify if the Portfolio is complete
@@ -103,12 +108,18 @@ class PortfolioETF:
 
     def solve_equilibrium(self, max_investment: float = 1000.0):
         """
-        Compute the equilibrium portfolio based on target shares and maximum investment.
+        Solves for the optimal number of each ETF to buy to approach target shares,
+        given a maximum investment. Updates the portfolio with the number to buy and
+        final share for each ETF, and prints results.
 
         Args:
-            max_investment (float, optional): The maximum amount to invest in the portfolio. Defaults to 1000.0.
-        Returns:
-            None: Prints the number of each ETF to buy and their final shares in the portfolio.
+            max_investment (float, optional): Maximum amount to invest. Defaults to 1000.0.
+
+        Prints:
+            - Optimization status
+            - Number of each ETF to buy
+            - Final share of each ETF
+            - Total amount to invest
         """
         
         # Number of ETF
