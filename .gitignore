@@ -6,5 +6,9 @@ dist/
 wheels/
 *.egg-info
 
+# Inputs files
+Inputs/*
+!Inputs/investment.csv
+
 # Virtual environments
 .venv
