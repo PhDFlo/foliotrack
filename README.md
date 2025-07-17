@@ -28,6 +28,20 @@ ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Fund
 - `DCA/Portfolio.py`: Defines the `PortfolioETF` class and optimization logic.
 - `pyproject.toml`: Project metadata and dependencies.
 
+## Installation
+
+1. Clone the repository from Github
+```
+git clone git@github.com:PhDFlo/ETF-Optimizer.git
+```
+
+2. In the `ETF-Optimizer` folder create the python environment using [uv](https://github.com/astral-sh/uv):
+```
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
+
 ## Gradio interface Usage
 
 To facilitate the use of the ETF-Optimizer tool a Gradio interface is available:
@@ -113,11 +127,6 @@ Final share of each ETF:
 
 Total amount to invest: 1200.00€
 ```
-
-## Installation
-
-Clone the repository and use the code directly, or copy the `DCA` directory into your project. Requires Python 3.12 or higher.
-
 
 ## Requirements
 
