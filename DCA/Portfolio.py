@@ -36,6 +36,7 @@ class PortfolioETF:
             "amount_invested": amount_invested,
             "actual_share": 0.,
             "number_to_buy": 0., # Computed with equilibrium
+            "amount_to_invest": 0., # Computed with equilibrium
             "final_share": 0. # Computed with equilibrium
         })
         print(f"ETF '{etf.name}' added to portfolio with share {target_share}.")
@@ -55,6 +56,7 @@ class PortfolioETF:
              "amount_invested": f"{item["amount_invested"]}€",
              "actual_share": item["actual_share"],
              "number_to_buy": item["number_to_buy"],
+             "amount_to_invest": f"{item["amount_to_invest"]}€",
              "final_share": item["final_share"],
              }
             for item in self.portfolio
@@ -178,10 +180,11 @@ class PortfolioETF:
             final_shares = np.zeros_like(final_invested)
         
         print("")
-        print("Final share of each ETF:")
+        print("Amount to spend and final share of each ETF:")
         for i, item in enumerate(self.portfolio):
+            item["amount_to_invest"] = price_matrix[i, i] * etf_counts[i]
             item["final_share"] = round(final_shares[i],4)
-            print(f"  {item['etf'].name}: {final_shares[i]:.4f}")
+            print(f"  {item['etf'].name}: {item["amount_to_invest"]:.2f}€, Final share = {item["final_share"]:.4f}")
         
         print("")
         print(f"Total amount to invest: {self.total_to_invest:.2f}€")

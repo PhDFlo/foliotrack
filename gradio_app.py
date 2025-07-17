@@ -36,10 +36,10 @@ def optimize_portfolio(etf_data, new_investment):
             "Name": etf_info.get("name"), 
             "Price": etf_info.get("price"), 
             "Target Share": etf_info.get("target_share"),
-            "Amount Invested": etf_info.get("amount_invested"), 
             "Actual Share": etf_info.get("actual_share"),
-            "Number to buy": etf_info.get("number_to_buy"),
             "Final Share": etf_info.get("final_share"),
+            "Amount to Invest": etf_info.get("amount_to_invest"), 
+            "Number to buy": etf_info.get("number_to_buy"),
         })
     
     portfolio_data = pd.DataFrame(portfolio_data)
@@ -91,10 +91,11 @@ with gr.Blocks() as demo:
 
     # Dataframe to display equilibrium results
     equilibrium_table = gr.Dataframe(
-        headers=["Name", "Price", "Target Share", "Amount Invested", "Actual Share", "Number to buy", "Final Share"],
+        headers=["Name", "Price", "Target Share", "Actual Share", "Final Share", "Amount to invest", "Number to buy"],
         datatype=["str", "number", "number", "number", "number", "number", "number"],
         label="Equilibrium Portfolio",
         visible=True,
+        column_widths=['10%', '5%', '5%', '5%', '5%', '5%', '5%']  # Adjusted widths for better visibility
     )   
 
     # Button to run optimization
