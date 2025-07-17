@@ -57,11 +57,11 @@ Open the url in any browser.
   <img src="images/gradio_interface.png" alt="ETF-Optimizer Logo" width="100%">
 </p>
 
-To create your ETF portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
-Refresh the list of available files by clicking on the `Refresh available files` button and select your file.
-Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
-Select the investment amount you want to ass to your portfolio in the `New Investment Amount (€)` button
-Finally, compute the optimization to get as close as possible to the target share. 
+- To create your ETF portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
+- Refresh the list of available files by clicking on the `Refresh available files` button and select your file.
+- Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
+- Select the investment amount you want to ass to your portfolio in the `New Investment Amount (€)` button
+- Finally, compute the optimization to get as close as possible to the target share. 
 
 ## Python Example Usage
 
