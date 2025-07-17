@@ -1,5 +1,6 @@
 # This code is a Python module describing the ETFs (Exchange-Traded Funds) class.
 
+
 class ETF:
     """
     A class to represent an Exchange-Traded Fund (ETF).
@@ -18,7 +19,7 @@ class ETF:
         ticker: str = "DCAM",
         currency: str = "Euro",
         price: float = 500.0,
-        fees: float = 0.2
+        fees: float = 0.2,
     ):
         """
         Initialize an ETF instance.
@@ -43,8 +44,10 @@ class ETF:
         Returns:
             str: String representation of the ETF.
         """
-        return (f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-                f"price={self.price}€, fees={self.fees}")
+        return (
+            f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
+            f"price={self.price}€, fees={self.fees}"
+        )
 
     def get_info(self):
         """
@@ -58,5 +61,5 @@ class ETF:
             "ticker": self.ticker,
             "currency": self.currency,
             "price": f"{self.price}€",
-            "fees": f"{self.fees}"
+            "fees": f"{self.fees}",
         }
