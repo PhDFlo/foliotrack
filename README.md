@@ -30,30 +30,30 @@ ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Fund
 
 ## Gradio interface Usage
 
-To facilitate the ETF-Optimizer tool a Gradio interface is available. To start it:
+To facilitate the use of the ETF-Optimizer tool a Gradio interface is available:
 
-1. Run `python3 gradio-app.py`. The app will be running locally and should display something like:
+1. Run `python gradio-app.py`. The app will be running locally and should display something like:
 
 ```
 * Running on local URL:  http://127.0.0.1:7860
 * To create a public link, set `share=True` in `launch()`.
 ```
 
-2. Open the url in your favorite browser.
+2. Open the url in any browser.
 
 <p align="center">
   <img src="images/gradio_interface.png" alt="ETF-Optimizer Logo" width="100%">
 </p>
 
-3. To create your ETF portfolio, create in the `Inputs` directory a .csv based on the `investment.csv` file.
+3. To create your ETF portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
 
-4. Refresh the list of available files by clicking on the `Refresh available files` button and select your file
+4. Refresh the list of available files by clicking on the `Refresh available files` button and select your file.
 
 5. Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
 
 6. Select the investment amount you want to ass to your portfolio in the `New Investment Amount (€)` button
 
-7. Finally, compute the optimization to reach the share you planned. 
+7. Finally, compute the optimization to get as close as possible to the target share. 
 
 ## Python Example Usage
 
