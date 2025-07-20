@@ -85,7 +85,7 @@ def main():
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    portfolio.solve_equilibrium(1000.0)
+    portfolio.solve_equilibrium(nvestment_amount=1000.0, Min_percent_to_invest=0.99)
 
     # Print portfolio info
     info = portfolio.get_portfolio_info()
@@ -104,22 +104,61 @@ if __name__ == "__main__":
 ETF 'Amundi MSCI World UCITS ETF' added to portfolio with share 0.5.
 ETF 'Vanguard S&P 500 UCITS ETF' added to portfolio with share 0.2.
 ETF 'iShares Core MSCI Emerging Markets IMI UCITS ETF' added to portfolio with share 0.3.
+
 Verifying portfolio shares...
 Portfolio shares sum equal to 1. Portfolio is complete.
 
 Optimisation status: optimal
 
 Number of each ETF to buy:
-  Amundi MSCI World UCITS ETF: 2
-  Vanguard S&P 500 UCITS ETF: 1
-  iShares Core MSCI Emerging Markets IMI UCITS ETF: 1
+  Amundi MSCI World UCITS ETF: 0
+  Vanguard S&P 500 UCITS ETF: 0
+  iShares Core MSCI Emerging Markets IMI UCITS ETF: 5
 
-Final share of each ETF:
-  Amundi MSCI World UCITS ETF: 0.56
-  Vanguard S&P 500 UCITS ETF: 0.22
-  iShares Core MSCI Emerging Markets IMI UCITS ETF: 0.22
+Amount to spend and final share of each ETF:
+  Amundi MSCI World UCITS ETF: 0.00€, Final share = 0.4878
+  Vanguard S&P 500 UCITS ETF: 0.00€, Final share = 0.1951
+  iShares Core MSCI Emerging Markets IMI UCITS ETF: 1000.00€, Final share = 0.3171
 
-Total amount to invest: 1200.00€
+Total amount to invest: 1000.00€
+
+Portfolio info:
+ETF:
+  name: Amundi MSCI World UCITS ETF
+  ticker: AMDW
+  currency: Euro
+  price: 500.0€
+  fees: 0.2
+  target_share: 0.5
+  amount_invested: 2000.0€
+  actual_share: 0.65
+  number_to_buy: 0
+  amount_to_invest: 0.0€
+  final_share: 0.4878
+ETF:
+  name: Vanguard S&P 500 UCITS ETF
+  ticker: VUSA
+  currency: USD
+  price: 300.0€
+  fees: 0.1
+  target_share: 0.2
+  amount_invested: 800.0€
+  actual_share: 0.26
+  number_to_buy: 0
+  amount_to_invest: 0.0€
+  final_share: 0.1951
+ETF:
+  name: iShares Core MSCI Emerging Markets IMI UCITS ETF
+  ticker: EIMI
+  currency: Euro
+  price: 200.0€
+  fees: 0.25
+  target_share: 0.3
+  amount_invested: 300.0€
+  actual_share: 0.1
+  number_to_buy: 5
+  amount_to_invest: 1000.0€
+  final_share: 0.3171
 ```
 
 ## Requirements
