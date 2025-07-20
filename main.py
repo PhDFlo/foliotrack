@@ -38,7 +38,7 @@ def main():
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    portfolio.solve_equilibrium(1000.0)
+    portfolio.solve_equilibrium(Investment_amount=1000.0, Min_percent_to_invest=0.99)
 
     # Print portfolio info and its keys/values
     info = portfolio.get_portfolio_info()

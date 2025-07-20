@@ -109,14 +109,17 @@ class PortfolioETF:
                 actual_share = round(item["amount_invested"] / total_invested, 2)
             item["actual_share"] = actual_share
 
-    def solve_equilibrium(self, max_investment: float = 1000.0):
+    def solve_equilibrium(
+        self, Investment_amount: float = 1000.0, Min_percent_to_invest: float = 0.99
+    ):
         """
         Solves for the optimal number of each ETF to buy to approach target shares,
         given a maximum investment. Updates the portfolio with the number to buy and
         final share for each ETF, and prints results.
 
         Args:
-            max_investment (float, optional): Maximum amount to invest. Defaults to 1000.0.
+            Investment_amount (float, optional): Amount to invest. Defaults to 1000.0.
+            Min_percent_to_invest (float, optional): Minimum percentage of the total investment to consider. Defaults to 0.99.
 
         Prints:
             - Optimization status
@@ -147,7 +150,9 @@ class PortfolioETF:
         # Define constraints
         constraints = [
             investments >= 0,
-            cp.sum(price_matrix @ investments) <= max_investment,
+            cp.sum(price_matrix @ investments)
+            >= Min_percent_to_invest * Investment_amount,
+            cp.sum(price_matrix @ investments) <= Investment_amount,
         ]
 
         # Define the error function
