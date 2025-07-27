@@ -60,7 +60,7 @@ Open the url in any browser.
 - To create your ETF portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
 - Refresh the list of available files by clicking on the `Refresh available files` button and select your file.
 - Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
-- Select the investment amount you want to ass to your portfolio in the `New Investment Amount (€)` button, default is 500€.
+- Select the investment amount you want to add to your portfolio and click on the `New Investment Amount (€)` button. Default is 500€.
 - Choose the minimum amount to be invested, default is 99%. Ex: with an investment of 500€, at least 495€ will be placed in the portfolio.
 - Finally, compute the optimization to get as close as possible to the target share. 
 
