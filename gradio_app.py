@@ -6,7 +6,7 @@ import pandas as pd
 
 
 # Helper to build portfolio from user input
-def optimize_portfolio(etf_data, new_investment):
+def optimize_portfolio(etf_data, new_investment, min_percent):
 
     # Create a PortfolioETF instance
     portfolio = PortfolioETF()
@@ -25,7 +25,10 @@ def optimize_portfolio(etf_data, new_investment):
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    portfolio.solve_equilibrium(float(new_investment))
+    portfolio.solve_equilibrium(
+        Investment_amount=float(new_investment),
+        Min_percent_to_invest=float(min_percent),
+    )
     info = portfolio.get_portfolio_info()
 
     # Format output for Gradio
@@ -112,8 +115,13 @@ with gr.Blocks() as demo:
     btn_refresh = gr.Button("Fill Table from CSV (optional)")
     btn_refresh.click(update_table_from_file, inputs=inp, outputs=etf_table)
 
-    # Input for new investment amount
-    new_investment = gr.Number(label="New Investment Amount (€)", value=500.0)
+    with gr.Row():
+        with gr.Column(scale=1):
+            # Input for new investment amount
+            new_investment = gr.Number(label="New Investment Amount (€)", value=500.0)
+        with gr.Column(scale=1):
+            # Input for the minimum percentage to invest
+            min_percent = gr.Number(label="Minimum Percentage to Invest", value=0.99)
 
     # Dataframe to display equilibrium results
     equilibrium_table = gr.Dataframe(
@@ -144,7 +152,7 @@ with gr.Blocks() as demo:
     run_btn = gr.Button("Optimize Portfolio")
     run_btn.click(
         optimize_portfolio,
-        inputs=[etf_table, new_investment],
+        inputs=[etf_table, new_investment, min_percent],
         outputs=equilibrium_table,
     )
 
