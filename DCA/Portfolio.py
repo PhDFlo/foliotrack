@@ -194,7 +194,7 @@ class PortfolioETF:
         print("")
         print("Amount to spend and final share of each ETF:")
         for i, item in enumerate(self.portfolio):
-            item["amount_to_invest"] = price_matrix[i, i] * etf_counts[i]
+            item["amount_to_invest"] = round(price_matrix[i, i] * etf_counts[i], 2)
             item["final_share"] = round(final_shares[i], 4)
             print(
                 f"  {item['etf'].name}: {item["amount_to_invest"]:.2f}€, Final share = {item["final_share"]:.4f}"
