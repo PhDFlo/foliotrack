@@ -187,6 +187,8 @@ ETF:
 - pyscipopt
 - gradio
 - pandas
+- matplotlib
+- pyQt6
 
 
 ## License
