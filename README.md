@@ -18,6 +18,7 @@ ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Fund
 - View detailed portfolio information, including target share, actual share, number to buy, and final share after investment.
 - Gradio interface to help ETF and portfolio definition
 - CSV file read to accelerate use of the interface
+- **ETF Contract Comparator:** Simulate and compare the evolution of multiple ETF investment contracts with customizable fees and taxes, and visualize results interactively.
 
 
 ## Project Structure
@@ -26,6 +27,7 @@ ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Fund
 - `gradio-app.py`: Gradio interface.
 - `DCA/ETF.py`: Defines the `ETF` class for representing individual ETFs.
 - `DCA/Portfolio.py`: Defines the `PortfolioETF` class and optimization logic.
+- `compare_etf.py`: Interactive command-line tool to compare ETF investment contracts with fees and capital gains tax.
 - `pyproject.toml`: Project metadata and dependencies.
 
 ## Installation
@@ -63,6 +65,21 @@ Open the url in any browser.
 - Select the investment amount you want to add to your portfolio and click on the `New Investment Amount (€)` button. Default is 500€.
 - Choose the minimum amount to be invested, default is 99%. Ex: with an investment of 500€, at least 495€ will be placed in the portfolio.
 - Finally, compute the optimization to get as close as possible to the target share. 
+
+## ETF Contract Comparator Usage
+
+The `compare_etf.py` script allows you to simulate and compare the evolution of multiple ETF investment contracts, each with its own fees and capital gains tax. You can define any number of contracts directly from the command line. It provides quantitative information to choose the best contract for investing on a particular ETF.
+
+**Example usage:**
+```sh
+python compare_etf.py --initial 20000 --annual-return 0.06 --years 25 --contribution 1000 \
+  --contract "A,0.0059,0.006,0.172" \
+  --contract "B,0.0012,0.00,0.30"
+```
+- `--contract "Label,ETF_fee,Bank_fee,CapitalGainsTax"`: Add as many contracts as you want, each with its own parameters.
+- All values for fees and taxes are expressed as decimals (e.g., 0.0059 for 0.59%).
+
+The script will print the results for each contract and plot a graph comparing their evolution and final after-tax values.
 
 ## Python Example Usage
 

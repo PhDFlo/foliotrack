@@ -10,4 +10,6 @@ dependencies = [
     "cvxpy",
     "gradio",
     "pandas",
+    "matplotlib",
+    "pyQt6"
 ]
