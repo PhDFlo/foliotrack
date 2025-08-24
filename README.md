@@ -72,7 +72,7 @@ The `compare_etf.py` script allows you to simulate and compare the evolution of 
 
 **Example usage:**
 ```sh
-python compare_etf.py --initial 20000 --annual-return 0.06 --years 25 --contribution 1000 \
+python compare_etf.py --initial 20000 --annual-return 0.06 --years 25 --yearly_contribution 1000 \
   --contract "A,0.0059,0.006,0.172" \
   --contract "B,0.0012,0.00,0.30"
 ```

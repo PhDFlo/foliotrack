@@ -41,6 +41,17 @@ def final_after_tax(value, invested, capital_gains_tax):
     return value - tax
 
 
+def compute_after_tax_curve(values, invested, capital_gains_tax):
+    """
+    Compute after-tax portfolio value at each year, as if liquidated at that year.
+    Returns a numpy array of after-tax values (same length as values).
+    """
+    gains = np.maximum(0.0, values - invested)
+    taxes = gains * capital_gains_tax
+    after_tax = values - taxes
+    return after_tax
+
+
 def parse_contract_arg(contract_str):
     """
     Parse a contract string of the form:
@@ -116,7 +127,7 @@ def parse_args():
     )
     p.add_argument("--years", type=int, default=30, help="Number of years to simulate")
     p.add_argument(
-        "--contribution",
+        "--yearly_contribution",
         type=float,
         default=0.0,
         help="Yearly contribution added at end of each year",
@@ -130,12 +141,42 @@ def parse_args():
     return p.parse_args()
 
 
+def find_intersections(xs, curves):
+    """
+    Find intersection points between all pairs of after-tax curves.
+    Returns a list of (x, y) tuples for each intersection, excluding intersections at the initial point.
+    """
+    intersections = []
+    n = len(curves)
+    for i in range(n):
+        for j in range(i + 1, n):
+            curve1 = curves[i]
+            curve2 = curves[j]
+            diff = curve1 - curve2
+            sign_change = np.where(np.diff(np.sign(diff)) != 0)[0]
+            for idx in sign_change:
+                # Linear interpolation for intersection
+                x0, x1 = xs[idx], xs[idx + 1]
+                y0_1, y1_1 = curve1[idx], curve1[idx + 1]
+                y0_2, y1_2 = curve2[idx], curve2[idx + 1]
+                denom = (y1_1 - y0_1) - (y1_2 - y0_2)
+                if denom == 0:
+                    continue
+                t = (y0_2 - y0_1) / denom
+                x_cross = x0 + t * (x1 - x0)
+                y_cross = y0_1 + t * (y1_1 - y0_1)
+                # Exclude intersection at initial point (x=0)
+                if x_cross > 0:
+                    intersections.append((x_cross, y_cross))
+    return intersections
+
+
 def main():
     args = parse_args()
     contracts = [parse_contract_arg(c) for c in args.contract]
     series_list = []
     invested_list = []
-    after_tax_list = []
+    after_tax_curves = []
     labels = []
     for contract in contracts:
         series, invested = simulate_contract(
@@ -144,31 +185,47 @@ def main():
             years=args.years,
             etf_fee=contract["etf_fee"],
             bank_fee=contract["bank_fee"],
-            yearly_contribution=args.contribution,
+            yearly_contribution=args.yearly_contribution,
         )
-        final_pre = series[-1]
-        after_tax = final_after_tax(final_pre, invested, contract["capgains_tax"])
+        after_tax_curve = compute_after_tax_curve(
+            series, invested, contract["capgains_tax"]
+        )
         series_list.append(series)
         invested_list.append(invested)
-        after_tax_list.append(after_tax)
+        after_tax_curves.append(after_tax_curve)
         labels.append(contract["label"])
         print(
-            f"Contract {contract['label']}: pre-withdrawal = {final_pre:,.2f}, invested = {invested:,.2f}, after-tax = {after_tax:,.2f}"
+            f"Contract {contract['label']}: pre-withdrawal = {series[-1]:,.2f}, invested = {invested:,.2f}, after-tax = {after_tax_curve[-1]:,.2f}"
         )
 
-    # Plot all contracts
     xs = np.arange(0, args.years + 1)
     plt.figure(figsize=(10, 6))
-    for idx, (series, label, after_tax) in enumerate(
-        zip(series_list, labels, after_tax_list)
+    colors = plt.cm.tab10.colors
+    for idx, (series, after_tax_curve, label) in enumerate(
+        zip(series_list, after_tax_curves, labels)
     ):
-        plt.plot(xs, series, label=f"{label} (pre-withdrawal)", lw=2)
+        color = colors[idx % len(colors)]
+        plt.plot(
+            xs,
+            series,
+            label=f"{label} (pre-withdrawal)",
+            lw=2,
+            alpha=0.5,
+            linestyle="--",
+            color=color,
+        )
+        plt.plot(xs, after_tax_curve, label=f"{label} (after-tax)", lw=2, color=color)
+    # Find and plot intersections between after-tax curves
+    intersections = find_intersections(xs, after_tax_curves)
+    for x_cross, y_cross in intersections:
         plt.scatter(
-            [args.years],
-            [after_tax],
+            x_cross,
+            y_cross,
             marker="o",
             s=80,
-            label=f"{label} after tax: {after_tax:,.2f}",
+            color="black",
+            zorder=5,
+            label=None,
         )
     plt.xlabel("Years")
     plt.ylabel("Portfolio value")
