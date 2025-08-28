@@ -11,7 +11,7 @@ class ETF:
         ticker (str): The ticker symbol of the ETF.
         currency (str): The currency in which the ETF is traded.
         price (float): The current price of the ETF.
-        fees (float): The annual fees (in percentage) associated with the ETF.
+        yearly_charge (float): The annual charge (in percentage) associated with the ETF.
     """
 
     def __init__(
@@ -20,7 +20,7 @@ class ETF:
         ticker: str = "DCAM",
         currency: str = "Euro",
         price: float = 500.0,
-        fees: float = 0.2,
+        yearly_charge: float = 0.2,
     ):
         """
         Initialize an ETF instance.
@@ -30,13 +30,13 @@ class ETF:
             ticker (str, optional): The ticker symbol. Defaults to "DCAM".
             currency (str, optional): The trading currency. Defaults to "Euro".
             price (float, optional): The price of the ETF. Defaults to 500.0.
-            fees (float, optional): The annual fees in percent. Defaults to 0.2.
+            yearly_charge (float, optional): The annual charge in percent. Defaults to 0.2.
         """
         self.name = name
         self.ticker = ticker
         self.currency = currency
         self.price = price
-        self.fees = fees
+        self.yearly_charge = yearly_charge
         # Set symbol based on currency
         if self.currency.lower() in ["eur", "euro", "€"]:
             self.symbol = "€"
@@ -54,7 +54,7 @@ class ETF:
         """
         return (
             f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-            f"price={self.price}€, fees={self.fees}"
+            f"price={self.price}{self.symbol}, yearly_charge={self.yearly_charge}"
         )
 
     def get_info(self):
@@ -69,7 +69,7 @@ class ETF:
             "ticker": self.ticker,
             "currency": self.currency,
             "price": f"{self.price}{self.symbol}",
-            "fees": f"{self.fees}",
+            "yearly_charge": f"{self.yearly_charge}",
             "symbol": self.symbol,
         }
 

@@ -11,21 +11,21 @@ def main():
         ticker="AMDW",
         currency="Euro",
         price=500.0,
-        fees=0.2,
+        yearly_charge=0.2,
     )
     etf2 = ETF(
         name="Vanguard S&P 500 UCITS ETF",
         ticker="VUSA.AS",
         currency="USD",
         price=300.0,
-        fees=0.1,
+        yearly_charge=0.1,
     )
     etf3 = ETF(
         name="iShares Core MSCI Emerging Markets IMI UCITS ETF",
         ticker="EIMI.L",
         currency="Euro",
         price=200.0,
-        fees=0.25,
+        yearly_charge=0.25,
     )
 
     # Create a PortfolioETF instance
