@@ -12,3 +12,4 @@ Inputs/*
 
 # Virtual environments
 .venv
+uv.lock
