@@ -11,5 +11,6 @@ dependencies = [
     "gradio",
     "pandas",
     "matplotlib",
-    "pyQt6"
+    "pyQt6",
+    "yfinance"
 ]

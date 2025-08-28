@@ -1,4 +1,5 @@
 # This code is a Python module describing the ETFs (Exchange-Traded Funds) class.
+import yfinance as yf
 
 
 class ETF:
@@ -36,6 +37,13 @@ class ETF:
         self.currency = currency
         self.price = price
         self.fees = fees
+        # Set symbol based on currency
+        if self.currency.lower() in ["eur", "euro", "€"]:
+            self.symbol = "€"
+        elif self.currency.lower() in ["usd", "us dollar", "dollar", "$"]:
+            self.symbol = "$"
+        else:
+            self.symbol = ""
 
     def __repr__(self):
         """
@@ -60,6 +68,19 @@ class ETF:
             "name": self.name,
             "ticker": self.ticker,
             "currency": self.currency,
-            "price": f"{self.price}€",
+            "price": f"{self.price}{self.symbol}",
             "fees": f"{self.fees}",
+            "symbol": self.symbol,
         }
+
+    def update_price_from_yfinance(self):
+        """
+        Update the ETF price using yfinance based on its ticker.
+        """
+        ticker = yf.Ticker(self.ticker)
+        try:
+            price = ticker.info.get("regularMarketPrice")
+            if price is not None:
+                self.price = price
+        except Exception as e:
+            print(f"Could not update price for {self.ticker}: {e}")

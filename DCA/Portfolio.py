@@ -20,22 +20,22 @@ class PortfolioETF:
         self.portfolio: list[dict[str, object]] = []
         self.total_to_invest = 0.0
 
-    def add_etf(
-        self, etf: ETF, target_share: float = 1.0, amount_invested: float = 0.0
-    ):
+    def add_etf(self, etf: ETF, target_share: float = 1.0, number_held: float = 0.0):
         """
-        Adds an ETF to the portfolio with its target share and invested amount.
+        Adds an ETF to the portfolio with its target share and number held.
         Also initializes fields for actual share, number to buy, and final share.
 
         Args:
             etf (ETF): The ETF instance to add.
             target_share (float, optional): Desired share of this ETF in the portfolio. Defaults to 1.0.
-            amount_invested (float, optional): Amount already invested in this ETF. Defaults to 0.0.
+            number_held (float, optional): Number of ETF units currently held. Defaults to 0.0.
         """
+        amount_invested = number_held * etf.price
         self.portfolio.append(
             {
                 "etf": etf,
                 "target_share": target_share,
+                "number_held": number_held,
                 "amount_invested": amount_invested,
                 "actual_share": 0.0,
                 "number_to_buy": 0.0,  # Computed with equilibrium
@@ -43,7 +43,9 @@ class PortfolioETF:
                 "final_share": 0.0,  # Computed with equilibrium
             }
         )
-        print(f"ETF '{etf.name}' added to portfolio with share {target_share}.")
+        print(
+            f"ETF '{etf.name}' added to portfolio with share {target_share} and number held {number_held}."
+        )
 
     def get_portfolio_info(self):
         """
@@ -57,10 +59,11 @@ class PortfolioETF:
             {
                 **item["etf"].get_info(),
                 "target_share": item["target_share"],
-                "amount_invested": f"{item["amount_invested"]}€",
+                "number_held": f"{item['number_held']}",
+                "amount_invested": f"{item['amount_invested']}{item['etf'].symbol}",
                 "actual_share": item["actual_share"],
                 "number_to_buy": item["number_to_buy"],
-                "amount_to_invest": f"{item["amount_to_invest"]}€",
+                "amount_to_invest": f"{item['amount_to_invest']}{item['etf'].symbol}",
                 "final_share": item["final_share"],
             }
             for item in self.portfolio
@@ -178,7 +181,7 @@ class PortfolioETF:
         print("Number of each ETF to buy:")
         for i, item in enumerate(self.portfolio):
             item["number_to_buy"] = etf_counts[i]
-            print(f"  {item['etf'].name}: {etf_counts[i]}")
+            print(f"  {item['etf'].name}: {etf_counts[i]} units")
 
         # Calculate final invested amounts
         final_invested = invested_amounts + price_matrix @ etf_counts
@@ -197,8 +200,26 @@ class PortfolioETF:
             item["amount_to_invest"] = round(price_matrix[i, i] * etf_counts[i], 2)
             item["final_share"] = round(final_shares[i], 4)
             print(
-                f"  {item['etf'].name}: {item["amount_to_invest"]:.2f}€, Final share = {item["final_share"]:.4f}"
+                f"  {item['etf'].name}: {item['amount_to_invest']:.2f}{item['etf'].symbol}, Final share = {item['final_share']:.4f}"
             )
 
         print("")
-        print(f"Total amount to invest: {self.total_to_invest:.2f}€")
+        # Print total amount to invest with all currencies shown
+        total_amounts = {}
+        for i, item in enumerate(self.portfolio):
+            symbol = item["etf"].symbol
+            total_amounts.setdefault(symbol, 0)
+            total_amounts[symbol] += item["amount_to_invest"]
+        print("Total amount to invest:")
+        for symbol, amount in total_amounts.items():
+            print(f"  {amount:.2f}{symbol}")
+
+    def update_etf_prices(self):
+        """
+        Update prices for all ETFs in the portfolio using yfinance,
+        and update the amount invested for each ETF based on the new price and number held.
+        """
+        for item in self.portfolio:
+            etf = item["etf"]
+            etf.update_price_from_yfinance()
+            item["amount_invested"] = item["number_held"] * etf.price

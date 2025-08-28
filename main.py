@@ -15,14 +15,14 @@ def main():
     )
     etf2 = ETF(
         name="Vanguard S&P 500 UCITS ETF",
-        ticker="VUSA",
+        ticker="VUSA.AS",
         currency="USD",
         price=300.0,
         fees=0.1,
     )
     etf3 = ETF(
         name="iShares Core MSCI Emerging Markets IMI UCITS ETF",
-        ticker="EIMI",
+        ticker="EIMI.L",
         currency="Euro",
         price=200.0,
         fees=0.25,
@@ -30,9 +30,11 @@ def main():
 
     # Create a PortfolioETF instance
     portfolio = PortfolioETF()
-    portfolio.add_etf(etf1, target_share=0.5, amount_invested=2000.0)
-    portfolio.add_etf(etf2, target_share=0.2, amount_invested=800.0)
-    portfolio.add_etf(etf3, target_share=0.3, amount_invested=300.0)
+    portfolio.add_etf(etf1, target_share=0.5, number_held=20.0)
+    portfolio.add_etf(etf2, target_share=0.2, number_held=1.0)
+    portfolio.add_etf(etf3, target_share=0.3, number_held=3.0)
+
+    portfolio.update_etf_prices()  # Update prices from yfinance
 
     # Compute the actual share
     portfolio.compute_actual_shares()
