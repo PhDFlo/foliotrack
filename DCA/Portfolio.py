@@ -3,6 +3,7 @@
 from .ETF import ETF
 import numpy as np
 import cvxpy as cp
+import csv
 
 
 class PortfolioETF:
@@ -44,7 +45,7 @@ class PortfolioETF:
             }
         )
         print(
-            f"ETF '{etf.name}' added to portfolio with share {target_share} and number held {number_held}."
+            f"ETF '{etf.name}' added to portfolio with share {target_share} and number held {round(number_held,4)}."
         )
 
     def get_portfolio_info(self):
@@ -223,3 +224,77 @@ class PortfolioETF:
             etf = item["etf"]
             etf.update_price_from_yfinance()
             item["amount_invested"] = item["number_held"] * etf.price
+
+    @staticmethod
+    def from_csv(filepath):
+        """
+        Create a PortfolioETF instance from a CSV file.
+        CSV columns: Name,Ticker,Currency,Price,Yearly Charge,Target Share,Amount Invested,Number Held
+
+        Args:
+            filepath (str): Path to the CSV file.
+
+        Returns:
+            PortfolioETF: The populated portfolio.
+        """
+        portfolio = PortfolioETF()
+        with open(filepath, newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                name = row.get("Name")
+                ticker = row.get("Ticker")
+                currency = row.get("Currency")
+                price = float(row.get("Price", 0))
+                yearly_charge = float(row.get("Yearly Charge", 0))
+                target_share = float(row.get("Target Share", 0))
+                amount_invested = float(row.get("Amount Invested", 0))
+                number_held = float(row.get("Number Held", 0))
+                from .ETF import ETF
+
+                etf = ETF(
+                    name=name,
+                    ticker=ticker,
+                    currency=currency,
+                    price=price,
+                    yearly_charge=yearly_charge,
+                )
+                portfolio.add_etf(
+                    etf, target_share=target_share, number_held=number_held
+                )
+        return portfolio
+
+    def to_csv(self, filepath):
+        """
+        Write the portfolio to a CSV file.
+        Columns: Name,Ticker,Currency,Price,Yearly Charge,Target Share,Amount Invested,Number Held
+
+        Args:
+            filepath (str): Path to the CSV file.
+        """
+        with open(filepath, mode="w", newline="", encoding="utf-8") as csvfile:
+            fieldnames = [
+                "Name",
+                "Ticker",
+                "Currency",
+                "Price",
+                "Yearly Charge",
+                "Target Share",
+                "Amount Invested",
+                "Number Held",
+            ]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for item in self.portfolio:
+                etf = item["etf"]
+                writer.writerow(
+                    {
+                        "Name": etf.name,
+                        "Ticker": etf.ticker,
+                        "Currency": etf.currency,
+                        "Price": etf.price,
+                        "Yearly Charge": getattr(etf, "yearly_charge", ""),
+                        "Target Share": item["target_share"],
+                        "Amount Invested": item["amount_invested"],
+                        "Number Held": item["number_held"],
+                    }
+                )

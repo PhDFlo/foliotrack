@@ -3,7 +3,7 @@ from DCA.Portfolio import PortfolioETF
 import numpy as np
 
 
-def main():
+def portfolio_from_scratch():
 
     # Create an ETF instance
     etf1 = ETF(
@@ -51,5 +51,21 @@ def main():
             print(f"  {k}: {v}")
 
 
+def use_existing_portfolio():
+    # Load an existing portfolio from CSV
+    portfolio = PortfolioETF.from_csv("Inputs/investment.csv")
+
+    portfolio.update_etf_prices()
+
+    # Compute the actual share
+    portfolio.compute_actual_shares()
+
+    # Solve for equilibrium
+    portfolio.solve_equilibrium(Investment_amount=1000.0, Min_percent_to_invest=0.99)
+
+    # Export updated portfolio to CSV
+    portfolio.to_csv("portfolio_output.csv")
+
+
 if __name__ == "__main__":
-    main()
+    use_existing_portfolio()
