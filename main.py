@@ -1,5 +1,6 @@
 from DCA.ETF import ETF
 from DCA.Portfolio import PortfolioETF
+from DCA.Equilibrate import Equilibrate
 import numpy as np
 
 
@@ -40,7 +41,9 @@ def portfolio_from_scratch():
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    portfolio.solve_equilibrium(Investment_amount=1000.0, Min_percent_to_invest=0.99)
+    Equilibrate.solve_equilibrium(
+        portfolio.portfolio, Investment_amount=1000.0, Min_percent_to_invest=0.99
+    )
 
     # Print portfolio info and its keys/values
     info = portfolio.get_portfolio_info()
@@ -61,7 +64,17 @@ def use_existing_portfolio():
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    portfolio.solve_equilibrium(Investment_amount=1000.0, Min_percent_to_invest=0.99)
+    Equilibrate.solve_equilibrium(
+        portfolio.portfolio, Investment_amount=1000.0, Min_percent_to_invest=0.99
+    )
+
+    # Print portfolio info and its keys/values
+    info = portfolio.get_portfolio_info()
+    print("\nPortfolio info:")
+    for etf_info in info:
+        print("ETF:")
+        for k, v in etf_info.items():
+            print(f"  {k}: {v}")
 
     # Export updated portfolio to CSV
     portfolio.to_csv("portfolio_output.csv")
