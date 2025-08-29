@@ -45,6 +45,28 @@ class PortfolioETF:
         ]
 
 
+    def verify_target_share_sum(self):
+        """
+        Checks if the sum of target shares for all ETFs equals 1.
+        Prints details and completeness status.
+
+        Returns:
+            bool: True if sum equals 1, False otherwise.
+        """
+        print()
+        print("Verifying portfolio shares...")
+        total_share = sum(item["target_share"] for item in self.portfolio)
+        if abs(total_share - 1.0) > 1e-6:
+            print("Portfolio shares do not sum to 1. Details:")
+            for item in self.portfolio:
+                print(f"  {item['etf'].name}: {item['target_share']}")
+            print(f"Portfolio is NOT complete. (Sum: {total_share})")
+            return False
+        else:
+            print("Portfolio shares sum equal to 1. Portfolio is complete.")
+            return True
+        
+
     def add_new_etf(self, etf: ETF, target_share: float = 1.0, number_held: float = 0.0):
         """
         Adds an ETF to the portfolio with its target share and number held.
@@ -88,30 +110,12 @@ class PortfolioETF:
             if item["etf"].ticker == etf_ticker:
                 item["number_held"] += quantity
                 item["amount_invested"] = item["number_held"] * item["etf"].price
-                print(f"Bought {quantity} units of '{etf_ticker}'. New number held: {item['number_held']}")
+                self.compute_actual_shares() # Update the actual shares
+                item["number_to_buy"] = 0.0  # Reset number to buy
+                print(f"\nBought {quantity} units of '{etf_ticker}'. New number held: {item['number_held']}. Number to buy reset")
                 return
         raise ValueError(f"ETF '{etf_ticker}' not found in the portfolio.")
 
-    def verify_target_share_sum(self):
-        """
-        Checks if the sum of target shares for all ETFs equals 1.
-        Prints details and completeness status.
-
-        Returns:
-            bool: True if sum equals 1, False otherwise.
-        """
-        print()
-        print("Verifying portfolio shares...")
-        total_share = sum(item["target_share"] for item in self.portfolio)
-        if abs(total_share - 1.0) > 1e-6:
-            print("Portfolio shares do not sum to 1. Details:")
-            for item in self.portfolio:
-                print(f"  {item['etf'].name}: {item['target_share']}")
-            print(f"Portfolio is NOT complete. (Sum: {total_share})")
-            return False
-        else:
-            print("Portfolio shares sum equal to 1. Portfolio is complete.")
-            return True
 
     def compute_actual_shares(self):
         """

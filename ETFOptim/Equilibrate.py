@@ -51,14 +51,11 @@ class Equilibrate:
         problem = cp.Problem(objective, constraints)
         problem.solve()
 
-        print("")
-        print("Optimisation status:", problem.status)
-
+        print("\nOptimisation status:", problem.status)
         if investments.value is None:
             raise RuntimeError("Optimization did not produce a solution.")
         etf_counts = np.round(investments.value).astype(int)
-        print("")
-        print("Number of each ETF to buy:")
+        print("\nNumber of each ETF to buy:")
         for i, item in enumerate(portfolio):
             item["number_to_buy"] = etf_counts[i]
             print(f"  {item['etf'].name}: {etf_counts[i]} units")
@@ -72,8 +69,7 @@ class Equilibrate:
         else:
             final_shares = np.zeros_like(final_invested)
 
-        print("")
-        print("Amount to spend and final share of each ETF:")
+        print("\nAmount to spend and final share of each ETF:")
         for i, item in enumerate(portfolio):
             item["amount_to_invest"] = round(price_matrix[i, i] * etf_counts[i], 2)
             item["final_share"] = round(final_shares[i], 4)
@@ -81,13 +77,12 @@ class Equilibrate:
                 f"  {item['etf'].name}: {item['amount_to_invest']:.2f}{item['etf'].symbol}, Final share = {item['final_share']:.4f}"
             )
 
-        print("")
         total_amounts = {}
         for i, item in enumerate(portfolio):
             symbol = item["etf"].symbol
             total_amounts.setdefault(symbol, 0)
             total_amounts[symbol] += item["amount_to_invest"]
-        print("Total amount to invest:")
+        print("\nTotal amount to invest:")
         for symbol, amount in total_amounts.items():
             print(f"  {amount:.2f}{symbol}")
 
