@@ -95,13 +95,15 @@ class PortfolioETF:
         )
     
     
-    def buy_etf(self, etf_ticker: str, quantity: float):
+    def buy_etf(self, etf_ticker: str, quantity: float, buy_price: float = None, fee: float = 0.0):
         """
         Buys a specified quantity of an ETF in the portfolio.
 
         Args:
             etf_ticker (str): The ticker of the ETF to buy.
             quantity (float): The number of units to buy.
+            buy_price (float, optional): The price at which to buy the ETF. If None, uses current price. Defaults to None.
+            fee (float, optional): Transaction fee for the purchase. Defaults to 0.0. (not used currently)
 
         Raises:
             ValueError: If the ETF is not found in the portfolio.
@@ -109,7 +111,9 @@ class PortfolioETF:
         for item in self.portfolio:
             if item["etf"].ticker == etf_ticker:
                 item["number_held"] += quantity
-                item["amount_invested"] = item["number_held"] * item["etf"].price
+                if buy_price is None: # Use current price if no buy price is provided
+                    buy_price = item["etf"].price
+                item["amount_invested"] = item["amount_invested"] + quantity * buy_price
                 self.compute_actual_shares() # Update the actual shares
                 item["number_to_buy"] = 0.0  # Reset number to buy
                 print(f"\nBought {quantity} units of '{etf_ticker}'. New number held: {item['number_held']}. Number to buy reset")

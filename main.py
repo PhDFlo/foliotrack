@@ -69,7 +69,7 @@ def use_existing_portfolio():
     )
     
     # Buy 9 units of the ETF with ticker "EIMI.L"
-    portfolio.buy_etf("EIMI.L", 9.0)  
+    portfolio.buy_etf("EIMI.L", 9.0, buy_price=210.0)  # Assuming a buy price of 210.0
 
     # Print portfolio info and its keys/values
     info = portfolio.get_portfolio_info()
