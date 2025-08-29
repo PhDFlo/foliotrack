@@ -1,6 +1,6 @@
-from DCA.ETF import ETF
-from DCA.Portfolio import PortfolioETF
-from DCA.Equilibrate import Equilibrate
+from ETFOptim.ETF import ETF
+from ETFOptim.Portfolio import PortfolioETF
+from ETFOptim.Equilibrate import Equilibrate
 import numpy as np
 
 
@@ -77,7 +77,7 @@ def use_existing_portfolio():
             print(f"  {k}: {v}")
 
     # Export updated portfolio to CSV
-    portfolio.to_csv("portfolio_output.csv")
+    portfolio.to_csv("Inputs/portfolio_output.csv")
 
 
 if __name__ == "__main__":

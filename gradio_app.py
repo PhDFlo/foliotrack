@@ -1,6 +1,6 @@
 import gradio as gr
-from DCA.ETF import ETF
-from DCA.Portfolio import PortfolioETF
+from ETFOptim.ETF import ETF
+from ETFOptim.Portfolio import PortfolioETF
 import numpy as np
 import pandas as pd
 
