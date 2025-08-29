@@ -7,8 +7,8 @@ wheels/
 *.egg-info
 
 # Inputs files
-Inputs/*
-!Inputs/investment.csv
+Portfolios/*
+!Portfolios/investment.csv
 
 # Virtual environments
 .venv

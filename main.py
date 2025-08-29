@@ -56,7 +56,7 @@ def portfolio_from_scratch():
 
 def use_existing_portfolio():
     # Load an existing portfolio from CSV
-    portfolio = PortfolioETF.from_csv("Inputs/investment.csv")
+    portfolio = PortfolioETF.from_csv("Portfolios/investment.csv")
 
     portfolio.update_etf_prices()
 
@@ -80,7 +80,7 @@ def use_existing_portfolio():
             print(f"  {k}: {v}")
 
     # Export updated portfolio to CSV
-    portfolio.to_csv("Inputs/portfolio_output.csv")
+    portfolio.to_csv("Portfolios/portfolio_output.csv")
 
 
 if __name__ == "__main__":
