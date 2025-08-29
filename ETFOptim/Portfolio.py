@@ -20,8 +20,32 @@ class PortfolioETF:
         """
         self.portfolio: list[dict[str, object]] = []
         self.total_to_invest = 0.0
+        
+        
+    def get_portfolio_info(self):
+        """
+        Returns a summary of all ETFs in the portfolio, including their info,
+        target share, amount invested, actual share, number to buy, and final share.
 
-    def add_etf(self, etf: ETF, target_share: float = 1.0, number_held: float = 0.0):
+        Returns:
+            list: List of dictionaries with ETF details and portfolio metrics.
+        """
+        return [
+            {
+                **item["etf"].get_info(),
+                "target_share": item["target_share"],
+                "number_held": f"{item['number_held']}",
+                "amount_invested": f"{item['amount_invested']}{item['etf'].symbol}",
+                "actual_share": item["actual_share"],
+                "number_to_buy": item["number_to_buy"],
+                "amount_to_invest": f"{item['amount_to_invest']}{item['etf'].symbol}",
+                "final_share": item["final_share"],
+            }
+            for item in self.portfolio
+        ]
+
+
+    def add_new_etf(self, etf: ETF, target_share: float = 1.0, number_held: float = 0.0):
         """
         Adds an ETF to the portfolio with its target share and number held.
         Also initializes fields for actual share, number to buy, and final share.
@@ -47,28 +71,26 @@ class PortfolioETF:
         print(
             f"ETF '{etf.name}' added to portfolio with share {target_share} and number held {round(number_held,4)}."
         )
-
-    def get_portfolio_info(self):
+    
+    
+    def buy_etf(self, etf_ticker: str, quantity: float):
         """
-        Returns a summary of all ETFs in the portfolio, including their info,
-        target share, amount invested, actual share, number to buy, and final share.
+        Buys a specified quantity of an ETF in the portfolio.
 
-        Returns:
-            list: List of dictionaries with ETF details and portfolio metrics.
+        Args:
+            etf_ticker (str): The ticker of the ETF to buy.
+            quantity (float): The number of units to buy.
+
+        Raises:
+            ValueError: If the ETF is not found in the portfolio.
         """
-        return [
-            {
-                **item["etf"].get_info(),
-                "target_share": item["target_share"],
-                "number_held": f"{item['number_held']}",
-                "amount_invested": f"{item['amount_invested']}{item['etf'].symbol}",
-                "actual_share": item["actual_share"],
-                "number_to_buy": item["number_to_buy"],
-                "amount_to_invest": f"{item['amount_to_invest']}{item['etf'].symbol}",
-                "final_share": item["final_share"],
-            }
-            for item in self.portfolio
-        ]
+        for item in self.portfolio:
+            if item["etf"].ticker == etf_ticker:
+                item["number_held"] += quantity
+                item["amount_invested"] = item["number_held"] * item["etf"].price
+                print(f"Bought {quantity} units of '{etf_ticker}'. New number held: {item['number_held']}")
+                return
+        raise ValueError(f"ETF '{etf_ticker}' not found in the portfolio.")
 
     def verify_target_share_sum(self):
         """
@@ -156,7 +178,7 @@ class PortfolioETF:
                     price=price,
                     yearly_charge=yearly_charge,
                 )
-                portfolio.add_etf(
+                portfolio.add_new_etf(
                     etf, target_share=target_share, number_held=number_held
                 )
         return portfolio
