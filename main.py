@@ -10,7 +10,7 @@ def portfolio_from_scratch():
     etf1 = ETF(
         name="Amundi MSCI World UCITS ETF",
         ticker="AMDW",
-        currency="Euro",
+        currency="EUR",
         price=500.0,
         yearly_charge=0.2,
     )
@@ -24,7 +24,7 @@ def portfolio_from_scratch():
     etf3 = ETF(
         name="iShares Core MSCI Emerging Markets IMI UCITS ETF",
         ticker="EIMI.L",
-        currency="Euro",
+        currency="EUR",
         price=200.0,
         yearly_charge=0.25,
     )
