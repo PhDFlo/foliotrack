@@ -105,12 +105,12 @@ class PortfolioETF:
             quantity (float): The number of units to buy.
             buy_price (float, optional): The price at which to buy the ETF. If None, uses current price. Defaults to None.
             fee (float, optional): Transaction fee for the purchase. Defaults to 0.0 (not used currently). 
-            date (str, optional): Date of the purchase in dd-mm-yyyy format. Defaults to today's date (not used currently).
+            date (str, optional): Date of the purchase in yyyy-mm-dd format. Defaults to today's date (not used currently).
         Raises:
             ValueError: If the ETF is not found in the portfolio.
         """
         if date is None:
-            date = datetime.datetime.now().strftime("%d-%m-%Y")
+            date = datetime.datetime.now().strftime("%Y-%m-%d")
         for item in self.portfolio:
             if item["etf"].ticker == etf_ticker:
                 item["number_held"] += quantity
@@ -156,7 +156,7 @@ class PortfolioETF:
             item["amount_invested"] = item["number_held"] * etf.price
 
     @staticmethod
-    def from_csv(filepath):
+    def portfolio_from_csv(filepath):
         """
         Create a PortfolioETF instance from a CSV file.
         CSV columns: Name,Ticker,Currency,Price,Yearly Charge,Target Share,Amount Invested,Number Held
@@ -193,7 +193,7 @@ class PortfolioETF:
                 )
         return portfolio
 
-    def to_csv(self, filepath):
+    def portfolio_to_csv(self, filepath):
         """
         Write the portfolio to a CSV file.
         Columns: Name,Ticker,Currency,Price,Yearly Charge,Target Share,Amount Invested,Number Held
