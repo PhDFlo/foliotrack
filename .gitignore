@@ -6,9 +6,13 @@ dist/
 wheels/
 *.egg-info
 
-# Inputs files
+# Portfolio files
 Portfolios/*
 !Portfolios/investment.csv
+
+# Purchase files
+Purchases/*
+!Purchases/new_purchases.csv
 
 # Virtual environments
 .venv

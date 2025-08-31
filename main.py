@@ -73,7 +73,7 @@ def use_existing_portfolio():
     securities_account.buy_etf("EIMI.L", 9.0, buy_price=210.0)  # Assuming a buy price of 210.0
     
     # Write staged purchases for Wealthfolio import
-    securities_account.purchases_to_Wealthfolio_csv("Portfolios/staged_purchases.csv")
+    securities_account.purchases_to_Wealthfolio_csv("Purchases/new_purchases.csv")
 
     # Print portfolio info and its keys/values
     info = securities_account.get_portfolio_info()

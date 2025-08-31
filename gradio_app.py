@@ -1,37 +1,61 @@
+
 import gradio as gr
 from ETFOptim.ETF import ETF
 from ETFOptim.Portfolio import PortfolioETF
 import numpy as np
 import pandas as pd
 
+# Global portfolio instance (keeps state across tabs)
+portfolio = PortfolioETF()
 
-# Helper to build portfolio from user input
+def update_file_explorer():
+    return gr.FileExplorer(root_dir="/")
+
+def update_file_explorer_2():
+    return gr.FileExplorer(root_dir="./Portfolios")
+
+def update_table_from_file(inp):
+    df = pd.read_csv(inp, delimiter=",")
+    df = df.to_numpy()
+    # Clear portfolio and add ETFs from CSV
+    portfolio.portfolio.clear()
+    for row in df:
+        etf = ETF(
+            name=row[0],
+            ticker=row[1],
+            currency=row[2],
+            price=float(row[3]),
+            yearly_charge=float(row[4]),
+        )
+        portfolio.add_new_etf(etf, target_share=float(row[5]), number_held=float(row[7]))
+    portfolio.compute_actual_shares()
+    return df.tolist()
+
+def save_portfolio_to_csv(filename):
+    portfolio.portfolio_to_csv(filename)
+    return f"Portfolio saved to {filename}"
+
 def optimize_portfolio(etf_data, new_investment, min_percent):
-
-    # Create a PortfolioETF instance
-    portfolio = PortfolioETF()
+    # Rebuild portfolio from table
+    portfolio.portfolio.clear()
     for etf in etf_data:
         etf_obj = ETF(
             name=etf[0],
             ticker=etf[1],
             currency=etf[2],
             price=float(etf[3]),
-            fees=float(etf[4]),
+            yearly_charge=float(etf[4]),
         )
-        portfolio.add_etf(
-            etf_obj, target_share=float(etf[5]), amount_invested=float(etf[6])
-        )
-    # Compute the actual share
+        portfolio.add_new_etf(etf_obj, target_share=float(etf[5]), number_held=float(etf[7]))
     portfolio.compute_actual_shares()
-
     # Solve for equilibrium
-    portfolio.solve_equilibrium(
+    from ETFOptim.Equilibrate import Equilibrate
+    Equilibrate.solve_equilibrium(
+        portfolio.portfolio,
         Investment_amount=float(new_investment),
         Min_percent_to_invest=float(min_percent),
     )
     info = portfolio.get_portfolio_info()
-
-    # Format output for Gradio
     portfolio_data = []
     for etf_info in info:
         portfolio_data.append(
@@ -45,115 +69,103 @@ def optimize_portfolio(etf_data, new_investment, min_percent):
                 "Number to buy": etf_info.get("number_to_buy"),
             }
         )
+    return pd.DataFrame(portfolio_data)
 
-    portfolio_data = pd.DataFrame(portfolio_data)
-    return portfolio_data
+def update_etf_prices():
+    portfolio.update_etf_prices()
+    info = portfolio.get_portfolio_info()
+    return pd.DataFrame(info)
 
+def buy_etf(ticker, quantity, buy_price):
+    try:
+        portfolio.buy_etf(ticker, quantity, buy_price=buy_price)
+        return f"Bought {quantity} units of {ticker} at {buy_price}"
+    except Exception as e:
+        return str(e)
 
-# Function to update the ETF table from a CSV file
-def update_table_from_file(inp):
-    # Read initial data from CSV or create an empty DataFrame
-    df = pd.read_csv(inp, delimiter=",")
-    df = df.to_numpy()  # Convert DataFrame to numpy array for Gradio compatibility
-    return df.tolist()
-
-
-# Function to update file explorer
-def update_file_explorer():
-    return gr.FileExplorer(root_dir="/")
-
-
-def update_file_explorer_2():
-    return gr.FileExplorer(root_dir="./Inputs")
-
+def export_wealthfolio_csv(filename):
+    portfolio.purchases_to_Wealthfolio_csv(filename)
+    return f"Staged purchases exported to {filename}"
 
 with gr.Blocks() as demo:
     gr.Markdown("# ETF Portfolio Optimizer")
+    with gr.Tabs():
+        with gr.TabItem("Portfolio"):
+            inp = gr.FileExplorer(
+                root_dir="./Portfolios",
+                value="investment.csv",
+                label="CSV Files available",
+                file_count="single",
+            )
+            btn_refresh = gr.Button("Refresh available files")
+            btn_refresh.click(update_file_explorer, outputs=inp).then(
+                update_file_explorer_2, outputs=inp
+            )
+            etf_table = gr.Dataframe(
+                headers=[
+                    "Name",
+                    "Ticker",
+                    "Currency",
+                    "Price",
+                    "Yearly Charge",
+                    "Target Share",
+                    "Amount Invested",
+                    "Number Held",
+                ],
+                datatype=["str", "str", "str", "number", "number", "number", "number", "number"],
+                row_count=(10, "dynamic"),
+                col_count=8,
+                type="numpy",
+                label="ETF List (add or edit rows)",
+                column_widths=["10%", "5%", "5%", "5%", "5%", "5%", "5%", "5%"],
+            )
+            btn_fill = gr.Button("Fill Table from CSV (optional)")
+            btn_fill.click(update_table_from_file, inputs=inp, outputs=etf_table)
+            btn_save = gr.Button("Save Portfolio to CSV")
+            save_filename = gr.Textbox(value="Portfolios/portfolio_output.csv", label="Save as filename")
+            btn_save.click(save_portfolio_to_csv, inputs=save_filename, outputs=gr.Textbox())
 
-    # File explorer to select CSV files
-    inp = gr.FileExplorer(
-        root_dir="./Inputs",
-        value="investment.csv",
-        label="CSV Files available",
-        file_count="single",
-    )
+        with gr.TabItem("Prices"):
+            btn_update_prices = gr.Button("Update ETF Prices from yfinance")
+            prices_table = gr.Dataframe(
+                headers=["Name", "Ticker", "Currency", "Price", "Yearly Charge", "Target Share", "Amount Invested", "Number Held"],
+                datatype=["str", "str", "str", "number", "number", "number", "number", "number"],
+                label="Portfolio with Updated Prices",
+                column_widths=["10%", "5%", "5%", "5%", "5%", "5%", "5%", "5%"],
+            )
+            btn_update_prices.click(update_etf_prices, outputs=prices_table)
 
-    # Button to refresh file explorer
-    btn_refresh = gr.Button("Refresh available files")
-    btn_refresh.click(update_file_explorer, outputs=inp).then(
-        update_file_explorer_2, outputs=inp
-    )
-
-    # ETF table for user input
-    etf_table = gr.Dataframe(
-        headers=[
-            "Name",
-            "Ticker",
-            "Currency",
-            "Price",
-            "Fees",
-            "Target Share",
-            "Amount Invested",
-        ],
-        datatype=["str", "str", "str", "number", "number", "number", "number"],
-        row_count=(10, "dynamic"),
-        col_count=7,
-        type="numpy",
-        label="ETF List (add or edit rows)",
-        column_widths=[
-            "10%",
-            "5%",
-            "5%",
-            "5%",
-            "5%",
-            "5%",
-            "5%",
-        ],  # Adjusted widths for better visibility
-    )
-
-    # Button to fill table from CSV file
-    btn_refresh = gr.Button("Fill Table from CSV (optional)")
-    btn_refresh.click(update_table_from_file, inputs=inp, outputs=etf_table)
-
-    with gr.Row():
-        with gr.Column(scale=1):
-            # Input for new investment amount
+        with gr.TabItem("Equilibrium"):
             new_investment = gr.Number(label="New Investment Amount (€)", value=500.0)
-        with gr.Column(scale=1):
-            # Input for the minimum percentage to invest
             min_percent = gr.Number(label="Minimum Percentage to Invest", value=0.99)
+            equilibrium_table = gr.Dataframe(
+                headers=["Name", "Price", "Target Share", "Actual Share", "Final Share", "Amount to Invest", "Number to buy"],
+                datatype=["str", "number", "number", "number", "number", "number", "number"],
+                label="Equilibrium Portfolio",
+                column_widths=["10%", "5%", "5%", "5%", "5%", "5%", "5%"],
+            )
+            btn_optimize = gr.Button("Optimize Portfolio")
+            btn_optimize.click(
+                optimize_portfolio,
+                inputs=[etf_table, new_investment, min_percent],
+                outputs=equilibrium_table,
+            )
 
-    # Dataframe to display equilibrium results
-    equilibrium_table = gr.Dataframe(
-        headers=[
-            "Name",
-            "Price",
-            "Target Share",
-            "Actual Share",
-            "Final Share",
-            "Amount to invest",
-            "Number to buy",
-        ],
-        datatype=["str", "number", "number", "number", "number", "number", "number"],
-        label="Equilibrium Portfolio",
-        visible=True,
-        column_widths=[
-            "10%",
-            "5%",
-            "5%",
-            "5%",
-            "5%",
-            "5%",
-            "5%",
-        ],  # Adjusted widths for better visibility
-    )
+        with gr.TabItem("Buy ETF"):
+            ticker_list = gr.Dropdown(choices=[], label="ETF Ticker")
+            quantity = gr.Number(label="Quantity to Buy", value=1.0)
+            buy_price = gr.Number(label="Buy Price", value=0.0)
+            btn_buy = gr.Button("Buy ETF")
+            buy_result = gr.Textbox(label="Buy Result")
+            def update_ticker_choices():
+                return [item[1] for item in etf_table.value] if etf_table.value else []
+            etf_table.change(update_ticker_choices, outputs=ticker_list)
+            btn_buy.click(buy_etf, inputs=[ticker_list, quantity, buy_price], outputs=buy_result)
 
-    # Button to run optimization
-    run_btn = gr.Button("Optimize Portfolio")
-    run_btn.click(
-        optimize_portfolio,
-        inputs=[etf_table, new_investment, min_percent],
-        outputs=equilibrium_table,
-    )
+        with gr.TabItem("Export Wealthfolio CSV"):
+            export_filename = gr.Textbox(value="Portfolios/staged_purchases.csv", label="Export as filename")
+            btn_export = gr.Button("Export Staged Purchases")
+            export_result = gr.Textbox(label="Export Result")
+            btn_export.click(export_wealthfolio_csv, inputs=export_filename, outputs=export_result)
 
 demo.launch()
