@@ -18,7 +18,7 @@ class ETF:
         self,
         name: str,
         ticker: str = "DCAM",
-        currency: str = "Euro",
+        currency: str = "EUR",
         price: float = 500.0,
         yearly_charge: float = 0.2,
     ):
@@ -28,7 +28,7 @@ class ETF:
         Args:
             name (str): The name of the ETF.
             ticker (str, optional): The ticker symbol. Defaults to "DCAM".
-            currency (str, optional): The trading currency. Defaults to "Euro".
+            currency (str, optional): The trading currency. Defaults to "EUR".
             price (float, optional): The price of the ETF. Defaults to 500.0.
             yearly_charge (float, optional): The annual charge in percent. Defaults to 0.2.
         """
@@ -37,10 +37,15 @@ class ETF:
         self.currency = currency
         self.price = price
         self.yearly_charge = yearly_charge
+        # Verify currency
+        if self.currency.lower() not in ["eur", "usd"]:
+            print(
+                f"Error: Currency '{self.currency}' is not supported. Only EUR and USD are allowed."
+            )
         # Set symbol based on currency
-        if self.currency.lower() in ["eur", "euro", "€"]:
+        if self.currency.lower() in ["eur", "€"]:
             self.symbol = "€"
-        elif self.currency.lower() in ["usd", "us dollar", "dollar", "$"]:
+        elif self.currency.lower() in ["usd", "$"]:
             self.symbol = "$"
         else:
             self.symbol = ""
