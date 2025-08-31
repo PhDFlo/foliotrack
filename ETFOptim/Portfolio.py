@@ -21,6 +21,7 @@ class PortfolioETF:
         """
         self.portfolio: list[dict[str, object]] = []
         self.total_to_invest = 0.0
+        self.staged_purchases = []  # List to store staged purchases
         
         
     def get_portfolio_info(self):
@@ -119,6 +120,14 @@ class PortfolioETF:
                 item["amount_invested"] = item["amount_invested"] + quantity * buy_price
                 self.compute_actual_shares() # Update the actual shares
                 item["number_to_buy"] = 0.0  # Reset number to buy
+                # Add purchase to staged_purchases
+                self.staged_purchases.append({
+                    "ticker": etf_ticker,
+                    "quantity": quantity,
+                    "buy_price": buy_price,
+                    "fee": fee,
+                    "date": date
+                })
                 print(f"\nBought {quantity} units of '{etf_ticker}' on {date}. New number held: {item['number_held']}. Number to buy reset.")
                 return
         raise ValueError(f"ETF '{etf_ticker}' not found in the portfolio.")
