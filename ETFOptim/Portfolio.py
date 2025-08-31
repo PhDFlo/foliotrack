@@ -4,6 +4,7 @@ from .ETF import ETF
 import numpy as np
 import cvxpy as cp
 import csv
+import datetime
 
 
 class PortfolioETF:
@@ -95,7 +96,7 @@ class PortfolioETF:
         )
     
     
-    def buy_etf(self, etf_ticker: str, quantity: float, buy_price: float = None, fee: float = 0.0):
+    def buy_etf(self, etf_ticker: str, quantity: float, buy_price: float = None, fee: float = 0.0, date: str = None):
         """
         Buys a specified quantity of an ETF in the portfolio.
 
@@ -103,11 +104,13 @@ class PortfolioETF:
             etf_ticker (str): The ticker of the ETF to buy.
             quantity (float): The number of units to buy.
             buy_price (float, optional): The price at which to buy the ETF. If None, uses current price. Defaults to None.
-            fee (float, optional): Transaction fee for the purchase. Defaults to 0.0. (not used currently)
-
+            fee (float, optional): Transaction fee for the purchase. Defaults to 0.0 (not used currently). 
+            date (str, optional): Date of the purchase in dd-mm-yyyy format. Defaults to today's date (not used currently).
         Raises:
             ValueError: If the ETF is not found in the portfolio.
         """
+        if date is None:
+            date = datetime.datetime.now().strftime("%d-%m-%Y")
         for item in self.portfolio:
             if item["etf"].ticker == etf_ticker:
                 item["number_held"] += quantity
@@ -116,10 +119,9 @@ class PortfolioETF:
                 item["amount_invested"] = item["amount_invested"] + quantity * buy_price
                 self.compute_actual_shares() # Update the actual shares
                 item["number_to_buy"] = 0.0  # Reset number to buy
-                print(f"\nBought {quantity} units of '{etf_ticker}'. New number held: {item['number_held']}. Number to buy reset")
+                print(f"\nBought {quantity} units of '{etf_ticker}' on {date}. New number held: {item['number_held']}. Number to buy reset.")
                 return
         raise ValueError(f"ETF '{etf_ticker}' not found in the portfolio.")
-
 
     def compute_actual_shares(self):
         """
