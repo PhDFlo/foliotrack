@@ -237,3 +237,44 @@ class PortfolioETF:
                         "Number Held": item["number_held"],
                     }
                 )
+
+    def purchases_to_Wealthfolio_csv(self, filepath):
+        """
+        Write the staged purchases to a CSV file in Wealthfolio format:
+        date, symbol, quantity, activityType, unitPrice, currency, fee, amount
+
+        Args:
+            filepath (str): Path to the output CSV file.
+        """
+        fieldnames = [
+            "date",
+            "symbol",
+            "quantity",
+            "activityType",
+            "unitPrice",
+            "currency",
+            "fee",
+            "amount"
+        ]
+        with open(filepath, mode="w", newline="", encoding="utf-8") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for purchase in self.staged_purchases:
+                # Find ETF currency from portfolio
+                currency = None
+                for item in self.portfolio:
+                    if item["etf"].ticker == purchase["ticker"]:
+                        currency = item["etf"].currency
+                        break
+                # Calculate amount
+                amount = purchase["quantity"] * purchase["buy_price"] + purchase["fee"]
+                writer.writerow({
+                    "date": purchase["date"],
+                    "symbol": purchase["ticker"],
+                    "quantity": purchase["quantity"],
+                    "activityType": "Buy",
+                    "unitPrice": purchase["buy_price"],
+                    "currency": currency if currency else "",
+                    "fee": purchase["fee"],
+                    "amount": amount
+                })
