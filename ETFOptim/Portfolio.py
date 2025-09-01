@@ -22,8 +22,7 @@ class PortfolioETF:
         self.portfolio: list[dict[str, object]] = []
         self.total_to_invest = 0.0
         self.staged_purchases = []  # List to store staged purchases
-        
-        
+
     def get_portfolio_info(self):
         """
         Returns a summary of all ETFs in the portfolio, including their info,
@@ -37,15 +36,14 @@ class PortfolioETF:
                 **item["etf"].get_info(),
                 "target_share": item["target_share"],
                 "number_held": f"{item['number_held']}",
-                "amount_invested": f"{item['amount_invested']}{item['etf'].symbol}",
+                "amount_invested": f"{item['amount_invested']}",
                 "actual_share": item["actual_share"],
                 "number_to_buy": item["number_to_buy"],
-                "amount_to_invest": f"{item['amount_to_invest']}{item['etf'].symbol}",
+                "amount_to_invest": f"{item['amount_to_invest']}",
                 "final_share": item["final_share"],
             }
             for item in self.portfolio
         ]
-
 
     def verify_target_share_sum(self):
         """
@@ -67,9 +65,10 @@ class PortfolioETF:
         else:
             print("Portfolio shares sum equal to 1. Portfolio is complete.")
             return True
-        
 
-    def add_new_etf(self, etf: ETF, target_share: float = 1.0, number_held: float = 0.0):
+    def add_new_etf(
+        self, etf: ETF, target_share: float = 1.0, number_held: float = 0.0
+    ):
         """
         Adds an ETF to the portfolio with its target share and number held.
         Also initializes fields for actual share, number to buy, and final share.
@@ -95,9 +94,15 @@ class PortfolioETF:
         print(
             f"ETF '{etf.name}' added to portfolio with share {target_share} and number held {round(number_held,4)}."
         )
-    
-    
-    def buy_etf(self, etf_ticker: str, quantity: float, buy_price: float = None, fee: float = 0.0, date: str = None):
+
+    def buy_etf(
+        self,
+        etf_ticker: str,
+        quantity: float,
+        buy_price: float = None,
+        fee: float = 0.0,
+        date: str = None,
+    ):
         """
         Buys a specified quantity of an ETF in the portfolio.
 
@@ -105,7 +110,7 @@ class PortfolioETF:
             etf_ticker (str): The ticker of the ETF to buy.
             quantity (float): The number of units to buy.
             buy_price (float, optional): The price at which to buy the ETF. If None, uses current price. Defaults to None.
-            fee (float, optional): Transaction fee for the purchase. Defaults to 0.0 (not used currently). 
+            fee (float, optional): Transaction fee for the purchase. Defaults to 0.0 (not used currently).
             date (str, optional): Date of the purchase in yyyy-mm-dd format. Defaults to today's date (not used currently).
         Raises:
             ValueError: If the ETF is not found in the portfolio.
@@ -115,20 +120,24 @@ class PortfolioETF:
         for item in self.portfolio:
             if item["etf"].ticker == etf_ticker:
                 item["number_held"] += quantity
-                if buy_price is None: # Use current price if no buy price is provided
+                if buy_price is None:  # Use current price if no buy price is provided
                     buy_price = item["etf"].price
                 item["amount_invested"] = item["amount_invested"] + quantity * buy_price
-                self.compute_actual_shares() # Update the actual shares
+                self.compute_actual_shares()  # Update the actual shares
                 item["number_to_buy"] = 0.0  # Reset number to buy
                 # Add purchase to staged_purchases
-                self.staged_purchases.append({
-                    "ticker": etf_ticker,
-                    "quantity": quantity,
-                    "buy_price": buy_price,
-                    "fee": fee,
-                    "date": date
-                })
-                print(f"\nBought {quantity} units of '{etf_ticker}' on {date}. New number held: {item['number_held']}. Number to buy reset.")
+                self.staged_purchases.append(
+                    {
+                        "ticker": etf_ticker,
+                        "quantity": quantity,
+                        "buy_price": buy_price,
+                        "fee": fee,
+                        "date": date,
+                    }
+                )
+                print(
+                    f"\nBought {quantity} units of '{etf_ticker}' on {date}. New number held: {item['number_held']}. Number to buy reset."
+                )
                 return
         raise ValueError(f"ETF '{etf_ticker}' not found in the portfolio.")
 
@@ -254,7 +263,7 @@ class PortfolioETF:
             "unitPrice",
             "currency",
             "fee",
-            "amount"
+            "amount",
         ]
         with open(filepath, mode="w", newline="", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -268,13 +277,15 @@ class PortfolioETF:
                         break
                 # Calculate amount
                 amount = purchase["quantity"] * purchase["buy_price"] + purchase["fee"]
-                writer.writerow({
-                    "date": purchase["date"],
-                    "symbol": purchase["ticker"],
-                    "quantity": purchase["quantity"],
-                    "activityType": "Buy",
-                    "unitPrice": purchase["buy_price"],
-                    "currency": currency if currency else "",
-                    "fee": purchase["fee"],
-                    "amount": amount
-                })
+                writer.writerow(
+                    {
+                        "date": purchase["date"],
+                        "symbol": purchase["ticker"],
+                        "quantity": purchase["quantity"],
+                        "activityType": "Buy",
+                        "unitPrice": purchase["buy_price"],
+                        "currency": currency if currency else "",
+                        "fee": purchase["fee"],
+                        "amount": amount,
+                    }
+                )

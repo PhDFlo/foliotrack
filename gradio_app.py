@@ -86,41 +86,63 @@ def optimize_portfolio(etf_data, new_investment, min_percent):
 
 def update_etf_prices():
     portfolio.update_etf_prices()
-    table_data = []
-    for entry in portfolio.portfolio:
-        # Handle both dict and tuple/list structures
-        if isinstance(entry, dict):
-            etf = entry.get("etf")
-            meta = entry
-        elif isinstance(entry, (tuple, list)) and len(entry) == 2:
-            etf, meta = entry
-        else:
-            continue  # skip malformed entries
-        table_data.append(
-            [
-                etf.name,
-                etf.ticker,
-                etf.currency,
-                etf.price,
-                etf.yearly_charge,
-                meta.get("target_share"),
-                meta.get("amount_invested"),
-                meta.get("number_held"),
-            ]
+    info = portfolio.get_portfolio_info()
+    return (
+        pd.DataFrame(
+            info,
+            columns=[
+                "name",
+                "ticker",
+                "currency",
+                "price",
+                "yearly_charge",
+                "target_share",
+                "amount_invested",
+                "number_held",
+            ],
         )
-    return pd.DataFrame(
-        table_data,
-        columns=[
-            "Name",
-            "Ticker",
-            "Currency",
-            "Price",
-            "Yearly Charge",
-            "Target Share",
-            "Amount Invested",
-            "Number Held",
-        ],
+        .to_numpy()
+        .tolist()
     )
+
+
+# def update_etf_prices():
+#    portfolio.update_etf_prices()
+#    table_data = []
+#    for entry in portfolio.portfolio:
+#        # Handle both dict and tuple/list structures
+#        if isinstance(entry, dict):
+#            etf = entry.get("etf")
+#            meta = entry
+#        elif isinstance(entry, (tuple, list)) and len(entry) == 2:
+#            etf, meta = entry
+#        else:
+#            continue  # skip malformed entries
+#        table_data.append(
+#            [
+#                etf.name,
+#                etf.ticker,
+#                etf.currency,
+#                etf.price,
+#                etf.yearly_charge,
+#                meta.get("target_share"),
+#                meta.get("amount_invested"),
+#                meta.get("number_held"),
+#            ]
+#        )
+#    return pd.DataFrame(
+#        table_data,
+#        columns=[
+#            "Name",
+#            "Ticker",
+#            "Currency",
+#            "Price",
+#            "Yearly Charge",
+#            "Target Share",
+#            "Amount Invested",
+#            "Number Held",
+#        ],
+#    )
 
 
 def buy_etf(ticker, quantity, buy_price, fee, date):

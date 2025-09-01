@@ -73,9 +73,9 @@ class ETF:
             "name": self.name,
             "ticker": self.ticker,
             "currency": self.currency,
-            "price": f"{self.price}{self.symbol}",
-            "yearly_charge": f"{self.yearly_charge}",
             "symbol": self.symbol,
+            "price": f"{self.price}",
+            "yearly_charge": f"{self.yearly_charge}",
         }
 
     def update_price_from_yfinance(self):
