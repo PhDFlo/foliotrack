@@ -1,9 +1,9 @@
-
 import gradio as gr
 from ETFOptim.ETF import ETF
 from ETFOptim.Portfolio import PortfolioETF
 import numpy as np
 import pandas as pd
+import datetime
 
 # Global portfolio instance (keeps state across tabs)
 portfolio = PortfolioETF()
@@ -90,7 +90,9 @@ def export_wealthfolio_csv(filename):
 with gr.Blocks() as demo:
     gr.Markdown("# ETF Portfolio Optimizer")
     with gr.Tabs():
-        with gr.TabItem("Portfolio"):
+        with gr.TabItem("Portfolio & Update Prices"):
+            
+            # File explorer to select Portfolio CSV
             inp = gr.FileExplorer(
                 root_dir="./Portfolios",
                 value="investment.csv",
@@ -101,6 +103,9 @@ with gr.Blocks() as demo:
             btn_refresh.click(update_file_explorer, outputs=inp).then(
                 update_file_explorer_2, outputs=inp
             )
+            
+            
+            # Show Portfolio
             etf_table = gr.Dataframe(
                 headers=[
                     "Name",
@@ -121,21 +126,34 @@ with gr.Blocks() as demo:
             )
             btn_fill = gr.Button("Fill Table from CSV (optional)")
             btn_fill.click(update_table_from_file, inputs=inp, outputs=etf_table)
-            btn_save = gr.Button("Save Portfolio to CSV")
-            save_filename = gr.Textbox(value="Portfolios/portfolio_output.csv", label="Save as filename")
-            btn_save.click(save_portfolio_to_csv, inputs=save_filename, outputs=gr.Textbox())
-
-        with gr.TabItem("Prices"):
-            btn_update_prices = gr.Button("Update ETF Prices from yfinance")
+            
+            
+            # Update ETF Prices
             prices_table = gr.Dataframe(
                 headers=["Name", "Ticker", "Currency", "Price", "Yearly Charge", "Target Share", "Amount Invested", "Number Held"],
                 datatype=["str", "str", "str", "number", "number", "number", "number", "number"],
                 label="Portfolio with Updated Prices",
                 column_widths=["10%", "5%", "5%", "5%", "5%", "5%", "5%", "5%"],
             )
+            btn_update_prices = gr.Button("Update ETF Prices from yfinance")
             btn_update_prices.click(update_etf_prices, outputs=prices_table)
+            
+            
+            # Export Porfolio to CSV
+            with gr.Row():
+                with gr.Column(scale=1):
+                    # Set default filename with today's date in dd_mm_yyyy format
+                    default_filename = f"Portfolios/investment_{datetime.datetime.now().strftime('%d_%m_%Y')}.csv"
+                    save_filename = gr.Textbox(value=default_filename, label="Save as filename")
+                with gr.Column(scale=1):
+                    Text_output = gr.Textbox(label="Output")
+            btn_save = gr.Button("Save Portfolio to CSV")
+            btn_save.click(save_portfolio_to_csv, inputs=save_filename, outputs=Text_output)
+            
 
-        with gr.TabItem("Equilibrium"):
+        with gr.TabItem("Equilibrium, Buy & Export"):
+            
+            # New investment amount and minimum percent to invest
             new_investment = gr.Number(label="New Investment Amount (€)", value=500.0)
             min_percent = gr.Number(label="Minimum Percentage to Invest", value=0.99)
             equilibrium_table = gr.Dataframe(
@@ -148,10 +166,8 @@ with gr.Blocks() as demo:
             btn_optimize.click(
                 optimize_portfolio,
                 inputs=[etf_table, new_investment, min_percent],
-                outputs=equilibrium_table,
-            )
-
-        with gr.TabItem("Buy ETF"):
+                outputs=equilibrium_table,)
+            
             ticker_list = gr.Dropdown(choices=[], label="ETF Ticker")
             quantity = gr.Number(label="Quantity to Buy", value=1.0)
             buy_price = gr.Number(label="Buy Price", value=0.0)
@@ -161,8 +177,6 @@ with gr.Blocks() as demo:
                 return [item[1] for item in etf_table.value] if etf_table.value else []
             etf_table.change(update_ticker_choices, outputs=ticker_list)
             btn_buy.click(buy_etf, inputs=[ticker_list, quantity, buy_price], outputs=buy_result)
-
-        with gr.TabItem("Export Wealthfolio CSV"):
             export_filename = gr.Textbox(value="Portfolios/staged_purchases.csv", label="Export as filename")
             btn_export = gr.Button("Export Staged Purchases")
             export_result = gr.Textbox(label="Export Result")
