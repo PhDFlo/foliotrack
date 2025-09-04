@@ -31,9 +31,15 @@ def portfolio_from_scratch():
 
     # Create a PortfolioETF instance
     securities_account = PortfolioETF()
-    securities_account.add_new_etf(etf1, target_share=0.5, number_held=20.0)
-    securities_account.add_new_etf(etf2, target_share=0.2, number_held=1.0)
-    securities_account.add_new_etf(etf3, target_share=0.3, number_held=3.0)
+    etf1.target_share = 0.5
+    etf1.number_held = 20.0
+    etf2.target_share = 0.2
+    etf2.number_held = 1.0
+    etf3.target_share = 0.3
+    etf3.number_held = 3.0
+    securities_account.add_new_etf(etf1)
+    securities_account.add_new_etf(etf2)
+    securities_account.add_new_etf(etf3)
 
     securities_account.update_etf_prices()  # Update prices from yfinance
 
@@ -42,7 +48,7 @@ def portfolio_from_scratch():
 
     # Solve for equilibrium
     Equilibrate.solve_equilibrium(
-        securities_account.portfolio, Investment_amount=1000.0, Min_percent_to_invest=0.99
+        securities_account.etfs, Investment_amount=1000.0, Min_percent_to_invest=0.99
     )
 
     # Print portfolio info and its keys/values
@@ -65,7 +71,7 @@ def use_existing_portfolio():
 
     # Solve for equilibrium
     Equilibrate.solve_equilibrium(
-        securities_account.portfolio, Investment_amount=1000.0, Min_percent_to_invest=0.99
+        securities_account.etfs, Investment_amount=1000.0, Min_percent_to_invest=0.99
     )
     
     # Buy some ETFs

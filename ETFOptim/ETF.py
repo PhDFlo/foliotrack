@@ -21,6 +21,8 @@ class ETF:
         currency: str = "EUR",
         price: float = 500.0,
         yearly_charge: float = 0.2,
+        target_share: float = 1.0,
+        number_held: float = 0.0,
     ):
         """
         Initialize an ETF instance.
@@ -37,6 +39,13 @@ class ETF:
         self.currency = currency
         self.price = price
         self.yearly_charge = yearly_charge
+        self.target_share = target_share
+        self.number_held = number_held
+        self.amount_invested = self.number_held * self.price
+        self.actual_share = 0.0
+        self.number_to_buy = 0.0
+        self.amount_to_invest = 0.0
+        self.final_share = 0.0
         # Verify currency
         if self.currency.lower() not in ["eur", "usd"]:
             print(
@@ -76,7 +85,48 @@ class ETF:
             "symbol": self.symbol,
             "price": f"{self.price}",
             "yearly_charge": f"{self.yearly_charge}",
+            "target_share": self.target_share,
+            "number_held": f"{self.number_held}",
+            "amount_invested": f"{self.amount_invested}",
+            "actual_share": self.actual_share,
+            "number_to_buy": self.number_to_buy,
+            "amount_to_invest": f"{self.amount_to_invest}",
+            "final_share": self.final_share,
         }
+
+    def buy(self, quantity: float, buy_price: float = None, fee: float = 0.0, date: str = None):
+        import datetime
+        if date is None:
+            date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if buy_price is None:
+            buy_price = self.price
+        self.number_held += quantity
+        self.amount_invested += quantity * buy_price
+        # Optionally, update actual_share, number_to_buy, etc. externally
+        return {
+            "ticker": self.ticker,
+            "quantity": quantity,
+            "buy_price": buy_price,
+            "fee": fee,
+            "date": date,
+        }
+
+    def compute_actual_share(self, total_invested: float):
+        if total_invested == 0:
+            self.actual_share = 0.0
+        else:
+            self.actual_share = round(self.amount_invested / total_invested, 2)
+
+    def update_price_from_yfinance(self):
+        import yfinance as yf
+        ticker = yf.Ticker(self.ticker)
+        try:
+            price = ticker.info.get("regularMarketPrice")
+            if price is not None:
+                self.price = price
+                self.amount_invested = self.number_held * self.price
+        except Exception as e:
+            print(f"Could not update price for {self.ticker}: {e}")
 
     def update_price_from_yfinance(self):
         """

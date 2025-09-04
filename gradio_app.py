@@ -21,7 +21,7 @@ def update_table_from_file(inp):
     df = pd.read_csv(inp, delimiter=",")
     df = df.to_numpy()
     # Clear portfolio and add ETFs from CSV
-    portfolio.portfolio.clear()
+    portfolio.etfs.clear()
     for row in df:
         etf = ETF(
             name=row[0],
@@ -29,10 +29,10 @@ def update_table_from_file(inp):
             currency=row[2],
             price=float(row[3]),
             yearly_charge=float(row[4]),
+            target_share=float(row[5]),
+            number_held=float(row[7]),
         )
-        portfolio.add_new_etf(
-            etf, target_share=float(row[5]), number_held=float(row[7])
-        )
+        portfolio.add_new_etf(etf)
     portfolio.compute_actual_shares()
     return df.tolist()
 
@@ -44,7 +44,7 @@ def save_portfolio_to_csv(filename):
 
 def optimize_portfolio(etf_data, new_investment, min_percent):
     # Rebuild portfolio from table
-    portfolio.portfolio.clear()
+    portfolio.etfs.clear()
     for etf in etf_data:
         etf_obj = ETF(
             name=etf[0],
@@ -52,16 +52,14 @@ def optimize_portfolio(etf_data, new_investment, min_percent):
             currency=etf[2],
             price=float(etf[3]),
             yearly_charge=float(etf[4]),
+            target_share=float(etf[5]),
+            number_held=float(etf[7]),
         )
-        portfolio.add_new_etf(
-            etf_obj, target_share=float(etf[5]), number_held=float(etf[7])
-        )
+        portfolio.add_new_etf(etf_obj)
     portfolio.compute_actual_shares()
-    # Solve for equilibrium
     from ETFOptim.Equilibrate import Equilibrate
-
     Equilibrate.solve_equilibrium(
-        portfolio.portfolio,
+        portfolio.etfs,
         Investment_amount=float(new_investment),
         Min_percent_to_invest=float(min_percent),
     )

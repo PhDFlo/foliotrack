@@ -5,7 +5,7 @@ import cvxpy as cp
 class Equilibrate:
     @staticmethod
     def solve_equilibrium(
-        portfolio,
+        etfs,
         Investment_amount: float = 1000.0,
         Min_percent_to_invest: float = 0.99,
     ):
@@ -25,14 +25,14 @@ class Equilibrate:
             - Final share of each ETF
             - Total amount to invest
         """
-        n = len(portfolio)
+        n = len(etfs)
         if n == 0:
             raise ValueError("Portfolio is empty.")
 
         investments = cp.Variable(n, integer=True)
-        price_matrix = np.diag([item["etf"].price for item in portfolio])
-        invested_amounts = np.array([item["amount_invested"] for item in portfolio])
-        target_shares = np.array([item["target_share"] for item in portfolio])
+        price_matrix = np.diag([etf.price for etf in etfs])
+        invested_amounts = np.array([etf.amount_invested for etf in etfs])
+        target_shares = np.array([etf.target_share for etf in etfs])
 
         constraints = [
             investments >= 0,
@@ -56,9 +56,9 @@ class Equilibrate:
             raise RuntimeError("Optimization did not produce a solution.")
         etf_counts = np.round(investments.value).astype(int)
         print("\nNumber of each ETF to buy:")
-        for i, item in enumerate(portfolio):
-            item["number_to_buy"] = etf_counts[i]
-            print(f"  {item['etf'].name}: {etf_counts[i]} units")
+        for i, etf in enumerate(etfs):
+            etf.number_to_buy = etf_counts[i]
+            print(f"  {etf.name}: {etf_counts[i]} units")
 
         final_invested = invested_amounts + price_matrix @ etf_counts
         total_invested = np.sum(final_invested)
@@ -70,18 +70,18 @@ class Equilibrate:
             final_shares = np.zeros_like(final_invested)
 
         print("\nAmount to spend and final share of each ETF:")
-        for i, item in enumerate(portfolio):
-            item["amount_to_invest"] = round(price_matrix[i, i] * etf_counts[i], 2)
-            item["final_share"] = round(final_shares[i], 4)
+        for i, etf in enumerate(etfs):
+            etf.amount_to_invest = round(price_matrix[i, i] * etf_counts[i], 2)
+            etf.final_share = round(final_shares[i], 4)
             print(
-                f"  {item['etf'].name}: {item['amount_to_invest']:.2f}{item['etf'].symbol}, Final share = {item['final_share']:.4f}"
+                f"  {etf.name}: {etf.amount_to_invest:.2f}{etf.symbol}, Final share = {etf.final_share:.4f}"
             )
 
         total_amounts = {}
-        for i, item in enumerate(portfolio):
-            symbol = item["etf"].symbol
+        for etf in etfs:
+            symbol = etf.symbol
             total_amounts.setdefault(symbol, 0)
-            total_amounts[symbol] += item["amount_to_invest"]
+            total_amounts[symbol] += etf.amount_to_invest
         print("\nTotal amount to invest:")
         for symbol, amount in total_amounts.items():
             print(f"  {amount:.2f}{symbol}")
