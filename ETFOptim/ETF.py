@@ -9,9 +9,11 @@ class ETF:
     Attributes:
         name (str): The name of the ETF.
         ticker (str): The ticker symbol of the ETF.
-        currency (str): The currency in which the ETF is traded.
-        price (float): The current price of the ETF.
-        yearly_charge (float): The annual charge (in percentage) associated with the ETF.
+        currency (str): The trading currency (e.g., 'EUR', 'USD').
+        price (float): The price of the ETF.
+        yearly_charge (float): The annual charge in percent.
+        target_share (float): Desired share of this ETF in the portfolio.
+        number_held (float): Number of ETF units currently held.
     """
 
     def __init__(
@@ -24,16 +26,6 @@ class ETF:
         target_share: float = 1.0,
         number_held: float = 0.0,
     ):
-        """
-        Initialize an ETF instance.
-
-        Args:
-            name (str): The name of the ETF.
-            ticker (str, optional): The ticker symbol. Defaults to "DCAM".
-            currency (str, optional): The trading currency. Defaults to "EUR".
-            price (float, optional): The price of the ETF. Defaults to 500.0.
-            yearly_charge (float, optional): The annual charge in percent. Defaults to 0.2.
-        """
         self.name = name
         self.ticker = ticker
         self.currency = currency
@@ -46,6 +38,7 @@ class ETF:
         self.number_to_buy = 0.0
         self.amount_to_invest = 0.0
         self.final_share = 0.0
+        
         # Verify currency
         if self.currency.lower() not in ["eur", "usd"]:
             print(
@@ -73,7 +66,7 @@ class ETF:
 
     def get_info(self):
         """
-        Get a dictionary containing the ETF's information.
+        Get a dictionary containing the ETF's information and all attributes.
 
         Returns:
             dict: A dictionary with ETF attributes.
@@ -95,6 +88,18 @@ class ETF:
         }
 
     def buy(self, quantity: float, buy_price: float = None, fee: float = 0.0, date: str = None):
+        """
+        Buy a specified quantity of this ETF, updating number held and amount invested.
+
+        Args:
+            quantity (float): Number of units to buy.
+            buy_price (float, optional): Price per unit. Defaults to current price.
+            fee (float, optional): Transaction fee. Defaults to 0.0.
+            date (str, optional): Date of purchase. Defaults to today.
+
+        Returns:
+            dict: Details of the purchase (ticker, quantity, buy_price, fee, date).
+        """
         import datetime
         if date is None:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -112,12 +117,21 @@ class ETF:
         }
 
     def compute_actual_share(self, total_invested: float):
+        """
+        Compute and update the actual share of this ETF in the portfolio.
+
+        Args:
+            total_invested (float): Total amount invested in the portfolio.
+        """
         if total_invested == 0:
             self.actual_share = 0.0
         else:
             self.actual_share = round(self.amount_invested / total_invested, 2)
 
     def update_price_from_yfinance(self):
+        """
+        Update the ETF price using yfinance based on its ticker, and update amount invested.
+        """
         import yfinance as yf
         ticker = yf.Ticker(self.ticker)
         try:

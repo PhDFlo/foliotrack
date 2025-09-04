@@ -17,7 +17,10 @@ class PortfolioETF:
 
     def __init__(self, currency: str = "EUR"):
         """
-        Initializes an empty portfolio for ETF management.
+        Initialize an empty portfolio for ETF management.
+
+        Args:
+            currency (str): The currency of the portfolio (default 'EUR').
         """
         self.etfs: list[ETF] = []
         self.currency = currency
@@ -25,13 +28,22 @@ class PortfolioETF:
 
     def get_portfolio_info(self):
         """
-        Returns a summary of all ETFs in the portfolio.
+        Returns a summary of all ETFs in the portfolio as a list of dictionaries.
+
+        Returns:
+            list: List of dictionaries with ETF details and portfolio metrics.
         """
         return [etf.get_info() for etf in self.etfs]
 
     def verify_target_share_sum(self):
-        print()
-        print("Verifying portfolio shares...")
+        """
+        Checks if the sum of target shares for all ETFs equals 1.
+        Prints details and completeness status.
+
+        Returns:
+            bool: True if sum equals 1, False otherwise.
+        """
+        print("\nVerifying portfolio shares...")
         total_share = sum(etf.target_share for etf in self.etfs)
         if abs(total_share - 1.0) > 1e-6:
             print("Portfolio shares do not sum to 1. Details:")
@@ -44,10 +56,29 @@ class PortfolioETF:
             return True
 
     def add_new_etf(self, etf: ETF):
+        """
+        Adds an ETF to the portfolio.
+
+        Args:
+            etf (ETF): The ETF instance to add.
+        """
         self.etfs.append(etf)
         print(f"ETF '{etf.name}' added to portfolio with share {etf.target_share} and number held {round(etf.number_held,4)}.")
 
     def buy_etf(self, etf_ticker: str, quantity: float, buy_price: float = None, fee: float = 0.0, date: str = None):
+        """
+        Buys a specified quantity of an ETF in the portfolio.
+
+        Args:
+            etf_ticker (str): The ticker of the ETF to buy.
+            quantity (float): The number of units to buy.
+            buy_price (float, optional): The price at which to buy the ETF. If None, uses current price.
+            fee (float, optional): Transaction fee for the purchase. Defaults to 0.0.
+            date (str, optional): Date of the purchase in yyyy-mm-dd format. Defaults to today's date.
+
+        Raises:
+            ValueError: If the ETF is not found in the portfolio.
+        """
         for etf in self.etfs:
             if etf.ticker == etf_ticker:
                 purchase = etf.buy(quantity, buy_price, fee, date)
@@ -58,6 +89,13 @@ class PortfolioETF:
         raise ValueError(f"ETF '{etf_ticker}' not found in the portfolio.")
 
     def compute_actual_shares(self):
+        """
+        Computes and updates the actual share of each ETF in the portfolio
+        based on the amount invested. Requires the portfolio to be complete.
+
+        Raises:
+            Exception: If the portfolio target shares do not sum to 1.
+        """
         if not self.verify_target_share_sum():
             raise Exception("Error, the portfolio is not complete.")
         total_invested = sum(etf.amount_invested for etf in self.etfs)
@@ -65,11 +103,25 @@ class PortfolioETF:
             etf.compute_actual_share(total_invested)
 
     def update_etf_prices(self):
+        """
+        Update prices for all ETFs in the portfolio using yfinance,
+        and update the amount invested for each ETF based on the new price and number held.
+        """
         for etf in self.etfs:
             etf.update_price_from_yfinance()
 
     @staticmethod
     def portfolio_from_csv(filepath):
+        """
+        Create a PortfolioETF instance from a CSV file.
+        CSV columns: Name,Ticker,Currency,Price,Yearly Charge,Target Share,Amount Invested,Number Held
+
+        Args:
+            filepath (str): Path to the CSV file.
+
+        Returns:
+            PortfolioETF: The populated portfolio.
+        """
         portfolio = PortfolioETF()
         with open(filepath, newline="", encoding="utf-8") as csvfile:
             reader = csv.DictReader(csvfile)
@@ -95,6 +147,13 @@ class PortfolioETF:
         return portfolio
 
     def portfolio_to_csv(self, filepath):
+        """
+        Write the portfolio to a CSV file.
+        Columns: Name,Ticker,Currency,Price,Yearly Charge,Target Share,Amount Invested,Number Held
+
+        Args:
+            filepath (str): Path to the CSV file.
+        """
         with open(filepath, mode="w", newline="", encoding="utf-8") as csvfile:
             fieldnames = [
                 "Name",
@@ -123,6 +182,13 @@ class PortfolioETF:
                 )
 
     def purchases_to_Wealthfolio_csv(self, filepath):
+        """
+        Write the staged purchases to a CSV file in Wealthfolio format:
+        date, symbol, quantity, activityType, unitPrice, currency, fee, amount
+
+        Args:
+            filepath (str): Path to the output CSV file.
+        """
         fieldnames = [
             "date",
             "symbol",
