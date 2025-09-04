@@ -1,18 +1,21 @@
-from ETFOptim.ETF import ETF
-from ETFOptim.Portfolio import PortfolioETF
-from ETFOptim.Equilibrate import Equilibrate
-import numpy as np
 
+import logging
+from ETFOptim.ETF import ETF
+from ETFOptim.Portfolio import Portfolio
+from ETFOptim.Equilibrate import Equilibrate
+
+logging.basicConfig(level=logging.INFO)
 
 def portfolio_from_scratch():
-
-    # Create an ETF instance
+    # Create ETF instances
     etf1 = ETF(
         name="Amundi MSCI World UCITS ETF",
         ticker="AMDW",
         currency="EUR",
         price=500.0,
         yearly_charge=0.2,
+        target_share=0.5,
+        number_held=20.0,
     )
     etf2 = ETF(
         name="Vanguard S&P 500 UCITS ETF",
@@ -20,6 +23,8 @@ def portfolio_from_scratch():
         currency="USD",
         price=300.0,
         yearly_charge=0.1,
+        target_share=0.2,
+        number_held=1.0,
     )
     etf3 = ETF(
         name="iShares Core MSCI Emerging Markets IMI UCITS ETF",
@@ -27,71 +32,63 @@ def portfolio_from_scratch():
         currency="EUR",
         price=200.0,
         yearly_charge=0.25,
+        target_share=0.3,
+        number_held=3.0,
     )
 
-    # Create a PortfolioETF instance
-    securities_account = PortfolioETF()
-    etf1.target_share = 0.5
-    etf1.number_held = 20.0
-    etf2.target_share = 0.2
-    etf2.number_held = 1.0
-    etf3.target_share = 0.3
-    etf3.number_held = 3.0
-    securities_account.add_new_etf(etf1)
-    securities_account.add_new_etf(etf2)
-    securities_account.add_new_etf(etf3)
+    # Create a Portfolio instance
+    portfolio = Portfolio()
+    portfolio.add_etf(etf1)
+    portfolio.add_etf(etf2)
+    portfolio.add_etf(etf3)
+    
+    portfolio.to_json("Portfolios/investment.json")
 
-    securities_account.update_etf_prices()  # Update prices from yfinance
-
-    # Compute the actual share
-    securities_account.compute_actual_shares()
+    portfolio.update_etf_prices()  # Update prices from yfinance
+    portfolio.compute_actual_shares()
 
     # Solve for equilibrium
     Equilibrate.solve_equilibrium(
-        securities_account.etfs, Investment_amount=1000.0, Min_percent_to_invest=0.99
+        portfolio.etfs, investment_amount=1000.0, min_percent_to_invest=0.99
     )
 
-    # Print portfolio info and its keys/values
-    info = securities_account.get_portfolio_info()
-    print("\nPortfolio info:")
+    # Log portfolio info
+    info = portfolio.get_portfolio_info()
+    logging.info("Portfolio info:")
     for etf_info in info:
-        print("ETF:")
+        logging.info(f"ETF:")
         for k, v in etf_info.items():
-            print(f"  {k}: {v}")
-
+            logging.info(f"  {k}: {v}")
 
 def use_existing_portfolio():
     # Load an existing portfolio from CSV
-    securities_account = PortfolioETF.portfolio_from_csv("Portfolios/investment.csv")
-
-    securities_account.update_etf_prices()
-
-    # Compute the actual share
-    securities_account.compute_actual_shares()
+    portfolio = Portfolio.from_json("Portfolios/investment.json")
+    portfolio.update_etf_prices()
+    portfolio.compute_actual_shares()
 
     # Solve for equilibrium
     Equilibrate.solve_equilibrium(
-        securities_account.etfs, Investment_amount=1000.0, Min_percent_to_invest=0.99
+        portfolio.etfs, investment_amount=1000.0, min_percent_to_invest=0.99
     )
-    
-    # Buy some ETFs
-    securities_account.buy_etf("VUSA.AS", 1.0) 
-    securities_account.buy_etf("EIMI.L", 9.0, buy_price=210.0)  # Assuming a buy price of 210.0
-    
-    # Write staged purchases for Wealthfolio import
-    securities_account.purchases_to_Wealthfolio_csv("Purchases/new_purchases.csv")
 
-    # Print portfolio info and its keys/values
-    info = securities_account.get_portfolio_info()
-    print("\nPortfolio info:")
+    # Buy some ETFs
+    portfolio.buy_etf("VUSA.AS", 1.0)
+    portfolio.buy_etf("EIMI.L", 9.0, buy_price=210.0)
+
+    # Write staged purchases for Wealthfolio import
+    portfolio.purchases_to_wealthfolio_csv("Purchases/new_purchases.csv")
+
+    # Log portfolio info
+    info = portfolio.get_portfolio_info()
+    logging.info("Portfolio info:")
     for etf_info in info:
-        print("ETF:")
+        logging.info(f"ETF:")
         for k, v in etf_info.items():
-            print(f"  {k}: {v}")
+            logging.info(f"  {k}: {v}")
 
     # Export updated portfolio to CSV
-    securities_account.portfolio_to_csv("Portfolios/portfolio_output.csv")
-
+    portfolio.to_json("Portfolios/portfolio_output.json")
 
 if __name__ == "__main__":
+    portfolio_from_scratch()
     use_existing_portfolio()

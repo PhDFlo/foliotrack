@@ -1,12 +1,12 @@
 import gradio as gr
 from ETFOptim.ETF import ETF
-from ETFOptim.Portfolio import PortfolioETF
+from ETFOptim.Portfolio import Portfolio
 import numpy as np
 import pandas as pd
 import datetime
 
 # Global portfolio instance (keeps state across tabs)
-portfolio = PortfolioETF()
+portfolio = Portfolio()
 
 
 def update_file_explorer():
@@ -20,7 +20,6 @@ def update_file_explorer_2():
 def update_table_from_file(inp):
     df = pd.read_csv(inp, delimiter=",")
     df = df.to_numpy()
-    # Clear portfolio and add ETFs from CSV
     portfolio.etfs.clear()
     for row in df:
         etf = ETF(
@@ -32,18 +31,17 @@ def update_table_from_file(inp):
             target_share=float(row[5]),
             number_held=float(row[7]),
         )
-        portfolio.add_new_etf(etf)
+        portfolio.add_etf(etf)
     portfolio.compute_actual_shares()
     return df.tolist()
 
 
 def save_portfolio_to_csv(filename):
-    portfolio.portfolio_to_csv(filename)
+    portfolio.to_csv(filename)
     return f"Portfolio saved to {filename}"
 
 
 def optimize_portfolio(etf_data, new_investment, min_percent):
-    # Rebuild portfolio from table
     portfolio.etfs.clear()
     for etf in etf_data:
         etf_obj = ETF(
@@ -55,13 +53,13 @@ def optimize_portfolio(etf_data, new_investment, min_percent):
             target_share=float(etf[5]),
             number_held=float(etf[7]),
         )
-        portfolio.add_new_etf(etf_obj)
+        portfolio.add_etf(etf_obj)
     portfolio.compute_actual_shares()
     from ETFOptim.Equilibrate import Equilibrate
     Equilibrate.solve_equilibrium(
         portfolio.etfs,
-        Investment_amount=float(new_investment),
-        Min_percent_to_invest=float(min_percent),
+        investment_amount=float(new_investment),
+        min_percent_to_invest=float(min_percent),
     )
     info = portfolio.get_portfolio_info()
     portfolio_data = []
@@ -152,7 +150,7 @@ def buy_etf(ticker, quantity, buy_price, fee, date):
 
 
 def export_wealthfolio_csv(filename):
-    portfolio.purchases_to_Wealthfolio_csv(filename)
+    portfolio.purchases_to_wealthfolio_csv(filename)
     return f"Staged purchases exported to {filename}"
 
 
