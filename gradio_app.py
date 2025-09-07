@@ -1,12 +1,12 @@
 import gradio as gr
 from ETFOptim.ETF import ETF
-from ETFOptim.Portfolio import PortfolioETF
+from ETFOptim.Portfolio import Portfolio
 import numpy as np
 import pandas as pd
 import datetime
 
 # Global portfolio instance (keeps state across tabs)
-portfolio = PortfolioETF()
+portfolio = Portfolio()
 
 
 def update_file_explorer():
@@ -17,34 +17,30 @@ def update_file_explorer_2():
     return gr.FileExplorer(root_dir="./Portfolios")
 
 
-def update_table_from_file(inp):
-    df = pd.read_csv(inp, delimiter=",")
-    df = df.to_numpy()
-    # Clear portfolio and add ETFs from CSV
-    portfolio.portfolio.clear()
-    for row in df:
-        etf = ETF(
-            name=row[0],
-            ticker=row[1],
-            currency=row[2],
-            price=float(row[3]),
-            yearly_charge=float(row[4]),
-        )
-        portfolio.add_new_etf(
-            etf, target_share=float(row[5]), number_held=float(row[7])
-        )
-    portfolio.compute_actual_shares()
-    return df.tolist()
+def read_portfolio(filename):
+    global portfolio
+    portfolio = Portfolio.from_json(filename)
+    info = portfolio.get_portfolio_info()
+    # Return as list of lists for Gradio table display
+    return [[etf.get(key) for key in [
+        "name", 
+        "ticker", 
+        "currency", 
+        "price", 
+        "yearly_charge", 
+        "target_share", 
+        "amount_invested",
+        "number_held", 
+    ]] for etf in info]
 
 
-def save_portfolio_to_csv(filename):
-    portfolio.portfolio_to_csv(filename)
+def save_portfolio_to_json(filename):
+    portfolio.to_json(filename)
     return f"Portfolio saved to {filename}"
 
 
 def optimize_portfolio(etf_data, new_investment, min_percent):
-    # Rebuild portfolio from table
-    portfolio.portfolio.clear()
+    portfolio.etfs.clear()
     for etf in etf_data:
         etf_obj = ETF(
             name=etf[0],
@@ -52,18 +48,16 @@ def optimize_portfolio(etf_data, new_investment, min_percent):
             currency=etf[2],
             price=float(etf[3]),
             yearly_charge=float(etf[4]),
+            target_share=float(etf[5]),
+            number_held=float(etf[7]),
         )
-        portfolio.add_new_etf(
-            etf_obj, target_share=float(etf[5]), number_held=float(etf[7])
-        )
+        portfolio.add_etf(etf_obj)
     portfolio.compute_actual_shares()
-    # Solve for equilibrium
     from ETFOptim.Equilibrate import Equilibrate
-
     Equilibrate.solve_equilibrium(
-        portfolio.portfolio,
-        Investment_amount=float(new_investment),
-        Min_percent_to_invest=float(min_percent),
+        portfolio.etfs,
+        investment_amount=float(new_investment),
+        min_percent_to_invest=float(min_percent),
     )
     info = portfolio.get_portfolio_info()
     portfolio_data = []
@@ -106,56 +100,18 @@ def update_etf_prices():
     )
 
 
-# def update_etf_prices():
-#    portfolio.update_etf_prices()
-#    table_data = []
-#    for entry in portfolio.portfolio:
-#        # Handle both dict and tuple/list structures
-#        if isinstance(entry, dict):
-#            etf = entry.get("etf")
-#            meta = entry
-#        elif isinstance(entry, (tuple, list)) and len(entry) == 2:
-#            etf, meta = entry
-#        else:
-#            continue  # skip malformed entries
-#        table_data.append(
-#            [
-#                etf.name,
-#                etf.ticker,
-#                etf.currency,
-#                etf.price,
-#                etf.yearly_charge,
-#                meta.get("target_share"),
-#                meta.get("amount_invested"),
-#                meta.get("number_held"),
-#            ]
-#        )
-#    return pd.DataFrame(
-#        table_data,
-#        columns=[
-#            "Name",
-#            "Ticker",
-#            "Currency",
-#            "Price",
-#            "Yearly Charge",
-#            "Target Share",
-#            "Amount Invested",
-#            "Number Held",
-#        ],
-#    )
-
-
 def buy_etf(ticker, quantity, buy_price, fee, date):
     try:
         portfolio.buy_etf(ticker, quantity, buy_price=buy_price, date=date, fee=fee)
-        return f"Bought {quantity} units of {ticker} at {buy_price}"
+        return f"Bought {quantity} unit(s) of {ticker} at {buy_price}"
     except Exception as e:
         return str(e)
 
 
 def export_wealthfolio_csv(filename):
-    portfolio.purchases_to_Wealthfolio_csv(filename)
+    portfolio.purchases_to_wealthfolio_csv(filename)
     return f"Staged purchases exported to {filename}"
+
 
 
 with gr.Blocks() as demo:
@@ -205,27 +161,27 @@ with gr.Blocks() as demo:
             )
             with gr.Row():
                 with gr.Column():
-                    btn_fill = gr.Button("Load CSV Portfolio (optional)")
+                    btn_fill = gr.Button("Load Selected Portfolio (optional)")
                     btn_fill.click(
-                        update_table_from_file, inputs=inp, outputs=etf_table
+                        read_portfolio, inputs=inp, outputs=etf_table
                     )
                 with gr.Column():
-                    btn_update_prices = gr.Button("Update ETF Prices from yfinance")
+                    btn_update_prices = gr.Button("Update ETF Prices")
                     btn_update_prices.click(update_etf_prices, outputs=etf_table)
 
-            # Export Porfolio to CSV
+            # Export Porfolio to JSON
             with gr.Row():
                 with gr.Column(scale=1):
                     # Set default filename with today's date in dd_mm_yyyy format
-                    default_filename = f"Portfolios/investment_{datetime.datetime.now().strftime('%d_%m_%Y')}.csv"
+                    default_filename = f"Portfolios/investment_{datetime.datetime.now().strftime('%d_%m_%Y')}.json"
                     save_filename = gr.Textbox(
                         value=default_filename, label="Save as filename"
                     )
                 with gr.Column(scale=1):
                     Text_output = gr.Textbox(label="Output")
-            btn_save = gr.Button("Save Portfolio to CSV")
+            btn_save = gr.Button("Save Portfolio")
             btn_save.click(
-                save_portfolio_to_csv, inputs=save_filename, outputs=Text_output
+                save_portfolio_to_json, inputs=save_filename, outputs=Text_output
             )
 
         with gr.TabItem("Equilibrium, Buy & Export"):

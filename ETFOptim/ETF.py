@@ -1,48 +1,31 @@
-# This code is a Python module describing the ETFs (Exchange-Traded Funds) class.
 import yfinance as yf
+import logging
+from dataclasses import dataclass, field, asdict
+from typing import Optional, Dict, Any
 
-
+@dataclass
 class ETF:
     """
     A class to represent an Exchange-Traded Fund (ETF).
-
-    Attributes:
-        name (str): The name of the ETF.
-        ticker (str): The ticker symbol of the ETF.
-        currency (str): The currency in which the ETF is traded.
-        price (float): The current price of the ETF.
-        yearly_charge (float): The annual charge (in percentage) associated with the ETF.
     """
+    name: str
+    ticker: str = "DCAM"
+    currency: str = "EUR"
+    price: float = 500.0
+    yearly_charge: float = 0.2
+    target_share: float = 1.0
+    number_held: float = 0.0
+    actual_share: float = 0.0
+    number_to_buy: float = 0.0
+    amount_to_invest: float = 0.0
+    final_share: float = 0.0
+    amount_invested: float = field(init=False)
+    symbol: str = field(init=False)
 
-    def __init__(
-        self,
-        name: str,
-        ticker: str = "DCAM",
-        currency: str = "EUR",
-        price: float = 500.0,
-        yearly_charge: float = 0.2,
-    ):
-        """
-        Initialize an ETF instance.
-
-        Args:
-            name (str): The name of the ETF.
-            ticker (str, optional): The ticker symbol. Defaults to "DCAM".
-            currency (str, optional): The trading currency. Defaults to "EUR".
-            price (float, optional): The price of the ETF. Defaults to 500.0.
-            yearly_charge (float, optional): The annual charge in percent. Defaults to 0.2.
-        """
-        self.name = name
-        self.ticker = ticker
-        self.currency = currency
-        self.price = price
-        self.yearly_charge = yearly_charge
-        # Verify currency
+    def __post_init__(self):
+        self.amount_invested = self.number_held * self.price
         if self.currency.lower() not in ["eur", "usd"]:
-            print(
-                f"Error: Currency '{self.currency}' is not supported. Only EUR and USD are allowed."
-            )
-        # Set symbol based on currency
+            logging.warning(f"Currency '{self.currency}' is not supported. Only EUR and USD are allowed.")
         if self.currency.lower() in ["eur", "€"]:
             self.symbol = "€"
         elif self.currency.lower() in ["usd", "$"]:
@@ -50,42 +33,81 @@ class ETF:
         else:
             self.symbol = ""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Return a string representation of the ETF instance.
-
-        Returns:
-            str: String representation of the ETF.
         """
         return (
             f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-            f"price={self.price}{self.symbol}, yearly_charge={self.yearly_charge}"
+            f"price={self.price}{self.symbol}, yearly_charge={self.yearly_charge})"
         )
 
-    def get_info(self):
+    def get_info(self) -> Dict[str, Any]:
         """
-        Get a dictionary containing the ETF's information.
+        Get a dictionary containing the ETF's information and all attributes.
+        """
+        info = asdict(self)
+        info["symbol"] = self.symbol
+        return info
 
-        Returns:
-            dict: A dictionary with ETF attributes.
+    def buy(self, quantity: float, buy_price: Optional[float] = None, fee: float = 0.0, date: Optional[str] = None) -> Dict[str, Any]:
         """
+        Buy a specified quantity of this ETF, updating number held and amount invested.
+        """
+        import datetime
+        if date is None:
+            date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if buy_price is None:
+            buy_price = self.price
+        self.number_held += quantity
+        self.amount_invested += quantity * buy_price
         return {
-            "name": self.name,
             "ticker": self.ticker,
-            "currency": self.currency,
-            "symbol": self.symbol,
-            "price": f"{self.price}",
-            "yearly_charge": f"{self.yearly_charge}",
+            "quantity": quantity,
+            "buy_price": buy_price,
+            "fee": fee,
+            "date": date,
         }
 
-    def update_price_from_yfinance(self):
+    def compute_actual_share(self, total_invested: float) -> None:
         """
-        Update the ETF price using yfinance based on its ticker.
+        Compute and update the actual share of this ETF in the portfolio.
+        """
+        if total_invested == 0:
+            self.actual_share = 0.0
+        else:
+            self.actual_share = round(self.amount_invested / total_invested, 2)
+
+    def update_price_from_yfinance(self) -> None:
+        """
+        Update the ETF price using yfinance based on its ticker, and update amount invested.
         """
         ticker = yf.Ticker(self.ticker)
         try:
             price = ticker.info.get("regularMarketPrice")
             if price is not None:
                 self.price = price
+                self.amount_invested = self.number_held * self.price
         except Exception as e:
-            print(f"Could not update price for {self.ticker}: {e}")
+            logging.error(f"Could not update price for {self.ticker}: {e}")
+
+    def to_json(self) -> Dict[str, Any]:
+        """
+        Serialize ETF to a JSON-compatible dict.
+        """
+        return self.get_info()
+
+    @staticmethod
+    def from_json(data: Dict[str, Any]) -> "ETF":
+        """
+        Deserialize ETF from a JSON-compatible dict.
+        """
+        return ETF(
+            name=data["name"],
+            ticker=data.get("ticker", "DCAM"),
+            currency=data.get("currency", "EUR"),
+            price=float(data.get("price", 500.0)),
+            yearly_charge=float(data.get("yearly_charge", 0.2)),
+            target_share=float(data.get("target_share", 1.0)),
+            number_held=float(data.get("number_held", 0.0)),
+        )
