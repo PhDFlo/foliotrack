@@ -1,6 +1,6 @@
 [project]
 name = "ETF-Optmizer"
-version = "1.0.0"
+version = "1.0.1"
 description = "Compute DCA ETF deposit equilibrium based on existing investment"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -12,5 +12,10 @@ dependencies = [
     "pandas",
     "matplotlib",
     "pyQt6",
-    "yfinance"
+    "yfinance",
+    "forex-python",
 ]
+
+[build-system]
+requires = ["uv_build >= 0.7.19, <0.9.0"]
+build-backend = "uv_build"

@@ -1,6 +1,7 @@
 import gradio as gr
-from ETFOptim.ETF import ETF
-from ETFOptim.Portfolio import Portfolio
+from PBalance.Security import Security
+from PBalance.Portfolio import Portfolio
+from PBalance.Equilibrate import Equilibrate
 import numpy as np
 import pandas as pd
 import datetime
@@ -22,16 +23,22 @@ def read_portfolio(filename):
     portfolio = Portfolio.from_json(filename)
     info = portfolio.get_portfolio_info()
     # Return as list of lists for Gradio table display
-    return [[etf.get(key) for key in [
-        "name", 
-        "ticker", 
-        "currency", 
-        "price", 
-        "yearly_charge", 
-        "target_share", 
-        "amount_invested",
-        "number_held", 
-    ]] for etf in info]
+    return [
+        [
+            security.get(key)
+            for key in [
+                "name",
+                "ticker",
+                "currency",
+                "price",
+                "yearly_charge",
+                "target_share",
+                "amount_invested",
+                "number_held",
+            ]
+        ]
+        for security in info
+    ]
 
 
 def save_portfolio_to_json(filename):
@@ -39,47 +46,47 @@ def save_portfolio_to_json(filename):
     return f"Portfolio saved to {filename}"
 
 
-def optimize_portfolio(etf_data, new_investment, min_percent):
-    portfolio.etfs.clear()
-    for etf in etf_data:
-        etf_obj = ETF(
-            name=etf[0],
-            ticker=etf[1],
-            currency=etf[2],
-            price=float(etf[3]),
-            yearly_charge=float(etf[4]),
-            target_share=float(etf[5]),
-            number_held=float(etf[7]),
+def optimize_portfolio(security_data, new_investment, min_percent):
+    portfolio.securities.clear()
+    for security in security_data:
+        security_obj = Security(
+            name=security[0],
+            ticker=security[1],
+            currency=security[2],
+            price=float(security[3]),
+            yearly_charge=float(security[4]),
+            target_share=float(security[5]),
+            number_held=float(security[7]),
         )
-        portfolio.add_etf(etf_obj)
+        portfolio.add_security(security_obj)
     portfolio.compute_actual_shares()
-    from ETFOptim.Equilibrate import Equilibrate
+
     Equilibrate.solve_equilibrium(
-        portfolio.etfs,
+        portfolio.securities,
         investment_amount=float(new_investment),
         min_percent_to_invest=float(min_percent),
     )
     info = portfolio.get_portfolio_info()
     portfolio_data = []
-    for etf_info in info:
+    for security_info in info:
         portfolio_data.append(
             {
-                "Name": etf_info.get("name"),
-                "Ticker": etf_info.get("ticker"),
-                "Currency": etf_info.get("currency"),
-                "Price": etf_info.get("price"),
-                "Target Share": etf_info.get("target_share"),
-                "Actual Share": etf_info.get("actual_share"),
-                "Final Share": etf_info.get("final_share"),
-                "Amount to Invest": etf_info.get("amount_to_invest"),
-                "Number to buy": etf_info.get("number_to_buy"),
+                "Name": security_info.get("name"),
+                "Ticker": security_info.get("ticker"),
+                "Currency": security_info.get("currency"),
+                "Price": security_info.get("price"),
+                "Target Share": security_info.get("target_share"),
+                "Actual Share": security_info.get("actual_share"),
+                "Final Share": security_info.get("final_share"),
+                "Amount to Invest": security_info.get("amount_to_invest"),
+                "Number to buy": security_info.get("number_to_buy"),
             }
         )
     return pd.DataFrame(portfolio_data)
 
 
-def update_etf_prices():
-    portfolio.update_etf_prices()
+def update_security_prices():
+    portfolio.update_security_prices()
     info = portfolio.get_portfolio_info()
     return (
         pd.DataFrame(
@@ -100,9 +107,11 @@ def update_etf_prices():
     )
 
 
-def buy_etf(ticker, quantity, buy_price, fee, date):
+def buy_security(ticker, quantity, buy_price, fee, date):
     try:
-        portfolio.buy_etf(ticker, quantity, buy_price=buy_price, date=date, fee=fee)
+        portfolio.buy_security(
+            ticker, quantity, buy_price=buy_price, date=date, fee=fee
+        )
         return f"Bought {quantity} unit(s) of {ticker} at {buy_price}"
     except Exception as e:
         return str(e)
@@ -113,9 +122,8 @@ def export_wealthfolio_csv(filename):
     return f"Staged purchases exported to {filename}"
 
 
-
 with gr.Blocks() as demo:
-    gr.Markdown("# ETF Portfolio Optimizer")
+    gr.Markdown("# Security Portfolio Optimizer")
     with gr.Tabs():
         with gr.TabItem("Portfolio & Update Prices"):
 
@@ -132,7 +140,7 @@ with gr.Blocks() as demo:
             )
 
             # Show Portfolio
-            etf_table = gr.Dataframe(
+            security_table = gr.Dataframe(
                 headers=[
                     "Name",
                     "Ticker",
@@ -156,18 +164,18 @@ with gr.Blocks() as demo:
                 row_count=(10, "dynamic"),
                 col_count=8,
                 type="numpy",
-                label="ETF List (add or edit rows)",
+                label="Security List (add or edit rows)",
                 column_widths=["15%", "5%", "5%", "5%", "5%", "5%", "5%", "5%"],
             )
             with gr.Row():
                 with gr.Column():
                     btn_fill = gr.Button("Load Selected Portfolio (optional)")
-                    btn_fill.click(
-                        read_portfolio, inputs=inp, outputs=etf_table
-                    )
+                    btn_fill.click(read_portfolio, inputs=inp, outputs=security_table)
                 with gr.Column():
-                    btn_update_prices = gr.Button("Update ETF Prices")
-                    btn_update_prices.click(update_etf_prices, outputs=etf_table)
+                    btn_update_prices = gr.Button("Update Security Prices")
+                    btn_update_prices.click(
+                        update_security_prices, outputs=security_table
+                    )
 
             # Export Porfolio to JSON
             with gr.Row():
@@ -225,15 +233,15 @@ with gr.Blocks() as demo:
             btn_optimize = gr.Button("Optimize Portfolio")
             btn_optimize.click(
                 optimize_portfolio,
-                inputs=[etf_table, new_investment, min_percent],
+                inputs=[security_table, new_investment, min_percent],
                 outputs=equilibrium_table,
             )
 
-            # Buy ETFs
+            # Buy Securitys
             with gr.Row():
                 with gr.Column():
                     ticker_list = gr.Textbox(
-                        label="ETF Ticker",
+                        label="Security Ticker",
                         value="",
                     )
                 with gr.Column():
@@ -254,9 +262,9 @@ with gr.Blocks() as demo:
                 with gr.Column():
                     buy_result = gr.Textbox(label="Buy Result")
 
-            btn_buy = gr.Button("Buy ETF")
+            btn_buy = gr.Button("Buy Security")
             btn_buy.click(
-                buy_etf,
+                buy_security,
                 inputs=[ticker_list, quantity, buy_price, fee, date],
                 outputs=buy_result,
             )
