@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/logo.png" alt="ETF-Optimizer Logo" width="50%">
+  <img src="images/logo.png" alt="Portfolio-Balancer Logo" width="50%">
 </p>
 
 # Portfolio-Balancer
@@ -13,7 +13,7 @@ Portfolio-Balancer is a Python module for optimizing and rebalancing investment 
   - Security prices via [yfinance](https://github.com/ranaroussi/yfinance) (Yahoo Finance API).
   - Currency conversion via [forex-python](https://github.com/MicroPyramid/forex-python) for multi-currency portfolios.
 - Export Compatibility: Generates output in a format compatible with Wealthfolio for seamless portfolio tracking.
-- **ETF Contract Comparator tool:** Simulate and compare the evolution of multiple ETF investment contracts with customizable fees and taxes, and visualize results interactively.
+- **Security Contract Comparator tool:** Simulate and compare the evolution of multiple securities investment contracts with customizable fees and taxes, and visualize results interactively.
 
 ## Use Case
 Ideal for investors, financial advisors, and algorithmic traders seeking to:
@@ -27,9 +27,10 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
 - `main.py`: Example usage and entry point.
 - `gradio-app.py`: Gradio interface.
-- `DCA/ETF.py`: Defines the `ETF` class for representing individual ETFs.
-- `DCA/Portfolio.py`: Defines the `PortfolioETF` class and optimization logic.
-- `Tools/compare_etf.py`: Interactive command-line tool to compare ETF investment contracts with fees and capital gains tax.
+- `PBalance/Security.py`: Defines the `Security` class for representing individual securities.
+- `PBalance/Portfolio.py`: Defines the `Portfolio` class.
+- `PBalance/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
+- `Tools/Contract_security_comparator.py`: Interactive command-line tool to compare security investment contracts with fees and capital gains tax.
 - `pyproject.toml`: Project metadata and dependencies.
 
 ## Installation
@@ -39,7 +40,7 @@ Clone the repository from Github
 git clone git@github.com:PhDFlo/ETF-Optimizer.git
 ```
 
-In the `ETF-Optimizer` folder create the python environment using [uv](https://github.com/astral-sh/uv):
+In the `Portfolio-Balancer` folder create the python environment using [uv](https://github.com/astral-sh/uv):
 ```
 uv venv
 source .venv/bin/activate
@@ -76,29 +77,29 @@ from DCA.Portfolio import PortfolioETF
 
 def main():
     # Create ETF instances
-    etf1 = ETF(
-        name="Amundi MSCI World UCITS ETF",
+    security1 = Security(
+        name="Amundi MSCI World UCITS Security",
         ticker="AMDW",
         currency="EUR",
-        price_in_etf_currency=500.0,
+        price_in_security_currency=500.0,
         yearly_charge=0.2,
         target_share=0.5,
         number_held=20.0,
     )
-    etf2 = ETF(
-        name="Vanguard S&P 500 UCITS ETF",
+    security2 = Security(
+        name="Vanguard S&P 500 UCITS Security",
         ticker="VUSA.AS",
         currency="USD",
-        price_in_etf_currency=300.0,
+        price_in_security_currency=300.0,
         yearly_charge=0.1,
         target_share=0.2,
         number_held=1.0,
     )
-    etf3 = ETF(
-        name="iShares Core MSCI Emerging Markets IMI UCITS ETF",
+    security3 = Security(
+        name="iShares Core MSCI Emerging Markets IMI UCITS Security",
         ticker="EIMI.L",
         currency="EUR",
-        price_in_etf_currency=200.0,
+        price_in_security_currency=200.0,
         yearly_charge=0.25,
         target_share=0.3,
         number_held=3.0,
@@ -106,26 +107,26 @@ def main():
 
     # Create a Portfolio instance
     portfolio = Portfolio()
-    portfolio.add_etf(etf1)
-    portfolio.add_etf(etf2)
-    portfolio.add_etf(etf3)
+    portfolio.add_security(security1)
+    portfolio.add_security(security2)
+    portfolio.add_security(security3)
 
     portfolio.to_json("Portfolios/investment_example.json")
 
-    portfolio.update_etf_prices()  # Update prices from yfinance
+    portfolio.update_security_prices()  # Update prices from yfinance
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
     Equilibrate.solve_equilibrium(
-        portfolio.etfs, investment_amount=1000.0, min_percent_to_invest=0.99
+        portfolio.securities, investment_amount=1000.0, min_percent_to_invest=0.99
     )
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
     logging.info("Portfolio info:")
-    for etf_info in info:
-        logging.info(f"ETF:")
-        for k, v in etf_info.items():
+    for security_info in info:
+        logging.info(f"Security:")
+        for k, v in security_info.items():
             logging.info(f"  {k}: {v}")
 
 if __name__ == "__main__":

@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 
 
 def simulate_contract(
-    initial, annual_return, years, etf_fee, bank_fee, yearly_contribution=0.0
+    initial, annual_return, years, security_fee, bank_fee, yearly_contribution=0.0
 ):
     """
-    Simulate yearly portfolio value after applying gross return, ETF fee and bank fee.
-    Fees (etf_fee, bank_fee) are annual percentages (e.g. 0.005 for 0.5%).
+    Simulate yearly portfolio value after applying gross return, Security fee and bank fee.
+    Fees (security_fee, bank_fee) are annual percentages (e.g. 0.005 for 0.5%).
     Returns (values_by_year, total_invested).
     values_by_year: numpy array of length (years+1) including year 0 (initial).
     """
@@ -18,8 +18,8 @@ def simulate_contract(
     for y in range(1, years + 1):
         # apply gross return
         val = values[y - 1] * (1.0 + annual_return)
-        # apply ETF expense ratio (reduces return)
-        val *= 1.0 - etf_fee
+        # apply Security expense ratio (reduces return)
+        val *= 1.0 - security_fee
         # apply bank annual fee (as % of assets at year end)
         val *= 1.0 - bank_fee
         # add yearly contribution at year end (after fees)
@@ -55,20 +55,20 @@ def compute_after_tax_curve(values, invested, capital_gains_tax):
 def parse_contract_arg(contract_str):
     """
     Parse a contract string of the form:
-    "label,etf_fee,bank_fee,capgains_tax"
+    "label,security_fee,bank_fee,capgains_tax"
     Example: "A,0.0059,0.006,0.172"
-    Returns: dict with keys label, etf_fee, bank_fee, capgains_tax
+    Returns: dict with keys label, security_fee, bank_fee, capgains_tax
     """
     parts = contract_str.split(",")
     if len(parts) != 4:
-        raise ValueError("Contract must be: label,etf_fee,bank_fee,capgains_tax")
+        raise ValueError("Contract must be: label,security_fee,bank_fee,capgains_tax")
     label = parts[0].strip()
-    etf_fee = float(parts[1])
+    security_fee = float(parts[1])
     bank_fee = float(parts[2])
     capgains_tax = float(parts[3])
     return {
         "label": label,
-        "etf_fee": etf_fee,
+        "security_fee": security_fee,
         "bank_fee": bank_fee,
         "capgains_tax": capgains_tax,
     }
@@ -107,7 +107,7 @@ def plot_comparison(
     )
     plt.xlabel("Years")
     plt.ylabel("Portfolio value")
-    plt.title("ETF investment comparison (fees & capital gains tax)")
+    plt.title("Security investment comparison (fees & capital gains tax)")
     plt.grid(alpha=0.3)
     plt.legend()
     plt.tight_layout()
@@ -116,7 +116,7 @@ def plot_comparison(
 
 def parse_args():
     p = argparse.ArgumentParser(
-        description="Compare ETF contracts with fees and capital gains tax."
+        description="Compare Security contracts with fees and capital gains tax."
     )
     p.add_argument("--initial", type=float, default=10000.0, help="Initial investment")
     p.add_argument(
@@ -136,7 +136,7 @@ def parse_args():
         "--contract",
         action="append",
         required=True,
-        help='Contract definition: "label,etf_fee,bank_fee,capgains_tax". Example: --contract "A,0.0059,0.006,0.172" --contract "B,0.0012,0.00,0.30"',
+        help='Contract definition: "label,security_fee,bank_fee,capgains_tax". Example: --contract "A,0.0059,0.006,0.172" --contract "B,0.0012,0.00,0.30"',
     )
     return p.parse_args()
 
@@ -183,7 +183,7 @@ def main():
             initial=args.initial,
             annual_return=args.annual_return,
             years=args.years,
-            etf_fee=contract["etf_fee"],
+            security_fee=contract["security_fee"],
             bank_fee=contract["bank_fee"],
             yearly_contribution=args.yearly_contribution,
         )
@@ -229,7 +229,7 @@ def main():
         )
     plt.xlabel("Years")
     plt.ylabel("Portfolio value")
-    plt.title("ETF investment comparison (fees & capital gains tax)")
+    plt.title("Security investment comparison (fees & capital gains tax)")
     plt.grid(alpha=0.3)
     plt.legend()
     plt.tight_layout()
