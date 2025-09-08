@@ -8,19 +8,20 @@ class ETF:
     """
     A class to represent an Exchange-Traded Fund (ETF).
     """
-    name: str
-    ticker: str = "DCAM"
-    currency: str = "EUR"
-    price: float = 500.0
-    yearly_charge: float = 0.2
-    target_share: float = 1.0
-    number_held: float = 0.0
-    actual_share: float = 0.0
-    number_to_buy: float = 0.0
-    amount_to_invest: float = 0.0
-    final_share: float = 0.0
-    amount_invested: float = field(init=False)
-    symbol: str = field(init=False)
+    name: str                                    # ETF name
+    ticker: str = "DCAM"                         # ETF ticker symbol
+    currency: str = "EUR"                        # ETF currency, either "EUR" or "USD"
+    symbol: str = field(init=False)              # Symbol of the ETF currency
+    exchange_rate: float = 1.0                   # Exchange rate to portfolio currency
+    price: float = 500.0                         # ETF price in its currency
+    yearly_charge: float = 0.2                   # Yearly charge in percentage
+    number_held: float = 0.0                     # Number of ETF units held
+    number_to_buy: float = 0.0                   # Number of ETF units to buy
+    amount_to_invest: float = 0.0                # Amount to invest in this ETF
+    amount_invested: float = field(init=False)   # Total amount invested in this ETF
+    target_share: float = 1.0                    # Target share of the ETF in the portfolio
+    actual_share: float = 0.0                    # Actual share of the ETF in the portfolio
+    final_share: float = 0.0                     # Final share of the ETF after investment
 
     def __post_init__(self):
         self.amount_invested = self.number_held * self.price

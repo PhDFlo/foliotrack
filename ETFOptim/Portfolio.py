@@ -10,9 +10,9 @@ class Portfolio:
     """
     Represents a portfolio containing multiple ETFs and a currency.
     """
-    etfs: List[ETF] = field(default_factory=list)
-    currency: str = "EUR"
-    staged_purchases: List[Dict[str, Any]] = field(default_factory=list)
+    etfs: List[ETF] = field(default_factory=list)                        # List of ETFs in the portfolio
+    currency: str = "EUR"                                                # Portfolio currency
+    staged_purchases: List[Dict[str, Any]] = field(default_factory=list) # ETFs being bought
 
     def add_etf(self, etf: ETF) -> None:
         self.etfs.append(etf)
