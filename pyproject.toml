@@ -1,7 +1,7 @@
 [project]
-name = "ETF-Optmizer"
+name = "Portfolio-Balancer"
 version = "1.0.1"
-description = "Compute DCA ETF deposit equilibrium based on existing investment"
+description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -15,7 +15,3 @@ dependencies = [
     "yfinance",
     "forex-python",
 ]
-
-[build-system]
-requires = ["uv_build >= 0.7.19, <0.9.0"]
-build-backend = "uv_build"
