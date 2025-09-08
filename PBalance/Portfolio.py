@@ -3,74 +3,78 @@ import json
 import csv
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
-from .ETF import ETF
+from .Security import Security
 
 
 @dataclass
 class Portfolio:
     """
-    Represents a portfolio containing multiple ETFs and a currency.
+    Represents a portfolio containing multiple Securitys and a currency.
     """
 
-    etfs: List[ETF] = field(default_factory=list)  # List of ETFs in the portfolio
+    securities: List[Security] = field(
+        default_factory=list
+    )  # List of Securitys in the portfolio
     currency: str = "EUR"  # Portfolio currency
     staged_purchases: List[Dict[str, Any]] = field(
         default_factory=list
-    )  # ETFs being bought
+    )  # Securitys being bought
 
-    def add_etf(self, etf: ETF) -> None:
-        self.etfs.append(etf)
+    def add_security(self, security: Security) -> None:
+        self.securities.append(security)
         logging.info(
-            f"ETF '{etf.name}' added to portfolio with share {etf.target_share} and number held {round(etf.number_held, 4)}."
+            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
         )
 
-    def remove_etf(self, symbol: str) -> None:
-        self.etfs = [etf for etf in self.etfs if etf.symbol != symbol]
+    def remove_security(self, symbol: str) -> None:
+        self.securities = [
+            security for security in self.securities if security.symbol != symbol
+        ]
 
     def get_portfolio_info(self) -> List[Dict[str, Any]]:
-        return [etf.get_info() for etf in self.etfs]
+        return [security.get_info() for security in self.securities]
 
     def verify_target_share_sum(self) -> bool:
-        total_share = sum(etf.target_share for etf in self.etfs)
+        total_share = sum(security.target_share for security in self.securities)
         if abs(total_share - 1.0) > 1e-6:
             logging.warning(f"Portfolio shares do not sum to 1. (Sum: {total_share})")
             return False
         logging.info("Portfolio shares sum equal to 1. Portfolio is complete.")
         return True
 
-    def buy_etf(
+    def buy_security(
         self,
-        etf_ticker: str,
+        security_ticker: str,
         quantity: float,
         buy_price: Optional[float] = None,
         fee: float = 0.0,
         date: Optional[str] = None,
     ) -> None:
-        for etf in self.etfs:
-            if etf.ticker == etf_ticker:
-                purchase = etf.buy(quantity, buy_price, fee, date)
+        for security in self.securities:
+            if security.ticker == security_ticker:
+                purchase = security.buy(quantity, buy_price, fee, date)
                 self.compute_actual_shares()
                 self.staged_purchases.append(purchase)
                 logging.info(
-                    f"Bought {quantity} units of '{etf_ticker}' on {purchase['date']}. New number held: {etf.number_held}."
+                    f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. New number held: {security.number_held}."
                 )
                 return
-        logging.error(f"ETF '{etf_ticker}' not found in the portfolio.")
-        raise ValueError(f"ETF '{etf_ticker}' not found in the portfolio.")
+        logging.error(f"Security '{security_ticker}' not found in the portfolio.")
+        raise ValueError(f"Security '{security_ticker}' not found in the portfolio.")
 
     def compute_actual_shares(self) -> None:
         if not self.verify_target_share_sum():
             raise Exception("Error, the portfolio is not complete.")
-        total_invested = sum(etf.amount_invested for etf in self.etfs)
-        for etf in self.etfs:
-            etf.compute_price_in_portfolio_currency(
+        total_invested = sum(security.amount_invested for security in self.securities)
+        for security in self.securities:
+            security.compute_price_in_portfolio_currency(
                 self.currency
             )  # Ensure price is in portfolio currency
-            etf.compute_actual_share(total_invested)
+            security.compute_actual_share(total_invested)
 
-    def update_etf_prices(self) -> None:
-        for etf in self.etfs:
-            etf.update_price_from_yfinance()
+    def update_security_prices(self) -> None:
+        for security in self.securities:
+            security.update_price_from_yfinance()
 
     def to_json(self, filepath: str) -> None:
         try:
@@ -78,7 +82,9 @@ class Portfolio:
                 json.dump(
                     {
                         "currency": self.currency,
-                        "etfs": [etf.get_info() for etf in self.etfs],
+                        "securities": [
+                            security.get_info() for security in self.securities
+                        ],
                         "staged_purchases": self.staged_purchases,
                     },
                     f,
@@ -93,10 +99,15 @@ class Portfolio:
         try:
             with open(filepath, "r") as f:
                 data = json.load(f)
-            etfs = [ETF.from_json(etf_data) for etf_data in data["etfs"]]
+            securities = [
+                Security.from_json(security_data)
+                for security_data in data["securities"]
+            ]
             staged_purchases = data.get("staged_purchases", [])
             return cls(
-                etfs=etfs, currency=data["currency"], staged_purchases=staged_purchases
+                securities=securities,
+                currency=data["currency"],
+                staged_purchases=staged_purchases,
             )
         except Exception as e:
             logging.error(f"Error loading portfolio from JSON: {e}")
@@ -120,9 +131,9 @@ class Portfolio:
                 for purchase in self.staged_purchases:
                     currency = next(
                         (
-                            etf.currency
-                            for etf in self.etfs
-                            if etf.ticker == purchase["ticker"]
+                            security.currency
+                            for security in self.securities
+                            if security.ticker == purchase["ticker"]
                         ),
                         "",
                     )

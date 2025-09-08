@@ -6,22 +6,22 @@ from typing import List, Tuple, Any
 
 class Equilibrate:
     """
-    Provides methods to solve for the optimal ETF purchase allocation to match target shares.
+    Provides methods to solve for the optimal Security purchase allocation to match target shares.
     """
 
     @staticmethod
     def solve_equilibrium(
-        etfs: List[Any],
+        securities: List[Any],
         investment_amount: float = 1000.0,
         min_percent_to_invest: float = 0.99,
     ) -> Tuple[np.ndarray, float, np.ndarray]:
         """
-        Solves for the optimal number of each ETF to buy to approach target shares,
-        given a maximum investment. Updates each ETF object with the number to buy and
+        Solves for the optimal number of each Security to buy to approach target shares,
+        given a maximum investment. Updates each Security object with the number to buy and
         final share. Returns the solution and logs results.
 
         Args:
-            etfs (List[Any]): List of ETF objects. Each ETF must have attributes:
+            securities (List[Any]): List of Security objects. Each Security must have attributes:
                 - price (float)
                 - amount_invested (float)
                 - target_share (float)
@@ -32,20 +32,20 @@ class Equilibrate:
 
         Returns:
             Tuple[np.ndarray, float, np.ndarray]:
-                - etf_counts: Number of each ETF to buy (int array)
+                - security_counts: Number of each Security to buy (int array)
                 - total_to_invest: Total amount to invest (float)
-                - final_shares: Final share of each ETF (float array)
+                - final_shares: Final share of each Security (float array)
 
         Raises:
-            ValueError: If ETF list is empty or required attributes are missing.
+            ValueError: If Security list is empty or required attributes are missing.
             RuntimeError: If optimization fails.
         """
-        n = len(etfs)
+        n = len(securities)
         if n == 0:
             logging.error("Portfolio is empty.")
             raise ValueError("Portfolio is empty.")
 
-        # Validate ETF attributes
+        # Validate Security attributes
         required_attrs = [
             "price_in_portfolio_currency",
             "amount_invested",
@@ -53,16 +53,22 @@ class Equilibrate:
             "name",
             "symbol",
         ]
-        for etf in etfs:
+        for security in securities:
             for attr in required_attrs:
-                if not hasattr(etf, attr):
-                    logging.error(f"ETF object missing required attribute: {attr}")
-                    raise ValueError(f"ETF object missing required attribute: {attr}")
+                if not hasattr(security, attr):
+                    logging.error(f"Security object missing required attribute: {attr}")
+                    raise ValueError(
+                        f"Security object missing required attribute: {attr}"
+                    )
 
         investments = cp.Variable(n, integer=True)
-        price_matrix = np.diag([etf.price_in_portfolio_currency for etf in etfs])
-        invested_amounts = np.array([etf.amount_invested for etf in etfs])
-        target_shares = np.array([etf.target_share for etf in etfs])
+        price_matrix = np.diag(
+            [security.price_in_portfolio_currency for security in securities]
+        )
+        invested_amounts = np.array(
+            [security.amount_invested for security in securities]
+        )
+        target_shares = np.array([security.target_share for security in securities])
 
         constraints = [
             investments >= 0,
@@ -85,43 +91,45 @@ class Equilibrate:
         if investments.value is None:
             logging.error("Optimization did not produce a solution.")
             raise RuntimeError("Optimization did not produce a solution.")
-        etf_counts = np.round(investments.value).astype(int)
+        security_counts = np.round(investments.value).astype(int)
 
-        # Update ETF objects and collect results
-        for i, etf in enumerate(etfs):
-            etf.number_to_buy = int(etf_counts[i])
+        # Update Security objects and collect results
+        for i, security in enumerate(securities):
+            security.number_to_buy = int(security_counts[i])
 
-        final_invested = invested_amounts + price_matrix @ etf_counts
+        final_invested = invested_amounts + price_matrix @ security_counts
         total_invested = np.sum(final_invested)
-        total_to_invest = float(np.sum(price_matrix @ etf_counts))
+        total_to_invest = float(np.sum(price_matrix @ security_counts))
 
         if total_invested > 0:
             final_shares = final_invested / total_invested
         else:
             final_shares = np.zeros_like(final_invested)
 
-        for i, etf in enumerate(etfs):
-            etf.amount_to_invest = round(price_matrix[i, i] * etf_counts[i], 2)
-            etf.final_share = round(float(final_shares[i]), 4)
+        for i, security in enumerate(securities):
+            security.amount_to_invest = round(
+                price_matrix[i, i] * security_counts[i], 2
+            )
+            security.final_share = round(float(final_shares[i]), 4)
 
         # Log results
-        logging.info("Number of each ETF to buy:")
-        for i, etf in enumerate(etfs):
-            logging.info(f"  {etf.name}: {etf.number_to_buy} units")
+        logging.info("Number of each Security to buy:")
+        for i, security in enumerate(securities):
+            logging.info(f"  {security.name}: {security.number_to_buy} units")
 
-        logging.info("Amount to spend and final share of each ETF:")
-        for i, etf in enumerate(etfs):
+        logging.info("Amount to spend and final share of each Security:")
+        for i, security in enumerate(securities):
             logging.info(
-                f"  {etf.name}: {etf.amount_to_invest:.2f}{etf.symbol}, Final share = {etf.final_share:.4f}"
+                f"  {security.name}: {security.amount_to_invest:.2f}{security.symbol}, Final share = {security.final_share:.4f}"
             )
 
         total_amounts = {}
-        for etf in etfs:
-            symbol = etf.symbol
+        for security in securities:
+            symbol = security.symbol
             total_amounts.setdefault(symbol, 0)
-            total_amounts[symbol] += etf.amount_to_invest
+            total_amounts[symbol] += security.amount_to_invest
         logging.info("Total amount to invest:")
         for symbol, amount in total_amounts.items():
             logging.info(f"  {amount:.2f}{symbol}")
 
-        return etf_counts, total_to_invest, final_shares
+        return security_counts, total_to_invest, final_shares

@@ -6,34 +6,34 @@ from forex_python.converter import CurrencyRates
 
 
 @dataclass
-class ETF:
+class Security:
     """
-    A class to represent an Exchange-Traded Fund (ETF).
+    A class to represent any security including Exchange-Traded Fund (ETF).
     """
 
-    name: str  # ETF name
-    ticker: str = "DCAM"  # ETF ticker symbol
-    currency: str = "EUR"  # ETF currency, either "EUR" or "USD"
-    symbol: str = field(init=False)  # Symbol of the ETF currency
+    name: str  # Security name
+    ticker: str = "DCAM"  # Security ticker symbol
+    currency: str = "EUR"  # Security currency, either "EUR" or "USD"
+    symbol: str = field(init=False)  # Symbol of the Security currency
     exchange_rate: float = 1.0  # Exchange rate to portfolio currency
-    price_in_etf_currency: float = 500.0  # ETF price in its currency
+    price_in_security_currency: float = 500.0  # Security price in its currency
     price_in_portfolio_currency: float = field(
         init=False
-    )  # ETF price in portfolio currency
+    )  # Security price in portfolio currency
     yearly_charge: float = 0.2  # Yearly charge in percentage
-    number_held: float = 0.0  # Number of ETF units held
-    number_to_buy: float = 0.0  # Number of ETF units to buy
-    amount_to_invest: float = 0.0  # Amount to invest in this ETF
-    amount_invested: float = field(init=False)  # Total amount invested in this ETF
-    target_share: float = 1.0  # Target share of the ETF in the portfolio
-    actual_share: float = 0.0  # Actual share of the ETF in the portfolio
-    final_share: float = 0.0  # Final share of the ETF after investment
+    number_held: float = 0.0  # Number of Security units held
+    number_to_buy: float = 0.0  # Number of Security units to buy
+    amount_to_invest: float = 0.0  # Amount to invest in this Security
+    amount_invested: float = field(init=False)  # Total amount invested in this Security
+    target_share: float = 1.0  # Target share of the Security in the portfolio
+    actual_share: float = 0.0  # Actual share of the Security in the portfolio
+    final_share: float = 0.0  # Final share of the Security after investment
 
     def __post_init__(self):
 
         self.price_in_portfolio_currency = (
-            self.price_in_etf_currency * self.exchange_rate
-        )  # ETF price in portfolio currency
+            self.price_in_security_currency * self.exchange_rate
+        )  # Security price in portfolio currency
         self.amount_invested = self.number_held * self.price_in_portfolio_currency
 
         if self.currency.lower() not in ["eur", "usd"]:
@@ -49,16 +49,16 @@ class ETF:
 
     def __repr__(self) -> str:
         """
-        Return a string representation of the ETF instance.
+        Return a string representation of the Security instance.
         """
         return (
-            f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-            f"price={self.price_in_etf_currency}{self.symbol}, yearly_charge={self.yearly_charge})"
+            f"Security(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
+            f"price={self.price_in_security_currency}{self.symbol}, yearly_charge={self.yearly_charge})"
         )
 
     def get_info(self) -> Dict[str, Any]:
         """
-        Get a dictionary containing the ETF's information and all attributes.
+        Get a dictionary containing the Security's information and all attributes.
         """
         info = asdict(self)
         info["symbol"] = self.symbol
@@ -72,7 +72,7 @@ class ETF:
         date: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Buy a specified quantity of this ETF, updating number held and amount invested.
+        Buy a specified quantity of this Security, updating number held and amount invested.
         """
         import datetime
 
@@ -92,7 +92,7 @@ class ETF:
 
     def compute_actual_share(self, total_invested: float) -> None:
         """
-        Compute and update the actual share of this ETF in the portfolio.
+        Compute and update the actual share of this Security in the portfolio.
         """
         if total_invested == 0:
             self.actual_share = 0.0
@@ -101,17 +101,19 @@ class ETF:
 
     def update_price_from_yfinance(self) -> None:
         """
-        Update the ETF price using yfinance based on its ticker, and update amount invested.
+        Update the Security price using yfinance based on its ticker, and update amount invested.
         """
         ticker = yf.Ticker(self.ticker)
         try:
             price_from_market = ticker.info.get("regularMarketPrice")
             if price_from_market is not None:
-                self.price_in_etf_currency = price_from_market
+                self.price_in_security_currency = price_from_market
                 self.price_in_portfolio_currency = (
-                    self.price_in_etf_currency * self.exchange_rate
+                    self.price_in_security_currency * self.exchange_rate
                 )
-                self.amount_invested = self.number_held * self.price_in_etf_currency
+                self.amount_invested = (
+                    self.number_held * self.price_in_security_currency
+                )
         except Exception as e:
             logging.error(f"Could not update price for {self.ticker}: {e}")
 
@@ -123,7 +125,7 @@ class ETF:
                     c.get_rate(self.currency.upper(), portfolio_currency.upper())
                 )
                 self.price_in_portfolio_currency = (
-                    self.price_in_etf_currency * self.exchange_rate
+                    self.price_in_security_currency * self.exchange_rate
                 )
             except Exception as e:
                 logging.error(
@@ -132,20 +134,22 @@ class ETF:
 
     def to_json(self) -> Dict[str, Any]:
         """
-        Serialize ETF to a JSON-compatible dict.
+        Serialize Security to a JSON-compatible dict.
         """
         return self.get_info()
 
     @staticmethod
-    def from_json(data: Dict[str, Any]) -> "ETF":
+    def from_json(data: Dict[str, Any]) -> "Security":
         """
-        Deserialize ETF from a JSON-compatible dict.
+        Deserialize Security from a JSON-compatible dict.
         """
-        return ETF(
+        return Security(
             name=data["name"],
             ticker=data.get("ticker", "DCAM"),
             currency=data.get("currency", "EUR"),
-            price_in_etf_currency=float(data.get("price_in_etf_currency", 500.0)),
+            price_in_security_currency=float(
+                data.get("price_in_security_currency", 500.0)
+            ),
             yearly_charge=float(data.get("yearly_charge", 0.2)),
             target_share=float(data.get("target_share", 1.0)),
             number_held=float(data.get("number_held", 0.0)),

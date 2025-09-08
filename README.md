@@ -2,23 +2,25 @@
   <img src="images/logo.png" alt="ETF-Optimizer Logo" width="50%">
 </p>
 
-# ETF-Optimizer
+# Portfolio-Balancer
 
+Portfolio-Balancer is a Python module for optimizing and rebalancing investment portfolios comprising any securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the module computes the optimal investment adjustments required to align the portfolio with the desired strategy.
 
-ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Funds (ETFs) and computing the optimal investment distribution for Dollar Cost Averaging (DCA) strategies. It uses Mixed-Integer Quadratic Programming (MIQP) to optimize your ETF allocations. The convex optimization problem is performed with [CVXPY](https://www.cvxpy.org/) and [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) for the solver.
+## Key Features
+- Mathematical Optimization: Uses Mixed-Integer Quadratic Programming (MIQP) to determine the most efficient asset allocation while respecting constraints (e.g., lot sizes, transaction costs).
+- Solver Integration: Leverages [CVXPY](https://www.cvxpy.org/) for convex optimization modeling and [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) as the underlying solver.
+- Real-Time Data Fetching:
+  - Security prices via [yfinance](https://github.com/ranaroussi/yfinance) (Yahoo Finance API).
+  - Currency conversion via [forex-python](https://github.com/MicroPyramid/forex-python) for multi-currency portfolios.
+- Export Compatibility: Generates output in a format compatible with Wealthfolio for seamless portfolio tracking.
+- **ETF Contract Comparator tool:** Simulate and compare the evolution of multiple ETF investment contracts with customizable fees and taxes, and visualize results interactively.
 
-
-## Features
-
-- Define and manage ETF objects with attributes such as name, ticker, currency, price, and fees.
-- Build a portfolio by specifying target shares and amounts already invested in each ETF.
-- Verify that the sum of target shares equals 1 (100%).
-- Compute the actual share of each ETF in your portfolio based on invested amounts.
-- Solve for the optimal number of each ETF to buy (using cvxpy) to best approach your target allocation given a maximum investment.
-- View detailed portfolio information, including target share, actual share, number to buy, and final share after investment.
-- Gradio interface to help ETF and portfolio definition
-- CSV file read to accelerate use of the interface
-- **ETF Contract Comparator:** Simulate and compare the evolution of multiple ETF investment contracts with customizable fees and taxes, and visualize results interactively.
+## Use Case
+Ideal for investors, financial advisors, and algorithmic traders seeking to:
+✅ Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
+✅ Multi-Currency Support – Dynamically adjusts for exchange rate fluctuations, enabling accurate valuation and rebalancing of global portfolios.
+✅ User-Friendly GUI – Accelerates workflow with an intuitive interface, reducing complexity for faster decision-making and execution.
+✅ Wealthfolio Integration – Exports optimized allocations in a compatible format for seamless tracking via [Wealthfolio](https://github.com/afadil/wealthfolio).
 
 
 ## Project Structure
@@ -27,7 +29,7 @@ ETF-Optimizer is a Python module for managing portfolios of Exchange-Traded Fund
 - `gradio-app.py`: Gradio interface.
 - `DCA/ETF.py`: Defines the `ETF` class for representing individual ETFs.
 - `DCA/Portfolio.py`: Defines the `PortfolioETF` class and optimization logic.
-- `compare_etf.py`: Interactive command-line tool to compare ETF investment contracts with fees and capital gains tax.
+- `Tools/compare_etf.py`: Interactive command-line tool to compare ETF investment contracts with fees and capital gains tax.
 - `pyproject.toml`: Project metadata and dependencies.
 
 ## Installation
@@ -74,29 +76,57 @@ from DCA.Portfolio import PortfolioETF
 
 def main():
     # Create ETF instances
-    etf1 = ETF(name="Amundi MSCI World UCITS ETF", ticker="AMDW", currency="Euro", price=500.0, fees=0.2)
-    etf2 = ETF(name="Vanguard S&P 500 UCITS ETF", ticker="VUSA", currency="USD", price=300.0, fees=0.1)
-    etf3 = ETF(name="iShares Core MSCI Emerging Markets IMI UCITS ETF", ticker="EIMI", currency="Euro", price=200.0, fees=0.25)
+    etf1 = ETF(
+        name="Amundi MSCI World UCITS ETF",
+        ticker="AMDW",
+        currency="EUR",
+        price_in_etf_currency=500.0,
+        yearly_charge=0.2,
+        target_share=0.5,
+        number_held=20.0,
+    )
+    etf2 = ETF(
+        name="Vanguard S&P 500 UCITS ETF",
+        ticker="VUSA.AS",
+        currency="USD",
+        price_in_etf_currency=300.0,
+        yearly_charge=0.1,
+        target_share=0.2,
+        number_held=1.0,
+    )
+    etf3 = ETF(
+        name="iShares Core MSCI Emerging Markets IMI UCITS ETF",
+        ticker="EIMI.L",
+        currency="EUR",
+        price_in_etf_currency=200.0,
+        yearly_charge=0.25,
+        target_share=0.3,
+        number_held=3.0,
+    )
 
-    # Create a PortfolioETF instance
-    portfolio = PortfolioETF()
-    portfolio.add_etf(etf1, target_share=0.5, amount_invested=2000.0)
-    portfolio.add_etf(etf2, target_share=0.2, amount_invested=800.0)
-    portfolio.add_etf(etf3, target_share=0.3, amount_invested=300.0)
+    # Create a Portfolio instance
+    portfolio = Portfolio()
+    portfolio.add_etf(etf1)
+    portfolio.add_etf(etf2)
+    portfolio.add_etf(etf3)
 
-    # Compute the actual share
+    portfolio.to_json("Portfolios/investment_example.json")
+
+    portfolio.update_etf_prices()  # Update prices from yfinance
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    portfolio.solve_equilibrium(nvestment_amount=1000.0, Min_percent_to_invest=0.99)
+    Equilibrate.solve_equilibrium(
+        portfolio.etfs, investment_amount=1000.0, min_percent_to_invest=0.99
+    )
 
-    # Print portfolio info
+    # Log portfolio info
     info = portfolio.get_portfolio_info()
-    print("\nPortfolio info:")
+    logging.info("Portfolio info:")
     for etf_info in info:
-        print("ETF:")
+        logging.info(f"ETF:")
         for k, v in etf_info.items():
-            print(f"  {k}: {v}")
+            logging.info(f"  {k}: {v}")
 
 if __name__ == "__main__":
     main()
@@ -164,7 +194,9 @@ ETF:
   final_share: 0.3171
 ```
 
-## ETF Contract Comparator Usage
+## Tools
+
+### ETF Contract Comparator Usage
 
 The `compare_etf.py` script allows you to simulate and compare the evolution of multiple ETF investment contracts, each with its own fees and capital gains tax. You can define any number of contracts directly from the command line. It provides quantitative information to choose the best contract for investing on a particular ETF.
 
@@ -189,6 +221,8 @@ The script will print the results for each contract and plot a graph comparing t
 - pandas
 - matplotlib
 - pyQt6
+- yfinance
+- forex-python
 
 
 ## License
