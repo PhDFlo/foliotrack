@@ -18,8 +18,11 @@ Portfolio-Balancer is a Python module for optimizing and rebalancing investment 
 ## Use Case
 Ideal for investors, financial advisors, and algorithmic traders seeking to:
 ✅ Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
+
 ✅ Multi-Currency Support – Dynamically adjusts for exchange rate fluctuations, enabling accurate valuation and rebalancing of global portfolios.
+
 ✅ User-Friendly GUI – Accelerates workflow with an intuitive interface, reducing complexity for faster decision-making and execution.
+
 ✅ Wealthfolio Integration – Exports optimized allocations in a compatible format for seamless tracking via [Wealthfolio](https://github.com/afadil/wealthfolio).
 
 
@@ -197,17 +200,17 @@ ETF:
 
 ## Tools
 
-### ETF Contract Comparator Usage
+### Security Contract Comparator Usage
 
-The `compare_etf.py` script allows you to simulate and compare the evolution of multiple ETF investment contracts, each with its own fees and capital gains tax. You can define any number of contracts directly from the command line. It provides quantitative information to choose the best contract for investing on a particular ETF.
+The `Contract_security_comparator.py` script allows you to simulate and compare the evolution of multiple securities investment contracts, each with its own fees and capital gains tax. You can define any number of contracts directly from the command line. It provides quantitative information to choose the best contract for investing on a particular security.
 
 **Example usage:**
 ```sh
-python compare_etf.py --initial 20000 --annual-return 0.06 --years 25 --yearly_contribution 1000 \
+python Contract_security_comparator.py --initial 20000 --annual-return 0.06 --years 25 --yearly_contribution 1000 \
   --contract "A,0.0059,0.006,0.172" \
   --contract "B,0.0012,0.00,0.30"
 ```
-- `--contract "Label,ETF_fee,Bank_fee,CapitalGainsTax"`: Add as many contracts as you want, each with its own parameters.
+- `--contract "Label,Security_fee,Bank_fee,CapitalGainsTax"`: Add as many contracts as you want, each with its own parameters.
 - All values for fees and taxes are expressed as decimals (e.g., 0.0059 for 0.59%).
 
 The script will print the results for each contract and plot a graph comparing their evolution and final after-tax values.
