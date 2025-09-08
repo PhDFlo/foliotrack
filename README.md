@@ -17,6 +17,7 @@ Portfolio-Balancer is a Python module for optimizing and rebalancing investment 
 
 ## Use Case
 Ideal for investors, financial advisors, and algorithmic traders seeking to:
+
 ✅ Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
 
 ✅ Multi-Currency Support – Dynamically adjusts for exchange rate fluctuations, enabling accurate valuation and rebalancing of global portfolios.
