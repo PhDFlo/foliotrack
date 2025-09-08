@@ -2,31 +2,44 @@ import yfinance as yf
 import logging
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Dict, Any
+from forex_python.converter import CurrencyRates
+
 
 @dataclass
 class ETF:
     """
     A class to represent an Exchange-Traded Fund (ETF).
     """
-    name: str                                    # ETF name
-    ticker: str = "DCAM"                         # ETF ticker symbol
-    currency: str = "EUR"                        # ETF currency, either "EUR" or "USD"
-    symbol: str = field(init=False)              # Symbol of the ETF currency
-    exchange_rate: float = 1.0                   # Exchange rate to portfolio currency
-    price: float = 500.0                         # ETF price in its currency
-    yearly_charge: float = 0.2                   # Yearly charge in percentage
-    number_held: float = 0.0                     # Number of ETF units held
-    number_to_buy: float = 0.0                   # Number of ETF units to buy
-    amount_to_invest: float = 0.0                # Amount to invest in this ETF
-    amount_invested: float = field(init=False)   # Total amount invested in this ETF
-    target_share: float = 1.0                    # Target share of the ETF in the portfolio
-    actual_share: float = 0.0                    # Actual share of the ETF in the portfolio
-    final_share: float = 0.0                     # Final share of the ETF after investment
+
+    name: str  # ETF name
+    ticker: str = "DCAM"  # ETF ticker symbol
+    currency: str = "EUR"  # ETF currency, either "EUR" or "USD"
+    symbol: str = field(init=False)  # Symbol of the ETF currency
+    exchange_rate: float = 1.0  # Exchange rate to portfolio currency
+    price_in_etf_currency: float = 500.0  # ETF price in its currency
+    price_in_portfolio_currency: float = field(
+        init=False
+    )  # ETF price in portfolio currency
+    yearly_charge: float = 0.2  # Yearly charge in percentage
+    number_held: float = 0.0  # Number of ETF units held
+    number_to_buy: float = 0.0  # Number of ETF units to buy
+    amount_to_invest: float = 0.0  # Amount to invest in this ETF
+    amount_invested: float = field(init=False)  # Total amount invested in this ETF
+    target_share: float = 1.0  # Target share of the ETF in the portfolio
+    actual_share: float = 0.0  # Actual share of the ETF in the portfolio
+    final_share: float = 0.0  # Final share of the ETF after investment
 
     def __post_init__(self):
-        self.amount_invested = self.number_held * self.price
+
+        self.price_in_portfolio_currency = (
+            self.price_in_etf_currency * self.exchange_rate
+        )  # ETF price in portfolio currency
+        self.amount_invested = self.number_held * self.price_in_portfolio_currency
+
         if self.currency.lower() not in ["eur", "usd"]:
-            logging.warning(f"Currency '{self.currency}' is not supported. Only EUR and USD are allowed.")
+            logging.warning(
+                f"Currency '{self.currency}' is not supported. Only EUR and USD are allowed."
+            )
         if self.currency.lower() in ["eur", "€"]:
             self.symbol = "€"
         elif self.currency.lower() in ["usd", "$"]:
@@ -40,7 +53,7 @@ class ETF:
         """
         return (
             f"ETF(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-            f"price={self.price}{self.symbol}, yearly_charge={self.yearly_charge})"
+            f"price={self.price_in_etf_currency}{self.symbol}, yearly_charge={self.yearly_charge})"
         )
 
     def get_info(self) -> Dict[str, Any]:
@@ -51,15 +64,22 @@ class ETF:
         info["symbol"] = self.symbol
         return info
 
-    def buy(self, quantity: float, buy_price: Optional[float] = None, fee: float = 0.0, date: Optional[str] = None) -> Dict[str, Any]:
+    def buy(
+        self,
+        quantity: float,
+        buy_price: Optional[float] = None,
+        fee: float = 0.0,
+        date: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
         Buy a specified quantity of this ETF, updating number held and amount invested.
         """
         import datetime
+
         if date is None:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
         if buy_price is None:
-            buy_price = self.price
+            buy_price = self.price_in_portfolio_currency
         self.number_held += quantity
         self.amount_invested += quantity * buy_price
         return {
@@ -85,12 +105,30 @@ class ETF:
         """
         ticker = yf.Ticker(self.ticker)
         try:
-            price = ticker.info.get("regularMarketPrice")
-            if price is not None:
-                self.price = price
-                self.amount_invested = self.number_held * self.price
+            price_from_market = ticker.info.get("regularMarketPrice")
+            if price_from_market is not None:
+                self.price_in_etf_currency = price_from_market
+                self.price_in_portfolio_currency = (
+                    self.price_in_etf_currency * self.exchange_rate
+                )
+                self.amount_invested = self.number_held * self.price_in_etf_currency
         except Exception as e:
             logging.error(f"Could not update price for {self.ticker}: {e}")
+
+    def compute_price_in_portfolio_currency(self, portfolio_currency: str) -> None:
+        if self.currency.lower() != portfolio_currency.lower():
+            c = CurrencyRates()
+            try:
+                self.exchange_rate = float(
+                    c.get_rate(self.currency.upper(), portfolio_currency.upper())
+                )
+                self.price_in_portfolio_currency = (
+                    self.price_in_etf_currency * self.exchange_rate
+                )
+            except Exception as e:
+                logging.error(
+                    f"Could not get exchange rate for {self.currency} to {portfolio_currency}: {e}"
+                )
 
     def to_json(self) -> Dict[str, Any]:
         """
@@ -107,7 +145,7 @@ class ETF:
             name=data["name"],
             ticker=data.get("ticker", "DCAM"),
             currency=data.get("currency", "EUR"),
-            price=float(data.get("price", 500.0)),
+            price_in_etf_currency=float(data.get("price_in_etf_currency", 500.0)),
             yearly_charge=float(data.get("yearly_charge", 0.2)),
             target_share=float(data.get("target_share", 1.0)),
             number_held=float(data.get("number_held", 0.0)),

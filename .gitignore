@@ -8,7 +8,7 @@ wheels/
 
 # Portfolio files
 Portfolios/*
-!Portfolios/investment.csv
+!Portfolios/investment.json
 
 # Purchase files
 Purchases/*

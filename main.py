@@ -1,4 +1,3 @@
-
 import logging
 from ETFOptim.ETF import ETF
 from ETFOptim.Portfolio import Portfolio
@@ -6,13 +5,14 @@ from ETFOptim.Equilibrate import Equilibrate
 
 logging.basicConfig(level=logging.INFO)
 
+
 def portfolio_from_scratch():
     # Create ETF instances
     etf1 = ETF(
         name="Amundi MSCI World UCITS ETF",
         ticker="AMDW",
         currency="EUR",
-        price=500.0,
+        price_in_etf_currency=500.0,
         yearly_charge=0.2,
         target_share=0.5,
         number_held=20.0,
@@ -21,7 +21,7 @@ def portfolio_from_scratch():
         name="Vanguard S&P 500 UCITS ETF",
         ticker="VUSA.AS",
         currency="USD",
-        price=300.0,
+        price_in_etf_currency=300.0,
         yearly_charge=0.1,
         target_share=0.2,
         number_held=1.0,
@@ -30,7 +30,7 @@ def portfolio_from_scratch():
         name="iShares Core MSCI Emerging Markets IMI UCITS ETF",
         ticker="EIMI.L",
         currency="EUR",
-        price=200.0,
+        price_in_etf_currency=200.0,
         yearly_charge=0.25,
         target_share=0.3,
         number_held=3.0,
@@ -41,8 +41,8 @@ def portfolio_from_scratch():
     portfolio.add_etf(etf1)
     portfolio.add_etf(etf2)
     portfolio.add_etf(etf3)
-    
-    portfolio.to_json("Portfolios/investment.json")
+
+    portfolio.to_json("Portfolios/investment_example.json")
 
     portfolio.update_etf_prices()  # Update prices from yfinance
     portfolio.compute_actual_shares()
@@ -60,9 +60,10 @@ def portfolio_from_scratch():
         for k, v in etf_info.items():
             logging.info(f"  {k}: {v}")
 
+
 def use_existing_portfolio():
     # Load an existing portfolio from CSV
-    portfolio = Portfolio.from_json("Portfolios/investment.json")
+    portfolio = Portfolio.from_json("Portfolios/investment_example.json")
     portfolio.update_etf_prices()
     portfolio.compute_actual_shares()
 
@@ -76,7 +77,7 @@ def use_existing_portfolio():
     portfolio.buy_etf("EIMI.L", 9.0, buy_price=210.0)
 
     # Write staged purchases for Wealthfolio import
-    portfolio.purchases_to_wealthfolio_csv("Purchases/new_purchases.csv")
+    portfolio.purchases_to_wealthfolio_csv("Purchases/new_purchases_example.csv")
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
@@ -88,6 +89,7 @@ def use_existing_portfolio():
 
     # Export updated portfolio to CSV
     portfolio.to_json("Portfolios/portfolio_output.json")
+
 
 if __name__ == "__main__":
     portfolio_from_scratch()

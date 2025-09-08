@@ -1,8 +1,8 @@
-
 import numpy as np
 import cvxpy as cp
 import logging
 from typing import List, Tuple, Any
+
 
 class Equilibrate:
     """
@@ -46,7 +46,13 @@ class Equilibrate:
             raise ValueError("Portfolio is empty.")
 
         # Validate ETF attributes
-        required_attrs = ["price", "amount_invested", "target_share", "name", "symbol"]
+        required_attrs = [
+            "price_in_portfolio_currency",
+            "amount_invested",
+            "target_share",
+            "name",
+            "symbol",
+        ]
         for etf in etfs:
             for attr in required_attrs:
                 if not hasattr(etf, attr):
@@ -54,13 +60,14 @@ class Equilibrate:
                     raise ValueError(f"ETF object missing required attribute: {attr}")
 
         investments = cp.Variable(n, integer=True)
-        price_matrix = np.diag([etf.price for etf in etfs])
+        price_matrix = np.diag([etf.price_in_portfolio_currency for etf in etfs])
         invested_amounts = np.array([etf.amount_invested for etf in etfs])
         target_shares = np.array([etf.target_share for etf in etfs])
 
         constraints = [
             investments >= 0,
-            cp.sum(price_matrix @ investments) >= min_percent_to_invest * investment_amount,
+            cp.sum(price_matrix @ investments)
+            >= min_percent_to_invest * investment_amount,
             cp.sum(price_matrix @ investments) <= investment_amount,
         ]
 
@@ -104,7 +111,9 @@ class Equilibrate:
 
         logging.info("Amount to spend and final share of each ETF:")
         for i, etf in enumerate(etfs):
-            logging.info(f"  {etf.name}: {etf.amount_to_invest:.2f}{etf.symbol}, Final share = {etf.final_share:.4f}")
+            logging.info(
+                f"  {etf.name}: {etf.amount_to_invest:.2f}{etf.symbol}, Final share = {etf.final_share:.4f}"
+            )
 
         total_amounts = {}
         for etf in etfs:
