@@ -41,7 +41,7 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
 Clone the repository from Github
 ```
-git clone git@github.com:PhDFlo/ETF-Optimizer.git
+git clone git@github.com:PhDFlo/Portfolio-Balancer.git
 ```
 
 In the `Portfolio-Balancer` folder create the python environment using [uv](https://github.com/astral-sh/uv):
@@ -53,7 +53,7 @@ uv pip install -r requirements.txt
 
 ## Gradio interface Usage
 
-To facilitate the use of the ETF-Optimizer tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
+To facilitate the use of the Portfolio-Balancer tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
 
 ```
 * Running on local URL:  http://127.0.0.1:7860
@@ -63,10 +63,10 @@ To facilitate the use of the ETF-Optimizer tool a Gradio interface is available 
 Open the url in any browser.
 
 <p align="center">
-  <img src="images/gradio_interface.png" alt="ETF-Optimizer Logo" width="100%">
+  <img src="images/gradio_interface.png" alt="Gradio interface image" width="100%">
 </p>
 
-- To create your ETF portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
+- To create your securities portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
 - Refresh the list of available files by clicking on the `Refresh available files` button and select your file.
 - Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
 - Select the investment amount you want to add to your portfolio and click on the `New Investment Amount (€)` button. Default is 500€.
@@ -76,11 +76,15 @@ Open the url in any browser.
 ## Python Example Usage
 
 ```python
-from DCA.ETF import ETF
-from DCA.Portfolio import PortfolioETF
+import logging
+from PBalance.Security import Security
+from PBalance.Portfolio import Portfolio
+from PBalance.Equilibrate import Equilibrate
+
+logging.basicConfig(level=logging.INFO)
 
 def main():
-    # Create ETF instances
+    # Create security instances
     security1 = Security(
         name="Amundi MSCI World UCITS Security",
         ticker="AMDW",
