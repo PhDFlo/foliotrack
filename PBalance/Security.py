@@ -14,17 +14,15 @@ class Security:
     name: str  # Security name
     ticker: str = "DCAM"  # Security ticker symbol
     currency: str = "EUR"  # Security currency, either "EUR" or "USD"
-    symbol: str = field(init=False)  # Symbol of the Security currency
+    symbol: str = "€"  # Symbol of the Security currency
     exchange_rate: float = 1.0  # Exchange rate to portfolio currency
     price_in_security_currency: float = 500.0  # Security price in its currency
-    price_in_portfolio_currency: float = field(
-        init=False
-    )  # Security price in portfolio currency
+    price_in_portfolio_currency: float = 500.0  # Security price in portfolio currency
     yearly_charge: float = 0.2  # Yearly charge in percentage
     number_held: float = 0.0  # Number of Security units held
     number_to_buy: float = 0.0  # Number of Security units to buy
     amount_to_invest: float = 0.0  # Amount to invest in this Security
-    amount_invested: float = field(init=False)  # Total amount invested in this Security
+    amount_invested: float = 0.0  # Total amount invested in this Security
     target_share: float = 1.0  # Target share of the Security in the portfolio
     actual_share: float = 0.0  # Actual share of the Security in the portfolio
     final_share: float = 0.0  # Final share of the Security after investment
@@ -112,7 +110,7 @@ class Security:
                     self.price_in_security_currency * self.exchange_rate
                 )
                 self.amount_invested = (
-                    self.number_held * self.price_in_security_currency
+                    self.number_held * self.price_in_portfolio_currency
                 )
         except Exception as e:
             logging.error(f"Could not update price for {self.ticker}: {e}")
@@ -144,13 +142,23 @@ class Security:
         Deserialize Security from a JSON-compatible dict.
         """
         return Security(
-            name=data["name"],
+            name=data.get("name", "Unnamed Security"),
             ticker=data.get("ticker", "DCAM"),
             currency=data.get("currency", "EUR"),
+            symbol=data.get("symbol", "€"),
+            exchange_rate=float(data.get("exchange_rate", 1.0)),
             price_in_security_currency=float(
                 data.get("price_in_security_currency", 500.0)
             ),
+            price_in_portfolio_currency=float(
+                data.get("price_in_portfolio_currency", 500.0)
+            ),
             yearly_charge=float(data.get("yearly_charge", 0.2)),
-            target_share=float(data.get("target_share", 1.0)),
             number_held=float(data.get("number_held", 0.0)),
+            number_to_buy=float(data.get("number_to_buy", 0.0)),
+            amount_to_invest=float(data.get("amount_to_invest", 0.0)),
+            amount_invested=float(data.get("amount_invested", 0.0)),
+            target_share=float(data.get("target_share", 1.0)),
+            actual_share=float(data.get("actual_share", 0.0)),
+            final_share=float(data.get("final_share", 0.0)),
         )

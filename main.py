@@ -73,8 +73,8 @@ def use_existing_portfolio():
     )
 
     # Buy some Securitys
-    portfolio.buy_security("VUSA.AS", 1.0)
-    portfolio.buy_security("EIMI.L", 9.0, buy_price=210.0)
+    # portfolio.buy_security("VUSA.AS", 1.0)
+    # portfolio.buy_security("EIMI.L", 9.0, buy_price=210.0)
 
     # Write staged purchases for Wealthfolio import
     portfolio.purchases_to_wealthfolio_csv("Purchases/new_purchases_example.csv")

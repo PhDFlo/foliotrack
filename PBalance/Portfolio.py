@@ -77,6 +77,7 @@ class Portfolio:
             security.update_price_from_yfinance()
 
     def to_json(self, filepath: str) -> None:
+        self.compute_actual_shares()  # Ensure shares are up to date
         try:
             with open(filepath, "w") as f:
                 json.dump(

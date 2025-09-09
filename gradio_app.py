@@ -20,8 +20,10 @@ def update_file_explorer_2():
 
 def read_portfolio(filename):
     global portfolio
+    print(filename)
     portfolio = Portfolio.from_json(filename)
     info = portfolio.get_portfolio_info()
+    print(info)
     # Return as list of lists for Gradio table display
     return [
         [
@@ -30,8 +32,8 @@ def read_portfolio(filename):
                 "name",
                 "ticker",
                 "currency",
-                "price",
-                "yearly_charge",
+                "price_in_security_currency",
+                "actual_share",
                 "target_share",
                 "amount_invested",
                 "number_held",
@@ -53,8 +55,8 @@ def optimize_portfolio(security_data, new_investment, min_percent):
             name=security[0],
             ticker=security[1],
             currency=security[2],
-            price=float(security[3]),
-            yearly_charge=float(security[4]),
+            price_in_security_currency=float(security[3]),
+            actual_share=float(security[4]),
             target_share=float(security[5]),
             number_held=float(security[7]),
         )
@@ -74,7 +76,7 @@ def optimize_portfolio(security_data, new_investment, min_percent):
                 "Name": security_info.get("name"),
                 "Ticker": security_info.get("ticker"),
                 "Currency": security_info.get("currency"),
-                "Price": security_info.get("price"),
+                "Price": security_info.get("price_in_security_currency"),
                 "Target Share": security_info.get("target_share"),
                 "Actual Share": security_info.get("actual_share"),
                 "Final Share": security_info.get("final_share"),
@@ -87,6 +89,7 @@ def optimize_portfolio(security_data, new_investment, min_percent):
 
 def update_security_prices():
     portfolio.update_security_prices()
+    portfolio.compute_actual_shares()
     info = portfolio.get_portfolio_info()
     return (
         pd.DataFrame(
@@ -95,8 +98,8 @@ def update_security_prices():
                 "name",
                 "ticker",
                 "currency",
-                "price",
-                "yearly_charge",
+                "price_in_security_currency",
+                "actual_share",
                 "target_share",
                 "amount_invested",
                 "number_held",
@@ -146,7 +149,7 @@ with gr.Blocks() as demo:
                     "Ticker",
                     "Currency",
                     "Price",
-                    "Yearly Charge",
+                    "Actual Share",
                     "Target Share",
                     "Amount Invested",
                     "Number Held",

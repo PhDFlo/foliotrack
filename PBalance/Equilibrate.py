@@ -123,13 +123,11 @@ class Equilibrate:
                 f"  {security.name}: {security.amount_to_invest:.2f}{security.symbol}, Final share = {security.final_share:.4f}"
             )
 
-        total_amounts = {}
+        total_amount = 0.0
         for security in securities:
-            symbol = security.symbol
-            total_amounts.setdefault(symbol, 0)
-            total_amounts[symbol] += security.amount_to_invest
-        logging.info("Total amount to invest:")
-        for symbol, amount in total_amounts.items():
-            logging.info(f"  {amount:.2f}{symbol}")
+            total_amount += security.amount_to_invest
+        logging.info(
+            f"Total amount to invest: {total_amount:.2f}{security.symbol}"
+        )  # Not satisfying if there are multiple currencies
 
         return security_counts, total_to_invest, final_shares
