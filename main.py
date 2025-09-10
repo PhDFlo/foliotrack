@@ -18,8 +18,8 @@ def portfolio_from_scratch():
         number_held=20.0,
     )
     security2 = Security(
-        name="Vanguard S&P 500 UCITS Security",
-        ticker="VUSA.AS",
+        name="NVIDIA Corporation",
+        ticker="NVDA",
         currency="USD",
         price_in_security_currency=300.0,
         yearly_charge=0.1,
@@ -49,7 +49,7 @@ def portfolio_from_scratch():
 
     # Solve for equilibrium
     Equilibrate.solve_equilibrium(
-        portfolio.securities, investment_amount=1000.0, min_percent_to_invest=0.99
+        portfolio, investment_amount=500.0, min_percent_to_invest=0.99
     )
 
     # Log portfolio info
@@ -69,12 +69,12 @@ def use_existing_portfolio():
 
     # Solve for equilibrium
     Equilibrate.solve_equilibrium(
-        portfolio.securities, investment_amount=1000.0, min_percent_to_invest=0.99
+        portfolio, investment_amount=1000.0, min_percent_to_invest=0.99
     )
 
     # Buy some Securitys
-    # portfolio.buy_security("VUSA.AS", 1.0)
-    # portfolio.buy_security("EIMI.L", 9.0, buy_price=210.0)
+    portfolio.buy_security("NVDA", 1.0)
+    portfolio.buy_security("EIMI.L", 9.0, buy_price=210.0)
 
     # Write staged purchases for Wealthfolio import
     portfolio.purchases_to_wealthfolio_csv("Purchases/new_purchases_example.csv")

@@ -20,10 +20,8 @@ def update_file_explorer_2():
 
 def read_portfolio(filename):
     global portfolio
-    print(filename)
     portfolio = Portfolio.from_json(filename)
     info = portfolio.get_portfolio_info()
-    print(info)
     # Return as list of lists for Gradio table display
     return [
         [
@@ -64,7 +62,7 @@ def optimize_portfolio(security_data, new_investment, min_percent):
     portfolio.compute_actual_shares()
 
     Equilibrate.solve_equilibrium(
-        portfolio.securities,
+        portfolio,
         investment_amount=float(new_investment),
         min_percent_to_invest=float(min_percent),
     )
@@ -130,11 +128,11 @@ with gr.Blocks() as demo:
     with gr.Tabs():
         with gr.TabItem("Portfolio & Update Prices"):
 
-            # File explorer to select Portfolio CSV
+            # File explorer to select Portfolio JSON
             inp = gr.FileExplorer(
                 root_dir="./Portfolios",
-                value="investment.csv",
-                label="CSV Files available",
+                value="investment_example.json",
+                label="JSON Files available",
                 file_count="single",
             )
             btn_refresh = gr.Button("Refresh available files")

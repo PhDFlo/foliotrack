@@ -4,6 +4,7 @@ import csv
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
 from .Security import Security
+from forex_python.converter import get_symbol
 
 
 @dataclass
@@ -16,9 +17,13 @@ class Portfolio:
         default_factory=list
     )  # List of Securitys in the portfolio
     currency: str = "EUR"  # Portfolio currency
+    symbol: str = field(init=False)  # Currency symbol
     staged_purchases: List[Dict[str, Any]] = field(
         default_factory=list
     )  # Securitys being bought
+
+    def __post_init__(self):
+        self.symbol = get_symbol(self.currency) or ""
 
     def add_security(self, security: Security) -> None:
         self.securities.append(security)

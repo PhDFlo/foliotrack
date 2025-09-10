@@ -2,7 +2,7 @@ import yfinance as yf
 import logging
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Dict, Any
-from forex_python.converter import CurrencyRates
+from forex_python.converter import get_rate, get_symbol
 
 
 @dataclass
@@ -14,7 +14,7 @@ class Security:
     name: str  # Security name
     ticker: str = "DCAM"  # Security ticker symbol
     currency: str = "EUR"  # Security currency, either "EUR" or "USD"
-    symbol: str = "€"  # Symbol of the Security currency
+    symbol: str = field(init=False)  # Symbol of the Security currency
     exchange_rate: float = 1.0  # Exchange rate to portfolio currency
     price_in_security_currency: float = 500.0  # Security price in its currency
     price_in_portfolio_currency: float = 500.0  # Security price in portfolio currency
@@ -32,18 +32,8 @@ class Security:
         self.price_in_portfolio_currency = (
             self.price_in_security_currency * self.exchange_rate
         )  # Security price in portfolio currency
+        self.symbol = get_symbol(self.currency) or ""
         self.amount_invested = self.number_held * self.price_in_portfolio_currency
-
-        if self.currency.lower() not in ["eur", "usd"]:
-            logging.warning(
-                f"Currency '{self.currency}' is not supported. Only EUR and USD are allowed."
-            )
-        if self.currency.lower() in ["eur", "€"]:
-            self.symbol = "€"
-        elif self.currency.lower() in ["usd", "$"]:
-            self.symbol = "$"
-        else:
-            self.symbol = ""
 
     def __repr__(self) -> str:
         """
@@ -116,11 +106,20 @@ class Security:
             logging.error(f"Could not update price for {self.ticker}: {e}")
 
     def compute_price_in_portfolio_currency(self, portfolio_currency: str) -> None:
+
+        # Add timeout handling for get_rate
+        # import signal
+
+        # def handler(signum, frame):
+        #    raise Exception("Request timed out")
+
+        # signal.signal(signal.SIGALRM, handler)
+        # signal.alarm(5)  # Set timeout to 5 seconds
+
         if self.currency.lower() != portfolio_currency.lower():
-            c = CurrencyRates()
             try:
                 self.exchange_rate = float(
-                    c.get_rate(self.currency.upper(), portfolio_currency.upper())
+                    get_rate(self.currency.upper(), portfolio_currency.upper())
                 )
                 self.price_in_portfolio_currency = (
                     self.price_in_security_currency * self.exchange_rate
@@ -145,7 +144,6 @@ class Security:
             name=data.get("name", "Unnamed Security"),
             ticker=data.get("ticker", "DCAM"),
             currency=data.get("currency", "EUR"),
-            symbol=data.get("symbol", "€"),
             exchange_rate=float(data.get("exchange_rate", 1.0)),
             price_in_security_currency=float(
                 data.get("price_in_security_currency", 500.0)
