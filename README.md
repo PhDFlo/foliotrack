@@ -9,7 +9,7 @@ Portfolio-Balancer is a Python module for optimizing and rebalancing investment 
 - Solver Integration: Leverages [CVXPY](https://www.cvxpy.org/) for convex optimization modeling and [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) as the underlying solver.
 - Real-Time Data Fetching:
   - Security prices via [yfinance](https://github.com/ranaroussi/yfinance) (Yahoo Finance API).
-  - Currency conversion via [forex-python](https://github.com/MicroPyramid/forex-python) for multi-currency portfolios.
+  - Currency conversion via [ecbdata](https://github.com/LucaMingarelli/ecbdata) using the European Central bank data for multi-currency portfolios.
 - Export Compatibility: Generates output in a format compatible with Wealthfolio for seamless portfolio tracking.
 - **Security Contract Comparator tool:** Simulate and compare the evolution of multiple securities investment contracts with customizable fees and taxes, and visualize results interactively.
 
@@ -29,6 +29,7 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
 - `main.py`: Example usage and entry point.
 - `gradio-app.py`: Gradio interface.
+- `PBalance/Currency.py`: Defines the `Currency` class to get currencies informations like symbol et exhchange rate.
 - `PBalance/Security.py`: Defines the `Security` class for representing individual securities.
 - `PBalance/Portfolio.py`: Defines the `Portfolio` class.
 - `PBalance/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
