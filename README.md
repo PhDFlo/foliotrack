@@ -141,64 +141,71 @@ if __name__ == "__main__":
 
 ## Python Example Output
 ```
-ETF 'Amundi MSCI World UCITS ETF' added to portfolio with share 0.5.
-ETF 'Vanguard S&P 500 UCITS ETF' added to portfolio with share 0.2.
-ETF 'iShares Core MSCI Emerging Markets IMI UCITS ETF' added to portfolio with share 0.3.
-
-Verifying portfolio shares...
-Portfolio shares sum equal to 1. Portfolio is complete.
-
-Optimisation status: optimal
-
-Number of each ETF to buy:
-  Amundi MSCI World UCITS ETF: 0
-  Vanguard S&P 500 UCITS ETF: 0
-  iShares Core MSCI Emerging Markets IMI UCITS ETF: 5
-
-Amount to spend and final share of each ETF:
-  Amundi MSCI World UCITS ETF: 0.00€, Final share = 0.4878
-  Vanguard S&P 500 UCITS ETF: 0.00€, Final share = 0.1951
-  iShares Core MSCI Emerging Markets IMI UCITS ETF: 1000.00€, Final share = 0.3171
-
-Total amount to invest: 1000.00€
-
-Portfolio info:
-ETF:
-  name: Amundi MSCI World UCITS ETF
-  ticker: AMDW
-  currency: Euro
-  price: 500.0€
-  fees: 0.2
-  target_share: 0.5
-  amount_invested: 2000.0€
-  actual_share: 0.65
-  number_to_buy: 0
-  amount_to_invest: 0.0€
-  final_share: 0.4878
-ETF:
-  name: Vanguard S&P 500 UCITS ETF
-  ticker: VUSA
-  currency: USD
-  price: 300.0€
-  fees: 0.1
-  target_share: 0.2
-  amount_invested: 800.0€
-  actual_share: 0.26
-  number_to_buy: 0
-  amount_to_invest: 0.0€
-  final_share: 0.1951
-ETF:
-  name: iShares Core MSCI Emerging Markets IMI UCITS ETF
-  ticker: EIMI
-  currency: Euro
-  price: 200.0€
-  fees: 0.25
-  target_share: 0.3
-  amount_invested: 300.0€
-  actual_share: 0.1
-  number_to_buy: 5
-  amount_to_invest: 1000.0€
-  final_share: 0.3171
+INFO:root:Security 'Amundi MSCI World UCITS Security' added to portfolio with share 0.5 and number held 20.0.
+INFO:root:Security 'NVIDIA Corporation' added to portfolio with share 0.2 and number held 1.0.
+INFO:root:Security 'iShares Core MSCI Emerging Markets IMI UCITS Security' added to portfolio with share 0.3 and number held 3.0.
+INFO:root:Portfolio shares sum equal to 1. Portfolio is complete.
+INFO:root:Portfolio saved to Portfolios/investment_example.json
+INFO:root:Portfolio shares sum equal to 1. Portfolio is complete.
+INFO:root:Optimisation status: optimal
+INFO:root:Number of each Security to buy:
+INFO:root:  Amundi MSCI World UCITS Security: 1 units
+INFO:root:  NVIDIA Corporation: 1 units
+INFO:root:  iShares Core MSCI Emerging Markets IMI UCITS Security: 7 units
+INFO:root:Amount to spend and final share of each Security:
+INFO:root:  Amundi MSCI World UCITS Security: 45.61€, Final share = 0.5678
+INFO:root:  NVIDIA Corporation: 151.75€, Final share = 0.1799
+INFO:root:  iShares Core MSCI Emerging Markets IMI UCITS Security: 297.99€, Final share = 0.2523
+INFO:root:Total amount to invest: 495.35€
+INFO:root:Portfolio info:
+INFO:root:Security:
+INFO:root:  name: Amundi MSCI World UCITS Security
+INFO:root:  ticker: AMDW
+INFO:root:  currency: EUR
+INFO:root:  symbol: €
+INFO:root:  exchange_rate: 1.0
+INFO:root:  price_in_security_currency: 45.61
+INFO:root:  price_in_portfolio_currency: 45.61
+INFO:root:  yearly_charge: 0.2
+INFO:root:  number_held: 20.0
+INFO:root:  number_to_buy: 1
+INFO:root:  amount_to_invest: 45.61
+INFO:root:  amount_invested: 912.2
+INFO:root:  target_share: 0.5
+INFO:root:  actual_share: 0.77
+INFO:root:  final_share: 0.5678
+INFO:root:Security:
+INFO:root:  name: NVIDIA Corporation
+INFO:root:  ticker: NVDA
+INFO:root:  currency: USD
+INFO:root:  symbol: $
+INFO:root:  exchange_rate: 0.8533879501621437
+INFO:root:  price_in_security_currency: 177.82
+INFO:root:  price_in_portfolio_currency: 151.7494452978324
+INFO:root:  yearly_charge: 0.1
+INFO:root:  number_held: 1.0
+INFO:root:  number_to_buy: 1
+INFO:root:  amount_to_invest: 151.75
+INFO:root:  amount_invested: 151.7494452978324
+INFO:root:  target_share: 0.2
+INFO:root:  actual_share: 0.13
+INFO:root:  final_share: 0.1799
+INFO:root:Security:
+INFO:root:  name: iShares Core MSCI Emerging Markets IMI UCITS Security
+INFO:root:  ticker: EIMI.L
+INFO:root:  currency: EUR
+INFO:root:  symbol: €
+INFO:root:  exchange_rate: 1.0
+INFO:root:  price_in_security_currency: 42.57
+INFO:root:  price_in_portfolio_currency: 42.57
+INFO:root:  yearly_charge: 0.25
+INFO:root:  number_held: 3.0
+INFO:root:  number_to_buy: 7
+INFO:root:  amount_to_invest: 297.99
+INFO:root:  amount_invested: 127.71000000000001
+INFO:root:  target_share: 0.3
+INFO:root:  actual_share: 0.11
+INFO:root:  final_share: 0.2523
 ```
 
 ## Tools
@@ -229,7 +236,7 @@ The script will print the results for each contract and plot a graph comparing t
 - matplotlib
 - pyQt6
 - yfinance
-- forex-python
+- ecbdata
 
 
 ## License
