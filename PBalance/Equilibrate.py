@@ -2,6 +2,7 @@ import numpy as np
 import cvxpy as cp
 import logging
 from typing import List, Tuple, Any
+from .Portfolio import Portfolio
 
 
 class Equilibrate:
@@ -11,7 +12,7 @@ class Equilibrate:
 
     @staticmethod
     def solve_equilibrium(
-        securities: List[Any],
+        portfolio: Portfolio,
         investment_amount: float = 1000.0,
         min_percent_to_invest: float = 0.99,
     ) -> Tuple[np.ndarray, float, np.ndarray]:
@@ -40,6 +41,9 @@ class Equilibrate:
             ValueError: If Security list is empty or required attributes are missing.
             RuntimeError: If optimization fails.
         """
+
+        securities = portfolio.securities
+
         n = len(securities)
         if n == 0:
             logging.error("Portfolio is empty.")
@@ -120,14 +124,14 @@ class Equilibrate:
         logging.info("Amount to spend and final share of each Security:")
         for i, security in enumerate(securities):
             logging.info(
-                f"  {security.name}: {security.amount_to_invest:.2f}{security.symbol}, Final share = {security.final_share:.4f}"
+                f"  {security.name}: {security.amount_to_invest:.2f}{portfolio.symbol}, Final share = {security.final_share:.4f}"
             )
 
         total_amount = 0.0
         for security in securities:
             total_amount += security.amount_to_invest
         logging.info(
-            f"Total amount to invest: {total_amount:.2f}{security.symbol}"
+            f"Total amount to invest: {total_amount:.2f}{portfolio.symbol}"
         )  # Not satisfying if there are multiple currencies
 
         return security_counts, total_to_invest, final_shares

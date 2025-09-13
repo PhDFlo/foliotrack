@@ -8,7 +8,7 @@ wheels/
 
 # Portfolio files
 Portfolios/*
-!Portfolios/investment.json
+!Portfolios/investment_example.json
 
 # Purchase files
 Purchases/*
@@ -17,3 +17,6 @@ Purchases/*
 # Virtual environments
 .venv
 uv.lock
+
+# VScode
+.vscode/*
