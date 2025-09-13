@@ -2,7 +2,7 @@ import yfinance as yf
 import logging
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Dict, Any
-from forex_python.converter import get_rate, get_symbol
+from .Currency import get_symbol, get_rate_between
 
 
 @dataclass
@@ -119,7 +119,7 @@ class Security:
         if self.currency.lower() != portfolio_currency.lower():
             try:
                 self.exchange_rate = float(
-                    get_rate(self.currency.upper(), portfolio_currency.upper())
+                    get_rate_between(self.currency.upper(), portfolio_currency.upper())
                 )
                 self.price_in_portfolio_currency = (
                     self.price_in_security_currency * self.exchange_rate

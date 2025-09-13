@@ -4,7 +4,7 @@ import csv
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
 from .Security import Security
-from forex_python.converter import get_symbol
+from .Currency import get_symbol
 
 
 @dataclass
