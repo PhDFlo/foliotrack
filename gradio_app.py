@@ -149,7 +149,7 @@ with gr.Blocks() as demo:
                     "Price",
                     "Actual Share",
                     "Target Share",
-                    "Amount Invested",
+                    f"Amount Invested ({portfolio.symbol})",
                     "Number Held",
                 ],
                 datatype=[
@@ -166,7 +166,7 @@ with gr.Blocks() as demo:
                 col_count=8,
                 type="numpy",
                 label="Security List (add or edit rows)",
-                column_widths=["15%", "5%", "5%", "5%", "5%", "5%", "5%", "5%"],
+                column_widths=["15%", "3%", "3%", "3%", "4%", "4%", "5%", "4%"],
             )
             with gr.Row():
                 with gr.Column():

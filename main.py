@@ -93,4 +93,4 @@ def use_existing_portfolio():
 
 if __name__ == "__main__":
     portfolio_from_scratch()
-    use_existing_portfolio()
+    #use_existing_portfolio()

@@ -29,8 +29,8 @@ class Security:
 
     def __post_init__(self):
 
-        self.price_in_portfolio_currency = (
-            self.price_in_security_currency * self.exchange_rate
+        self.price_in_portfolio_currency = round(
+            self.price_in_security_currency * self.exchange_rate,2
         )  # Security price in portfolio currency
         self.symbol = get_symbol(self.currency) or ""
         self.amount_invested = self.number_held * self.price_in_portfolio_currency
@@ -99,8 +99,9 @@ class Security:
                 self.price_in_portfolio_currency = (
                     self.price_in_security_currency * self.exchange_rate
                 )
-                self.amount_invested = (
-                    self.number_held * self.price_in_portfolio_currency
+                
+                self.amount_invested = round(
+                    self.number_held * self.price_in_portfolio_currency,2
                 )
         except Exception as e:
             logging.error(f"Could not update price for {self.ticker}: {e}")
@@ -121,9 +122,9 @@ class Security:
                 self.exchange_rate = float(
                     get_rate_between(self.currency.upper(), portfolio_currency.upper())
                 )
-                self.price_in_portfolio_currency = (
+                self.price_in_portfolio_currency = round(float(
                     self.price_in_security_currency * self.exchange_rate
-                )
+                ),2)
             except Exception as e:
                 logging.error(
                     f"Could not get exchange rate for {self.currency} to {portfolio_currency}: {e}"

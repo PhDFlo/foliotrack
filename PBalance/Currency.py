@@ -1,7 +1,7 @@
 import json, os
 import pandas as pd
 from ecbdata import ecbdata
-
+import logging
 
 class Currency:
 
@@ -111,7 +111,8 @@ class Currency:
         # Thus:
         #   1 unit of from_currency = (1 / rate_from) * rate_to units of to_currency
         #
-        cross_rate = (1 / rate_from) * rate_to
+        cross_rate = round((1 / rate_from) * rate_to,4)
+        logging.info(f"Exchange rate {from_currency} → {to_currency} on {date or 'latest'}: {cross_rate}")
         return cross_rate
 
 

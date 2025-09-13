@@ -17,3 +17,6 @@ Purchases/*
 # Virtual environments
 .venv
 uv.lock
+
+# VScode
+.vscode/*
