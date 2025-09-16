@@ -254,7 +254,7 @@ with gr.Blocks() as demo:
                     )
             with gr.Row():
                 with gr.Column():
-                    buy_price = gr.Number(label="Buy Price", value=0.0)
+                    buy_price = gr.Number(label="Unit price", value=0.0)
                 with gr.Column():
                     fee = gr.Number(
                         label="Transaction Fee (in the currency: €, $, ...)",
