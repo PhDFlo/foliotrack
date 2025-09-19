@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/logo.jpg" alt="Portfolio-Manager Logo" width="80%">
+  <img src="images/logo_portfolio_manager.jpg" alt="Portfolio-Manager Logo" width="80%">
 </p>
 
 Portfolio-Manager is a Python module for managing, optimizing and rebalancing investment portfolios comprising any securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the module computes the optimal investment adjustments required to align the portfolio with the desired strategy.
