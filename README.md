@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="images/logo.png" alt="Portfolio-Balancer Logo" width="80%">
+  <img src="images/logo.jpg" alt="Portfolio-Manager Logo" width="80%">
 </p>
 
-Portfolio-Balancer is a Python module for optimizing and rebalancing investment portfolios comprising any securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the module computes the optimal investment adjustments required to align the portfolio with the desired strategy.
+Portfolio-Manager is a Python module for managing, optimizing and rebalancing investment portfolios comprising any securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the module computes the optimal investment adjustments required to align the portfolio with the desired strategy.
 
 ## Key Features
 - Mathematical Optimization: Uses Mixed-Integer Quadratic Programming (MIQP) to determine the most efficient asset allocation while respecting constraints (e.g., lot sizes, transaction costs).
@@ -40,10 +40,10 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
 Clone the repository from Github
 ```
-git clone git@github.com:PhDFlo/Portfolio-Balancer.git
+git clone git@github.com:PhDFlo/Portfolio-Manager.git
 ```
 
-In the `Portfolio-Balancer` folder create the python environment using [uv](https://github.com/astral-sh/uv):
+In the `Portfolio-Manager` folder create the python environment using [uv](https://github.com/astral-sh/uv):
 ```
 uv venv
 source .venv/bin/activate
@@ -52,7 +52,7 @@ uv pip install -r requirements.txt
 
 ## Gradio interface Usage
 
-To facilitate the use of the Portfolio-Balancer tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
+To facilitate the use of the Portfolio-Manager tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
 
 ```
 * Running on local URL:  http://127.0.0.1:7860
