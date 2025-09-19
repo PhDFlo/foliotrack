@@ -18,5 +18,6 @@ Purchases/*
 .venv
 uv.lock
 
-# VScode
+# Utilities
 .vscode/*
+.clinerules/*
