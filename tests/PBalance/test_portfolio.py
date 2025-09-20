@@ -1,4 +1,3 @@
-import pytest
 from PBalance.Portfolio import Portfolio
 from PBalance.Security import Security
 

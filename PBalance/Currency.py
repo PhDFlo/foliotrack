@@ -1,7 +1,9 @@
-import json, os
+import json
+import os
 import pandas as pd
 from ecbdata import ecbdata
 import logging
+
 
 class Currency:
 
@@ -41,7 +43,7 @@ class Currency:
         if currency_dict:
             return currency_dict.get('cc')
         return None
-    
+
     def get_rate_between(self, from_currency: str, to_currency: str, date: str = None) -> float:
         """
         Returns the exchange rate from `from_currency` to `to_currency`

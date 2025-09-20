@@ -56,7 +56,7 @@ def portfolio_from_scratch():
     info = portfolio.get_portfolio_info()
     logging.info("Portfolio info:")
     for security_info in info:
-        logging.info(f"Security:")
+        logging.info("Security:")
         for k, v in security_info.items():
             logging.info(f"  {k}: {v}")
 
@@ -83,7 +83,7 @@ def use_existing_portfolio():
     info = portfolio.get_portfolio_info()
     logging.info("Portfolio info:")
     for security_info in info:
-        logging.info(f"Security:")
+        logging.info("Security:")
         for k, v in security_info.items():
             logging.info(f"  {k}: {v}")
 

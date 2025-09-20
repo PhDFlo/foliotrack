@@ -2,7 +2,6 @@ import gradio as gr
 from PBalance.Security import Security
 from PBalance.Portfolio import Portfolio
 from PBalance.Equilibrate import Equilibrate
-import numpy as np
 import pandas as pd
 import datetime
 

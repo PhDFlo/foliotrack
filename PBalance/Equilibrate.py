@@ -1,7 +1,7 @@
 import numpy as np
 import cvxpy as cp
 import logging
-from typing import List, Tuple, Any
+from typing import Tuple
 from .Portfolio import Portfolio
 
 
