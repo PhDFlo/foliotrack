@@ -57,7 +57,7 @@ def test_verify_target_share_sum():
     )
     portfolio.add_security(security1)
     portfolio.add_security(security2)
-    assert portfolio.verify_target_share_sum() == True
+    assert portfolio.verify_target_share_sum() is True
 
 
 def test_buy_security():
