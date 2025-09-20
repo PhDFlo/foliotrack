@@ -31,9 +31,9 @@ class Portfolio:
             f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
         )
 
-    def remove_security(self, symbol: str) -> None:
+    def remove_security(self, ticker: str) -> None:
         self.securities = [
-            security for security in self.securities if security.symbol != symbol
+            security for security in self.securities if security.ticker != ticker
         ]
 
     def get_portfolio_info(self) -> List[Dict[str, Any]]:

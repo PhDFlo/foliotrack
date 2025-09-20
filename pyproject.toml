@@ -3,7 +3,7 @@ name = "Portfolio-Balancer"
 version = "2.0.1"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "numpy",
     "pyscipopt",
@@ -14,4 +14,8 @@ dependencies = [
     "pyQt6",
     "yfinance",
     "ecbdata",
+    "pytest",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = "."
