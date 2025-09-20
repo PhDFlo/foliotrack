@@ -3,6 +3,12 @@ from PBalance.Security import Security
 
 
 def test_add_security():
+    """
+    Test adding a Security to a Portfolio.
+
+    Adding a Security to a Portfolio should increase the number of Securities in the Portfolio by 1.
+    The added Security should be the first element in the list of Securities in the Portfolio.
+    """
     portfolio = Portfolio(currency="EUR")
     security = Security(
         name="Security1",
@@ -17,6 +23,12 @@ def test_add_security():
 
 
 def test_remove_security():
+    """
+    Test removing a Security from a Portfolio.
+
+    Removing a Security from a Portfolio should decrease the number of securities in the Portfolio by 1.
+    The removed Security should not be in the list of securities in the Portfolio.
+    """
     portfolio = Portfolio(currency="EUR")
     security1 = Security(
         name="Security1",
@@ -40,6 +52,11 @@ def test_remove_security():
 
 
 def test_verify_target_share_sum():
+    """
+    Test the verify_target_share_sum method of a Portfolio.
+
+    The method should return True if the target shares of all Securities in the Portfolio sum to 1.0.
+    """
     portfolio = Portfolio(currency="EUR")
     security1 = Security(
         name="Security1",
@@ -61,6 +78,12 @@ def test_verify_target_share_sum():
 
 
 def test_buy_security():
+    """
+    Test buying a Security in a Portfolio.
+
+    Buying a Security in a Portfolio should increase the number held of the Security by the specified quantity.
+    The amount invested in the Security should be equal to the quantity multiplied by the buy price.
+    """
     portfolio = Portfolio(currency="EUR")
     security = Security(
         name="Security1",

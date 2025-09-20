@@ -2,6 +2,11 @@ from PBalance.Security import Security
 
 
 def test_buy_security():
+    """
+    Test the buy method of Security.
+
+    The buy method should increase the number of held units and the amount invested according to the specified quantity and buy price.
+    """
     security = Security(
         name="Security1",
         ticker="SEC1",
@@ -15,6 +20,11 @@ def test_buy_security():
 
 
 def test_compute_actual_share():
+    """
+    Test the compute_actual_share method of Security.
+
+    The method should compute and update the actual share of this Security in the portfolio.
+    """
     security = Security(
         name="Security1",
         ticker="SEC1",
@@ -28,6 +38,11 @@ def test_compute_actual_share():
 
 
 def test_update_price_from_yfinance():
+    """
+    Test the update_price_from_yfinance method of Security.
+
+    The method should update the Security price using yfinance based on its ticker, and update amount invested.
+    """
     security = Security(
         name="Security1",
         ticker="SEC1",

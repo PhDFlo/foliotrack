@@ -28,7 +28,12 @@ class Security:
     final_share: float = 0.0  # Final share of the Security after investment
 
     def __post_init__(self):
+        """
+        Initialize the Security instance with the given attributes.
 
+        Computes the Security price in the portfolio currency and
+        updates the amount invested in the Security.
+        """
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
         )  # Security price in portfolio currency
@@ -107,16 +112,12 @@ class Security:
             logging.error(f"Could not update price for {self.ticker}: {e}")
 
     def compute_price_in_portfolio_currency(self, portfolio_currency: str) -> None:
-
-        # Add timeout handling for get_rate
-        # import signal
-
-        # def handler(signum, frame):
-        #    raise Exception("Request timed out")
-
-        # signal.signal(signal.SIGALRM, handler)
-        # signal.alarm(5)  # Set timeout to 5 seconds
-
+        """
+        Compute and update the price of this Security in the specified portfolio currency.
+        If the currency of this Security is different from the portfolio currency, it will
+        fetch the exchange rate and update the price accordingly.
+        If an error occurs while fetching the exchange rate, it will log the error.
+        """
         if self.currency.lower() != portfolio_currency.lower():
             try:
                 self.exchange_rate = float(

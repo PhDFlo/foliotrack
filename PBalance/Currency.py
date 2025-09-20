@@ -8,10 +8,28 @@ import logging
 class Currency:
 
     def __init__(self):
+        """
+        Initialize Currency object.
+
+        This method initializes a Currency object by setting its internal
+        currency data to None.
+        """
         self.__currency_data = None
 
     @property
     def _currency_data(self):
+        """
+        Internal currency data.
+
+        This property stores the internal currency data of the Currency
+        object. The data is read from the file data/currencies.json
+        located in the same directory as this file. The data is stored
+        as a JSON object containing a list of dictionaries, where each
+        dictionary represents a currency with its ISO 4217 currency code
+        ("cc"), symbol ("symbol"), and name ("name"). The data is
+        read from the file when the property is accessed for the first
+        time and is stored internally for subsequent accesses.
+        """
         if self.__currency_data is None:
             file_path = os.path.dirname(os.path.abspath(__file__))
             with open(file_path + "/data/currencies.json", encoding="utf-8") as f:
@@ -19,30 +37,97 @@ class Currency:
         return self.__currency_data
 
     def _get_data(self, currency_code):
+        """
+        Get a currency dictionary by its ISO 4217 currency code.
+
+        Parameters
+        ----------
+        currency_code : str
+            The ISO 4217 currency code.
+
+        Returns
+        -------
+        dict or None
+            A dictionary containing the currency data if the currency code
+            is found, otherwise None.
+        """
         currency_dict = next(
             (item for item in self._currency_data if item["cc"] == currency_code), None
         )
         return currency_dict
 
     def _get_data_from_symbol(self, symbol):
+        """
+        Get a currency dictionary by its symbol.
+
+        Parameters
+        ----------
+        symbol : str
+            The symbol of the currency.
+
+        Returns
+        -------
+        dict or None
+            A dictionary containing the currency data if the symbol is
+            found, otherwise None.
+        """
         currency_dict = next(
             (item for item in self._currency_data if item["symbol"] == symbol), None
         )
         return currency_dict
 
     def get_symbol(self, currency_code):
+        """
+        Get the symbol of a currency given its ISO 4217 currency code.
+
+        Parameters
+        ----------
+        currency_code : str
+            The ISO 4217 currency code.
+
+        Returns
+        -------
+        str or None
+            The symbol of the currency if the currency code is found, otherwise None.
+        """
         currency_dict = self._get_data(currency_code)
         if currency_dict:
             return currency_dict.get("symbol")
         return None
 
     def get_currency_name(self, currency_code):
+        """
+        Get the name of a currency given its ISO 4217 currency code.
+
+        Parameters
+        ----------
+        currency_code : str
+            The ISO 4217 currency code.
+
+        Returns
+        -------
+        str or None
+            The name of the currency if the currency code is found, otherwise None.
+        """
         currency_dict = self._get_data(currency_code)
         if currency_dict:
             return currency_dict.get("name")
         return None
 
     def get_currency_code_from_symbol(self, symbol):
+        """
+        Get the ISO 4217 currency code of a currency given its symbol.
+
+        Parameters
+        ----------
+        symbol : str
+            The symbol of the currency.
+
+        Returns
+        -------
+        str or None
+            The ISO 4217 currency code of the currency if the symbol is found, otherwise None.
+        """
         currency_dict = self._get_data_from_symbol(symbol)
         if currency_dict:
             return currency_dict.get("cc")

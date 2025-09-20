@@ -6,6 +6,9 @@ from PBalance.Security import Security
 
 def test_solve_equilibrium():
     # Create a portfolio with some securities
+    """
+    Test solving for equilibrium given a portfolio and an investment amount.
+    """
     portfolio = Portfolio(currency="EUR")
     security1 = Security(
         name="Security1",
