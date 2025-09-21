@@ -16,7 +16,6 @@ Purchases/*
 
 # Virtual environments
 .venv
-uv.lock
 
 # Utilities
 .vscode/*
