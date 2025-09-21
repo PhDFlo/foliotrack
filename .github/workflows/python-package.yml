@@ -19,10 +19,10 @@ jobs:
         python-version: ["3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -35,9 +35,7 @@ jobs:
     - name: Install the project
       run: |
         uv sync --locked --all-extras --dev
-
-    - name: flake8 Lint
-      uses: py-actions/flake8@v2
+        uv pip install flake8
 
     - name: Lint with flake8
       run: |
