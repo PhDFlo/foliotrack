@@ -6,7 +6,6 @@ import logging
 
 
 class Currency:
-
     def __init__(self):
         """
         Initialize Currency object.

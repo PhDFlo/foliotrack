@@ -126,7 +126,6 @@ with gr.Blocks() as demo:
     gr.Markdown("# Security Portfolio Optimizer")
     with gr.Tabs():
         with gr.TabItem("Portfolio & Update Prices"):
-
             # File explorer to select Portfolio JSON
             inp = gr.FileExplorer(
                 root_dir="./Portfolios",
@@ -193,7 +192,6 @@ with gr.Blocks() as demo:
             )
 
         with gr.TabItem("Equilibrium, Buy & Export"):
-
             # New investment amount and minimum percent to invest
             with gr.Row():
                 with gr.Column():
