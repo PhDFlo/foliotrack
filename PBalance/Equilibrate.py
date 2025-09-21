@@ -238,7 +238,8 @@ class Equilibrate:
         logging.info("Amount to spend and final share of each Security:")
         for i, security in enumerate(securities):
             logging.info(
-                f"  {security.name}: {security.amount_to_invest:.2f}{portfolio_symbol}, Final share = {security.final_share:.4f}"
+                f"  {security.name}: {security.amount_to_invest:.2f}{portfolio_symbol}, \
+                    Final share = {security.final_share:.4f}"
             )
 
         total_amount = 0.0
