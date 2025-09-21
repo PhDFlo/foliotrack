@@ -136,7 +136,8 @@ def parse_args():
         "--contract",
         action="append",
         required=True,
-        help='Contract definition: "label,security_fee,bank_fee,capgains_tax". Example: --contract "A,0.0059,0.006,0.172" --contract "B,0.0012,0.00,0.30"',
+        help='Contract definition: "label,security_fee,bank_fee,capgains_tax". \
+            Example: --contract "A,0.0059,0.006,0.172" --contract "B,0.0012,0.00,0.30"',
     )
     return p.parse_args()
 
@@ -195,7 +196,8 @@ def main():
         after_tax_curves.append(after_tax_curve)
         labels.append(contract["label"])
         print(
-            f"Contract {contract['label']}: pre-withdrawal = {series[-1]:,.2f}, invested = {invested:,.2f}, after-tax = {after_tax_curve[-1]:,.2f}"
+            f"Contract {contract['label']}: pre-withdrawal = {series[-1]:,.2f}, \
+                invested = {invested:,.2f}, after-tax = {after_tax_curve[-1]:,.2f}"
         )
 
     xs = np.arange(0, args.years + 1)

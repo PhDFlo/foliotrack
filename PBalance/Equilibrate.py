@@ -125,7 +125,8 @@ class Equilibrate:
             n (int): Number of securities.
 
         Returns:
-            Tuple[cp.Variable, np.ndarray, np.ndarray, np.ndarray]: Optimization variables and matrices.
+            Tuple[cp.Variable, np.ndarray, np.ndarray, np.ndarray]:
+                Optimization variables and matrices.
         """
         investments = cp.Variable(n, integer=True)
         price_matrix = np.diag(

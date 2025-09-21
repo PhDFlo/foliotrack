@@ -41,7 +41,8 @@ class Portfolio:
         """
         self.securities.append(security)
         logging.info(
-            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
+            f"Security '{security.name}' added to portfolio with share {security.target_share} \
+                and number held {round(security.number_held, 4)}."
         )
 
     def remove_security(self, ticker: str) -> None:
@@ -127,7 +128,8 @@ class Portfolio:
                 self.compute_actual_shares()
                 self.staged_purchases.append(purchase)
                 logging.info(
-                    f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. New number held: {security.number_held}."
+                    f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. \
+                        New number held: {security.number_held}."
                 )
                 return
         logging.error(f"Security '{security_ticker}' not found in the portfolio.")

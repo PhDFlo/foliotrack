@@ -5,7 +5,8 @@ def test_buy_security():
     """
     Test the buy method of Security.
 
-    The buy method should increase the number of held units and the amount invested according to the specified quantity and buy price.
+    The buy method should increase the number of held units and the amount invested according \
+        to the specified quantity and buy price.
     """
     security = Security(
         name="Security1",
