@@ -45,9 +45,8 @@ git clone git@github.com:PhDFlo/Portfolio-Manager.git
 
 In the `Portfolio-Manager` folder create the python environment using [uv](https://github.com/astral-sh/uv):
 ```
-uv venv
+uv sync
 source .venv/bin/activate
-uv pip install -r requirements.txt
 ```
 
 ## Gradio interface Usage
