@@ -1,5 +1,5 @@
 import pytest
-from PBalance.Equilibrate import Equilibrate
+from PBalance.Equilibrate import solve_equilibrium
 from PBalance.Portfolio import Portfolio
 from PBalance.Security import Security
 
@@ -28,7 +28,7 @@ def test_solve_equilibrium():
     portfolio.add_security(security2)
 
     # Solve for equilibrium
-    security_counts, total_to_invest, final_shares = Equilibrate.solve_equilibrium(
+    security_counts, total_to_invest, final_shares = solve_equilibrium(
         portfolio, investment_amount=1000
     )
 

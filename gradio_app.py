@@ -1,7 +1,7 @@
 import gradio as gr
 from PBalance.Security import Security
 from PBalance.Portfolio import Portfolio
-from PBalance.Equilibrate import Equilibrate
+from PBalance.Equilibrate import solve_equilibrium
 import pandas as pd
 import datetime
 
@@ -60,7 +60,7 @@ def optimize_portfolio(security_data, new_investment, min_percent):
         portfolio.add_security(security_obj)
     portfolio.compute_actual_shares()
 
-    Equilibrate.solve_equilibrium(
+    solve_equilibrium(
         portfolio,
         investment_amount=float(new_investment),
         min_percent_to_invest=float(min_percent),

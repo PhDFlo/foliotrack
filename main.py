@@ -1,7 +1,7 @@
 import logging
 from PBalance.Security import Security
 from PBalance.Portfolio import Portfolio
-from PBalance.Equilibrate import Equilibrate
+from PBalance.Equilibrate import solve_equilibrium
 
 logging.basicConfig(level=logging.INFO)
 
@@ -48,9 +48,7 @@ def portfolio_from_scratch():
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    Equilibrate.solve_equilibrium(
-        portfolio, investment_amount=500.0, min_percent_to_invest=0.99
-    )
+    solve_equilibrium(portfolio, investment_amount=500.0, min_percent_to_invest=0.99)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
@@ -68,9 +66,7 @@ def use_existing_portfolio():
     portfolio.compute_actual_shares()
 
     # Solve for equilibrium
-    Equilibrate.solve_equilibrium(
-        portfolio, investment_amount=1000.0, min_percent_to_invest=0.99
-    )
+    solve_equilibrium(portfolio, investment_amount=1000.0, min_percent_to_invest=0.99)
 
     # Buy some Securitys
     portfolio.buy_security("NVDA", 1.0)
