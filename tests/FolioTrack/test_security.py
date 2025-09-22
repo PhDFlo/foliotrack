@@ -1,4 +1,4 @@
-from PBalance.Security import Security
+from FolioTrack.Security import Security
 
 
 def test_buy_security():

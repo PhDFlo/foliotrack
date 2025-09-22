@@ -1,8 +1,13 @@
 [project]
-name = "Portfolio-Manager"
-version = "2.0.1"
+name = "FolioTrack"
+version = "0.0.1"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
+keywords = [
+    "portfolio",
+    "management",
+    "portfolio management",
+]
 requires-python = ">=3.11"
 dependencies = [
     "numpy",
@@ -16,6 +21,13 @@ dependencies = [
     "ecbdata",
     "pytest",
 ]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["PBalance"]
 
 [tool.pytest.ini_options]
 pythonpath = "."

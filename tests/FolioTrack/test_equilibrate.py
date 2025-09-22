@@ -1,7 +1,7 @@
 import pytest
-from PBalance.Equilibrate import solve_equilibrium
-from PBalance.Portfolio import Portfolio
-from PBalance.Security import Security
+from FolioTrack.Equilibrate import solve_equilibrium
+from FolioTrack.Portfolio import Portfolio
+from FolioTrack.Security import Security
 
 
 def test_solve_equilibrium():

@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="images/logo_portfolio_manager.jpg" alt="Portfolio-Manager Logo" width="80%">
+  <img src="images/logo_portfolio_manager.jpg" alt="FolioTrack Logo" width="80%">
 </p>
 
-Portfolio-Manager is a Python package to manage, optimize and rebalance securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the packages methods compute the optimal investment adjustments required to align the portfolio with the desired strategy.
+FolioTrack is a Python package to manage, optimize and rebalance securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the packages methods compute the optimal investment adjustments required to align the portfolio with the desired strategy.
 
 ## Key Features
 - Mathematical Optimization: Uses Mixed-Integer Quadratic Programming (MIQP) to determine the most efficient asset allocation while respecting constraints (e.g., lot sizes, transaction costs).
@@ -29,10 +29,10 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
 - `main.py`: Example usage and entry point.
 - `gradio-app.py`: Gradio interface.
-- `PBalance/Currency.py`: Defines the `Currency` class to get currencies informations like symbol and exchange rate.
-- `PBalance/Security.py`: Defines the `Security` class for representing individual securities.
-- `PBalance/Portfolio.py`: Defines the `Portfolio` class.
-- `PBalance/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
+- `FolioTrack/Currency.py`: Defines the `Currency` class to get currencies informations like symbol and exchange rate.
+- `FolioTrack/Security.py`: Defines the `Security` class for representing individual securities.
+- `FolioTrack/Portfolio.py`: Defines the `Portfolio` class.
+- `FolioTrack/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
 - `Tools/Contract_security_comparator.py`: Interactive command-line tool to compare security investment contracts with fees and capital gains tax.
 - `pyproject.toml`: Project metadata and dependencies.
 
@@ -75,9 +75,9 @@ Open the url in any browser.
 
 ```python
 import logging
-from PBalance.Security import Security
-from PBalance.Portfolio import Portfolio
-from PBalance.Equilibrate import Equilibrate
+from FolioTrack.Security import Security
+from FolioTrack.Portfolio import Portfolio
+from FolioTrack.Equilibrate import Equilibrate
 
 logging.basicConfig(level=logging.INFO)
 

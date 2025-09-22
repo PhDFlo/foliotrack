@@ -1,7 +1,7 @@
 import logging
-from PBalance.Security import Security
-from PBalance.Portfolio import Portfolio
-from PBalance.Equilibrate import solve_equilibrium
+from FolioTrack.Security import Security
+from FolioTrack.Portfolio import Portfolio
+from FolioTrack.Equilibrate import solve_equilibrium
 
 logging.basicConfig(level=logging.INFO)
 

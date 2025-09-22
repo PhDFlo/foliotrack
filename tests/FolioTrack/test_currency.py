@@ -1,4 +1,4 @@
-from PBalance.Currency import Currency
+from FolioTrack.Currency import Currency
 
 
 def test_get_symbol():
