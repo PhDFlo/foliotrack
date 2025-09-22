@@ -5,6 +5,7 @@
 FolioTrack is a Python package to manage, optimize and rebalance securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the packages methods compute the optimal investment adjustments required to align the portfolio with the desired strategy.
 
 ## Key Features
+
 - Mathematical Optimization: Uses Mixed-Integer Quadratic Programming (MIQP) to determine the most efficient asset allocation while respecting constraints (e.g., lot sizes, transaction costs).
 - Solver Integration: Leverages [CVXPY](https://www.cvxpy.org/) for convex optimization modeling and [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) as the underlying solver.
 - Real-Time Data Fetching:
@@ -14,6 +15,7 @@ FolioTrack is a Python package to manage, optimize and rebalance securities, inc
 - **Security Contract Comparator tool:** Simulate and compare the evolution of multiple securities investment contracts with customizable fees and taxes, and visualize results interactively.
 
 ## Use Case
+
 Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
 ✅ Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
@@ -23,7 +25,6 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 ✅ User-Friendly GUI – Accelerates workflow with an intuitive interface, reducing complexity for faster decision-making and execution.
 
 ✅ Wealthfolio Integration – Exports optimized allocations in a compatible format for seamless tracking via [Wealthfolio](https://github.com/afadil/wealthfolio).
-
 
 ## Project Structure
 
@@ -39,11 +40,13 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 ## Installation
 
 Clone the repository from Github
+
 ```
 git clone git@github.com:PhDFlo/FolioTrack.git
 ```
 
 In the `FolioTrack` folder create the python environment using [uv](https://github.com/astral-sh/uv):
+
 ```
 uv sync
 source .venv/bin/activate
@@ -69,7 +72,7 @@ Open the url in any browser.
 - Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
 - Select the investment amount you want to add to your portfolio and click on the `New Investment Amount (€)` button. Default is 500€.
 - Choose the minimum amount to be invested, default is 99%. Ex: with an investment of 500€, at least 495€ will be placed in the portfolio.
-- Finally, compute the optimization to get as close as possible to the target share. 
+- Finally, compute the optimization to get as close as possible to the target share.
 
 ## Python Example Usage
 
@@ -140,6 +143,7 @@ if __name__ == "__main__":
 ```
 
 ## Python Example Output
+
 ```
 INFO:root:Security 'Amundi MSCI World UCITS Security' added to portfolio with share 0.5 and number held 20.0.
 INFO:root:Security 'NVIDIA Corporation' added to portfolio with share 0.2 and number held 1.0.
@@ -215,11 +219,13 @@ INFO:root:  final_share: 0.2523
 The `Contract_security_comparator.py` script allows you to simulate and compare the evolution of multiple securities investment contracts, each with its own fees and capital gains tax. You can define any number of contracts directly from the command line. It provides quantitative information to choose the best contract for investing on a particular security.
 
 **Example usage:**
+
 ```sh
 python Contract_security_comparator.py --initial 20000 --annual-return 0.06 --years 25 --yearly_contribution 1000 \
   --contract "A,0.0059,0.006,0.172" \
   --contract "B,0.0012,0.00,0.30"
 ```
+
 - `--contract "Label,Security_fee,Bank_fee,CapitalGainsTax"`: Add as many contracts as you want, each with its own parameters.
 - All values for fees and taxes are expressed as decimals (e.g., 0.0059 for 0.59%).
 
@@ -237,7 +243,6 @@ The script will print the results for each contract and plot a graph comparing t
 - pyQt6
 - yfinance
 - ecbdata
-
 
 ## License
 
