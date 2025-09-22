@@ -46,6 +46,12 @@ jobs:
         uv run ruff check --output-format=github .
         uv run ruff format --check --diff .
 
+    - name: Prettify code
+      uses: creyD/prettier_action@v4.6
+      with:
+        # This part is also where you can pass other options, for example:
+        prettier_options: --write **/*.{md}
+
     - name: Test with pytest
       run: | 
         uv run pytest
