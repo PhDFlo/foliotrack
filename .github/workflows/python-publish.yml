@@ -9,9 +9,6 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
     environment:
       name: PyPI
     permissions:
@@ -22,15 +19,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install uv
         uses: astral-sh/setup-uv@v6
-        with:
-          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python 3.13
+        run: uv python install 3.13
 
       - name: Build
         run: uv build
