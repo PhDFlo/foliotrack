@@ -7,6 +7,8 @@ keywords = [
     "portfolio",
     "management",
     "portfolio management",
+    "track",
+    "investment",
 ]
 requires-python = ">=3.11"
 dependencies = [
@@ -27,7 +29,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["PBalance"]
+where = ["FolioTrack"]
 
 [tool.pytest.ini_options]
 pythonpath = "."
