@@ -1,4 +1,4 @@
-from FolioTrack.Currency import Currency
+from foliotrack.Currency import Currency
 
 
 def test_get_symbol():

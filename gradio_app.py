@@ -1,7 +1,7 @@
 import gradio as gr
-from FolioTrack.Security import Security
-from FolioTrack.Portfolio import Portfolio
-from FolioTrack.Equilibrate import solve_equilibrium
+from foliotrack.Security import Security
+from foliotrack.Portfolio import Portfolio
+from foliotrack.Equilibrate import solve_equilibrium
 import pandas as pd
 import datetime
 

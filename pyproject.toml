@@ -1,6 +1,6 @@
 [project]
-name = "FolioTrack"
-version = "0.0.2"
+name = "foliotrack"
+version = "0.0.1"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
 keywords = [

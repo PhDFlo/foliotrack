@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="images/logo_FolioTrack.jpg" alt="FolioTrack Logo" width="80%">
+  <img src="images/logo_foliotrack.jpg" alt="foliotrack Logo" width="80%">
 </p>
 
-FolioTrack is a Python package to manage, optimize and rebalance securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the packages methods compute the optimal investment adjustments required to align the portfolio with the desired strategy.
+foliotrack is a Python package to manage, optimize and rebalance securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the packages methods compute the optimal investment adjustments required to align the portfolio with the desired strategy.
 
 ## Key Features
 
@@ -30,10 +30,10 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
 - `main.py`: Example usage and entry point.
 - `gradio-app.py`: Gradio interface.
-- `FolioTrack/Currency.py`: Defines the `Currency` class to get currencies informations like symbol and exchange rate.
-- `FolioTrack/Security.py`: Defines the `Security` class for representing individual securities.
-- `FolioTrack/Portfolio.py`: Defines the `Portfolio` class.
-- `FolioTrack/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
+- `foliotrack/Currency.py`: Defines the `Currency` class to get currencies informations like symbol and exchange rate.
+- `foliotrack/Security.py`: Defines the `Security` class for representing individual securities.
+- `foliotrack/Portfolio.py`: Defines the `Portfolio` class.
+- `foliotrack/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
 - `Tools/Contract_security_comparator.py`: Interactive command-line tool to compare security investment contracts with fees and capital gains tax.
 - `pyproject.toml`: Project metadata and dependencies.
 
@@ -42,10 +42,10 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 Clone the repository from Github
 
 ```
-git clone git@github.com:PhDFlo/FolioTrack.git
+git clone git@github.com:PhDFlo/foliotrack.git
 ```
 
-In the `FolioTrack` folder create the python environment using [uv](https://github.com/astral-sh/uv):
+In the `foliotrack` folder create the python environment using [uv](https://github.com/astral-sh/uv):
 
 ```
 uv sync
@@ -54,7 +54,7 @@ source .venv/bin/activate
 
 ## Gradio interface Usage
 
-To facilitate the use of the FolioTrack tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
+To facilitate the use of the foliotrack tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
 
 ```
 * Running on local URL:  http://127.0.0.1:7860
@@ -78,9 +78,9 @@ Open the url in any browser.
 
 ```python
 import logging
-from FolioTrack.Security import Security
-from FolioTrack.Portfolio import Portfolio
-from FolioTrack.Equilibrate import Equilibrate
+from foliotrack.Security import Security
+from foliotrack.Portfolio import Portfolio
+from foliotrack.Equilibrate import Equilibrate
 
 logging.basicConfig(level=logging.INFO)
 

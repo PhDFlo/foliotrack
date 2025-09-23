@@ -1,5 +1,5 @@
-from FolioTrack.Portfolio import Portfolio
-from FolioTrack.Security import Security
+from foliotrack.Portfolio import Portfolio
+from foliotrack.Security import Security
 import json
 import os
 

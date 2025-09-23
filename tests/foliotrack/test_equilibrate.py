@@ -1,7 +1,7 @@
 import pytest
-from FolioTrack.Equilibrate import solve_equilibrium
-from FolioTrack.Portfolio import Portfolio
-from FolioTrack.Security import Security
+from foliotrack.Equilibrate import solve_equilibrium
+from foliotrack.Portfolio import Portfolio
+from foliotrack.Security import Security
 
 
 def test_solve_equilibrium():

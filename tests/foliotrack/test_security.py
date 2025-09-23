@@ -1,4 +1,4 @@
-from FolioTrack.Security import Security
+from foliotrack.Security import Security
 
 
 def test_buy_security():
