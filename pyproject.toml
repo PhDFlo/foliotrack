@@ -35,7 +35,7 @@ publish-url = "https://test.pypi.org/legacy/"
 explicit = true
 
 [tool.setuptools.packages.find]
-where = ["FolioTrack"]
+where = ["foliotrack"]
 
 [tool.pytest.ini_options]
 pythonpath = "."
