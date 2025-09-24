@@ -27,6 +27,7 @@ dependencies = [
 cli = [
   "pytest",
 ]
+
 [project.urls]
 "Homepage" = "https://github.com/PhDFlo/foliotrack"
 "Bug Tracker" = "https://github.com/PhDFlo/foliotrack/issues"
