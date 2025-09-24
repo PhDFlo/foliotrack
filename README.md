@@ -243,6 +243,7 @@ The script will print the results for each contract and plot a graph comparing t
 - pyQt6
 - yfinance
 - ecbdata
+- pytest
 
 ## License
 
