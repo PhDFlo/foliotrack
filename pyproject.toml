@@ -21,8 +21,15 @@ dependencies = [
     "pyQt6",
     "yfinance",
     "ecbdata",
-    "pytest",
 ]
+
+[project.optional-dependencies]
+cli = [
+  "pytest",
+]
+[project.urls]
+"Homepage" = "https://github.com/PhDFlo/foliotrack"
+"Bug Tracker" = "https://github.com/PhDFlo/foliotrack/issues"
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]
@@ -35,7 +42,7 @@ publish-url = "https://test.pypi.org/legacy/"
 explicit = true
 
 [tool.setuptools.packages.find]
-where = ["foliotrack"]
+where = ["."]
 
 [tool.pytest.ini_options]
 pythonpath = "."
