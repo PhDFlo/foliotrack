@@ -537,8 +537,8 @@ dependencies = [
     { name = "yfinance" },
 ]
 
-[package.optional-dependencies]
-cli = [
+[package.dev-dependencies]
+dev = [
     { name = "pytest" },
 ]
 
@@ -552,10 +552,11 @@ requires-dist = [
     { name = "pandas" },
     { name = "pyqt6" },
     { name = "pyscipopt" },
-    { name = "pytest", marker = "extra == 'cli'" },
     { name = "yfinance" },
 ]
-provides-extras = ["cli"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8.4.2" }]
 
 [[package]]
 name = "fonttools"
