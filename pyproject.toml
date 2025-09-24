@@ -21,6 +21,7 @@ dependencies = [
     "PyQt6",
     "yfinance",
     "ecbdata",
+    "pytest",
 ]
 
 [project.urls]
@@ -42,8 +43,3 @@ where = ["."]
 
 [tool.pytest.ini_options]
 pythonpath = "."
-
-[dependency-groups]
-dev = [
-    "pytest>=8.4.2",
-]

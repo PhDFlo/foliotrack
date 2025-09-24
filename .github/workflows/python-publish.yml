@@ -30,10 +30,10 @@ jobs:
 
       # Check that basic features work and we didn't miss to include crucial files
       - name: pytest (wheel)
-        run: uv run --isolated --no-project --with dist/*.whl --group dev pytest
+        run: uv run --isolated --no-project --with dist/*.whl pytest
 
       - name: pytest (source distribution)
-        run: uv run --isolated --no-project --with dist/*.tar.gz --group dev pytest
+        run: uv run --isolated --no-project --with dist/*.tar.gz pytest
 
       - name: Publish
         run: uv publish
