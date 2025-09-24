@@ -5,4 +5,4 @@ from .Equilibrate import Equilibrate
 from .Portfolio import Portfolio
 from .Security import Security
 
-__all__ = ["Security", "Portfolio", "Equilibrate"]
+__all__ = ["Currency", "Security", "Portfolio", "Equilibrate"]
