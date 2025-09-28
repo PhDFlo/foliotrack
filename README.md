@@ -18,24 +18,18 @@ foliotrack is a Python package to manage, optimize and rebalance securities, inc
 
 Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
-✅ Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
+- Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
 
-✅ Multi-Currency Support – Dynamically adjusts for exchange rate fluctuations, enabling accurate valuation and rebalancing of global portfolios.
-
-✅ User-Friendly GUI – Accelerates workflow with an intuitive interface, reducing complexity for faster decision-making and execution.
-
-✅ Wealthfolio Integration – Exports optimized allocations in a compatible format for seamless tracking via [Wealthfolio](https://github.com/afadil/wealthfolio).
+- Multi-Currency Support – Dynamically adjusts for exchange rate fluctuations, enabling accurate valuation and rebalancing of global portfolios.
 
 ## Project Structure
 
 - `main.py`: Example usage and entry point.
-- `gradio-app.py`: Gradio interface.
 - `foliotrack/Currency.py`: Defines the `Currency` class to get currencies informations like symbol and exchange rate.
 - `foliotrack/Security.py`: Defines the `Security` class for representing individual securities.
 - `foliotrack/Portfolio.py`: Defines the `Portfolio` class.
 - `foliotrack/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
 - `Tools/Contract_security_comparator.py`: Interactive command-line tool to compare security investment contracts with fees and capital gains tax.
-- `pyproject.toml`: Project metadata and dependencies.
 
 ## Installation
 
@@ -51,28 +45,6 @@ In the `foliotrack` folder create the python environment using [uv](https://gith
 uv sync
 source .venv/bin/activate
 ```
-
-## Gradio interface Usage
-
-To facilitate the use of the foliotrack tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
-
-```
-* Running on local URL:  http://127.0.0.1:7860
-* To create a public link, set `share=True` in `launch()`.
-```
-
-Open the url in any browser.
-
-<p align="center">
-  <img src="images/gradio_interface.png" alt="Gradio interface image" width="100%">
-</p>
-
-- To create your securities portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
-- Refresh the list of available files by clicking on the `Refresh available files` button and select your file.
-- Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
-- Select the investment amount you want to add to your portfolio and click on the `New Investment Amount (€)` button. Default is 500€.
-- Choose the minimum amount to be invested, default is 99%. Ex: with an investment of 500€, at least 495€ will be placed in the portfolio.
-- Finally, compute the optimization to get as close as possible to the target share.
 
 ## Python Example Usage
 
