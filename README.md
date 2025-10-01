@@ -11,30 +11,21 @@ foliotrack is a Python package to manage, optimize and rebalance securities, inc
 - Real-Time Data Fetching:
   - Security prices via [yfinance](https://github.com/ranaroussi/yfinance) (Yahoo Finance API).
   - Currency conversion via [ecbdata](https://github.com/LucaMingarelli/ecbdata) (European Central bank data) for multi-currency portfolios.
-- Export Compatibility: Generates output in a format compatible with Wealthfolio for seamless portfolio tracking.
-- **Security Contract Comparator tool:** Simulate and compare the evolution of multiple securities investment contracts with customizable fees and taxes, and visualize results interactively.
 
 ## Use Case
 
 Ideal for investors, financial advisors, and algorithmic traders seeking to:
 
-✅ Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
-
-✅ Multi-Currency Support – Dynamically adjusts for exchange rate fluctuations, enabling accurate valuation and rebalancing of global portfolios.
-
-✅ User-Friendly GUI – Accelerates workflow with an intuitive interface, reducing complexity for faster decision-making and execution.
-
-✅ Wealthfolio Integration – Exports optimized allocations in a compatible format for seamless tracking via [Wealthfolio](https://github.com/afadil/wealthfolio).
+- Automated Rebalancing – Maintains target asset allocations with minimal manual intervention, ensuring alignment with investment strategies.
+- Multi-Currency Support – Dynamically adjusts for exchange rate fluctuations, enabling accurate valuation and rebalancing of global portfolios.
 
 ## Project Structure
 
 - `main.py`: Example usage and entry point.
-- `gradio-app.py`: Gradio interface.
 - `foliotrack/Currency.py`: Defines the `Currency` class to get currencies informations like symbol and exchange rate.
 - `foliotrack/Security.py`: Defines the `Security` class for representing individual securities.
 - `foliotrack/Portfolio.py`: Defines the `Portfolio` class.
 - `foliotrack/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
-- `Tools/Contract_security_comparator.py`: Interactive command-line tool to compare security investment contracts with fees and capital gains tax.
 - `pyproject.toml`: Project metadata and dependencies.
 
 ## Installation
@@ -52,29 +43,7 @@ uv sync
 source .venv/bin/activate
 ```
 
-## Gradio interface Usage
-
-To facilitate the use of the foliotrack tool a Gradio interface is available by running `python gradio-app.py`. The app will be running locally and should display something like:
-
-```
-* Running on local URL:  http://127.0.0.1:7860
-* To create a public link, set `share=True` in `launch()`.
-```
-
-Open the url in any browser.
-
-<p align="center">
-  <img src="images/gradio_interface.png" alt="Gradio interface image" width="100%">
-</p>
-
-- To create your securities portfolio, add in the `Inputs` directory a .csv based on the `investment.csv` file.
-- Refresh the list of available files by clicking on the `Refresh available files` button and select your file.
-- Fill the table by clicking on the `Fill Table from CSV` button. This step is optionnal as you may want to fill the table directly on the web page.
-- Select the investment amount you want to add to your portfolio and click on the `New Investment Amount (€)` button. Default is 500€.
-- Choose the minimum amount to be invested, default is 99%. Ex: with an investment of 500€, at least 495€ will be placed in the portfolio.
-- Finally, compute the optimization to get as close as possible to the target share.
-
-## Python Example Usage
+## Usage Example
 
 ```python
 import logging
@@ -142,7 +111,7 @@ if __name__ == "__main__":
     main()
 ```
 
-## Python Example Output
+Which produces the following output:
 
 ```
 INFO:root:Security 'Amundi MSCI World UCITS Security' added to portfolio with share 0.5 and number held 20.0.
@@ -218,29 +187,13 @@ INFO:root:  final_share: 0.2523
 
 The `Contract_security_comparator.py` script allows you to simulate and compare the evolution of multiple securities investment contracts, each with its own fees and capital gains tax. You can define any number of contracts directly from the command line. It provides quantitative information to choose the best contract for investing on a particular security.
 
-**Example usage:**
-
-```sh
-python Contract_security_comparator.py --initial 20000 --annual-return 0.06 --years 25 --yearly_contribution 1000 \
-  --contract "A,0.0059,0.006,0.172" \
-  --contract "B,0.0012,0.00,0.30"
-```
-
-- `--contract "Label,Security_fee,Bank_fee,CapitalGainsTax"`: Add as many contracts as you want, each with its own parameters.
-- All values for fees and taxes are expressed as decimals (e.g., 0.0059 for 0.59%).
-
-The script will print the results for each contract and plot a graph comparing their evolution and final after-tax values.
-
 ## Requirements
 
 - Python 3.12+
 - numpy
 - cvxpy
 - pyscipopt
-- gradio
 - pandas
-- matplotlib
-- pyQt6
 - yfinance
 - ecbdata
 - pytest
