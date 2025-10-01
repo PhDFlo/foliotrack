@@ -196,7 +196,3 @@ The `Contract_security_comparator.py` script allows you to simulate and compare 
 - yfinance
 - ecbdata
 - pytest
-
-## License
-
-MIT License
