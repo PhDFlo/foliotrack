@@ -26,7 +26,6 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 - `foliotrack/Security.py`: Defines the `Security` class for representing individual securities.
 - `foliotrack/Portfolio.py`: Defines the `Portfolio` class.
 - `foliotrack/Equilibrate.py`: Defines the `Equilibrate` class which contains the portfolio optimization algorithm.
-- `pyproject.toml`: Project metadata and dependencies.
 
 ## Installation
 
