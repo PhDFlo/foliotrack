@@ -11,21 +11,29 @@ class Security:
     A class to represent any security including Exchange-Traded Fund (ETF).
     """
 
-    name: str  # Security name
     ticker: str = "DCAM"  # Security ticker symbol
-    currency: str = "EUR"  # Security currency, either "EUR" or "USD"
-    symbol: str = field(init=False)  # Symbol of the Security currency
-    exchange_rate: float = 1.0  # Exchange rate to portfolio currency
     price_in_security_currency: float = 500.0  # Security price in its currency
-    price_in_portfolio_currency: float = 500.0  # Security price in portfolio currency
     yearly_charge: float = 0.2  # Yearly charge in percentage
     number_held: float = 0.0  # Number of Security units held
-    number_to_buy: float = 0.0  # Number of Security units to buy
-    amount_to_invest: float = 0.0  # Amount to invest in this Security
-    amount_invested: float = 0.0  # Total amount invested in this Security
     target_share: float = 1.0  # Target share of the Security in the portfolio
-    actual_share: float = 0.0  # Actual share of the Security in the portfolio
-    final_share: float = 0.0  # Final share of the Security after investment
+
+    name: str = field(init=False)  # Name of the Security
+    currency: str = field(init=False)  # Currency of the Security
+    symbol: str = field(init=False)  # Symbol of the Security currency
+    price_in_portfolio_currency: float = field(
+        init=False
+    )  # Security price in portfolio currency
+    exchange_rate: float = field(init=False)  # Exchange rate to portfolio currency
+
+    number_to_buy: float = field(init=False)  # Number of Security units to buy
+    amount_to_invest: float = field(init=False)  # Amount to invest in this Security
+    amount_invested: float = field(init=False)  # Total amount invested in this Security
+    actual_share: float = field(
+        init=False
+    )  # Actual share of the Security in the portfolio
+    final_share: float = field(
+        init=False
+    )  # Final share of the Security after investment
 
     def __post_init__(self):
         """
@@ -34,6 +42,17 @@ class Security:
         Computes the Security price in the portfolio currency and
         updates the amount invested in the Security.
         """
+        sec = yf.Ticker(self.ticker)
+
+        self.name = sec.info.get("longName", "Unnamed Security")
+        self.currency = sec.info.get("currency", "EUR")
+        self.actual_share = 0.0
+        self.final_share = 0.0
+        self.exchange_rate = 1.0
+        self.number_to_buy = 0.0
+        self.amount_to_invest = 0.0
+        self.amount_invested = 0.0
+
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
         )  # Security price in portfolio currency
