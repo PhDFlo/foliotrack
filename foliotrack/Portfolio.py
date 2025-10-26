@@ -44,6 +44,23 @@ class Portfolio:
             f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
         )
 
+    def buy_security_v2(self, security: Security) -> None:
+        for p_sec in self.securities:
+            if p_sec.ticker == security.ticker:
+                p_sec.number_held = p_sec.number_held + security.number_held
+                return
+
+        self.securities.append(security)
+        logging.info(
+            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
+        )
+
+    def update_security_values(self, ticker: str) -> None:
+        for security in self.securities:
+            if security.ticker == ticker:
+                # Update price
+                security.update_price_from_yfinance()
+
     def remove_security(self, ticker: str) -> None:
         """
         Removes a Security from the portfolio.

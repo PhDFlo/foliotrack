@@ -56,12 +56,9 @@ class Security:
         self.exchange_rate = 1.0
         self.number_to_buy = 0.0
         self.amount_to_invest = 0.0
-
-        self.price_in_portfolio_currency = round(
-            self.price_in_security_currency * self.exchange_rate, 2
-        )  # Security price in portfolio currency
         self.symbol = get_symbol(self.currency) or ""
-        self.amount_invested = self.number_held * self.price_in_portfolio_currency
+
+        self.update_portfolio_price_and_amount()
 
     def __repr__(self) -> str:
         """
@@ -79,6 +76,12 @@ class Security:
         info = asdict(self)
         info["symbol"] = self.symbol
         return info
+
+    def update_portfolio_price_and_amount(self) -> None:
+        self.price_in_portfolio_currency = round(
+            self.price_in_security_currency * self.exchange_rate, 2
+        )  # Security price in portfolio currency
+        self.amount_invested = self.number_held * self.price_in_portfolio_currency
 
     def buy(
         self,
@@ -115,6 +118,7 @@ class Security:
         else:
             self.actual_share = round(self.amount_invested / total_invested, 2)
 
+    # Need to keep one function update_prices that get currency and compute prices
     def update_price_from_yfinance(self) -> None:
         """
         Update the Security price using yfinance based on its ticker, and update amount invested.
