@@ -9,27 +9,21 @@ logging.basicConfig(level=logging.INFO)
 def portfolio_from_scratch():
     # Create Security instances
     security1 = Security(
-        name="Amundi MSCI World UCITS Security",
-        ticker="AMDW",
-        currency="EUR",
+        ticker="AMDW",  # Amundi MSCI World UCITS Security
         price_in_security_currency=500.0,
         yearly_charge=0.2,
         target_share=0.5,
         number_held=20.0,
     )
     security2 = Security(
-        name="NVIDIA Corporation",
-        ticker="NVDA",
-        currency="USD",
+        ticker="NVDA",  # NVIDIA Corporation
         price_in_security_currency=300.0,
         yearly_charge=0.1,
         target_share=0.2,
         number_held=1.0,
     )
     security3 = Security(
-        name="iShares Core MSCI Emerging Markets IMI UCITS Security",
-        ticker="EIMI.L",
-        currency="EUR",
+        ticker="EIMI.L",  # iShares Core MSCI Emerging Markets IMI UCITS Security
         price_in_security_currency=200.0,
         yearly_charge=0.25,
         target_share=0.3,

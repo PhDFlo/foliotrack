@@ -11,20 +11,18 @@ class Security:
     A class to represent any security including Exchange-Traded Fund (ETF).
     """
 
-    ticker: str = "DCAM"  # Security ticker symbol
-    price_in_security_currency: float = 500.0  # Security price in its currency
-    yearly_charge: float = 0.2  # Yearly charge in percentage
-    number_held: float = 0.0  # Number of Security units held
-    target_share: float = 1.0  # Target share of the Security in the portfolio
-
     name: str = field(init=False)  # Name of the Security
+    ticker: str = "DCAM"  # Security ticker symbol
     currency: str = field(init=False)  # Currency of the Security
     symbol: str = field(init=False)  # Symbol of the Security currency
+    exchange_rate: float = field(init=False)  # Exchange rate to portfolio currency
+    price_in_security_currency: float = 500.0  # Security price in its currency
     price_in_portfolio_currency: float = field(
         init=False
     )  # Security price in portfolio currency
-    exchange_rate: float = field(init=False)  # Exchange rate to portfolio currency
-
+    yearly_charge: float = 0.2  # Yearly charge in percentage
+    number_held: float = 0.0  # Number of Security units held
+    target_share: float = 1.0  # Target share of the Security in the portfolio
     number_to_buy: float = field(init=False)  # Number of Security units to buy
     amount_to_invest: float = field(init=False)  # Amount to invest in this Security
     amount_invested: float = field(init=False)  # Total amount invested in this Security
@@ -42,10 +40,17 @@ class Security:
         Computes the Security price in the portfolio currency and
         updates the amount invested in the Security.
         """
-        sec = yf.Ticker(self.ticker)
 
-        self.name = sec.info.get("longName", "Unnamed Security")
-        self.currency = sec.info.get("currency", "EUR")
+        try:
+            sec = yf.Ticker(self.ticker)
+
+            self.name = sec.info.get("longName", "Unnamed Security")
+            self.currency = sec.info.get("currency", "EUR")
+        except Exception as e:
+            logging.warning(f"Could not fetch security info for {self.ticker}: {e}")
+            self.name = "Unnamed Security"
+            self.currency = "EUR"
+
         self.actual_share = 0.0
         self.final_share = 0.0
         self.exchange_rate = 1.0
@@ -162,22 +167,11 @@ class Security:
         Deserialize Security from a JSON-compatible dict.
         """
         return Security(
-            name=data.get("name", "Unnamed Security"),
             ticker=data.get("ticker", "DCAM"),
-            currency=data.get("currency", "EUR"),
-            exchange_rate=float(data.get("exchange_rate", 1.0)),
             price_in_security_currency=float(
                 data.get("price_in_security_currency", 500.0)
             ),
-            price_in_portfolio_currency=float(
-                data.get("price_in_portfolio_currency", 500.0)
-            ),
             yearly_charge=float(data.get("yearly_charge", 0.2)),
             number_held=float(data.get("number_held", 0.0)),
-            number_to_buy=float(data.get("number_to_buy", 0.0)),
-            amount_to_invest=float(data.get("amount_to_invest", 0.0)),
-            amount_invested=float(data.get("amount_invested", 0.0)),
             target_share=float(data.get("target_share", 1.0)),
-            actual_share=float(data.get("actual_share", 0.0)),
-            final_share=float(data.get("final_share", 0.0)),
         )
