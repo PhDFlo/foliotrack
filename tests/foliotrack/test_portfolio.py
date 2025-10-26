@@ -18,6 +18,7 @@ def test_add_security():
         currency="EUR",
         price_in_security_currency=100,
         target_share=0.5,
+        fill=False,
     )
     portfolio.add_security(security)
     assert len(portfolio.securities) == 1
@@ -38,6 +39,7 @@ def test_remove_security():
         currency="EUR",
         price_in_security_currency=100,
         target_share=0.5,
+        fill=False,
     )
     security2 = Security(
         name="Security2",
@@ -45,6 +47,7 @@ def test_remove_security():
         currency="EUR",
         price_in_security_currency=200,
         target_share=0.5,
+        fill=False,
     )
     portfolio.add_security(security1)
     portfolio.add_security(security2)
@@ -113,6 +116,7 @@ def test_to_json():
         currency="EUR",
         price_in_security_currency=100,
         target_share=1.0,
+        fill=False,
     )
     portfolio.add_security(security)
     portfolio.buy_security("SEC1", 10, buy_price=100)
