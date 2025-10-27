@@ -47,6 +47,7 @@ class Portfolio:
             f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
         )
 
+    # Need to validate this method with two test cases (one where security exists, one where it does not) and validate add sell_security method. Also remove remove_security method
     def buy_security_v2(self, security: Security) -> None:
         for p_sec in self.securities:
             if p_sec.ticker == security.ticker:
@@ -61,6 +62,44 @@ class Portfolio:
         logging.info(
             f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
         )
+
+    def sell_security(self, ticker: str, quantity: float) -> None:
+        """
+        Sells a specified quantity of a Security in the portfolio, updating number held and amount invested.
+
+        Args:
+            ticker (str): The ticker of the Security to sell.
+            quantity (float): The quantity of the Security to sell.
+        """
+        for security in self.securities:
+            if security.ticker == ticker:
+                if quantity > security.number_held:
+                    logging.error(
+                        f"Cannot sell {quantity} units of '{ticker}'. Only {security.number_held} units held."
+                    )
+                    raise ValueError(
+                        f"Cannot sell {quantity} units of '{ticker}'. Only {security.number_held} units held."
+                    )
+                elif quantity == security.number_held:
+                    self.securities = [
+                        security
+                        for security in self.securities
+                        if security.ticker != ticker
+                    ]
+                    logging.info(f"Sold all units of '{ticker}'.")
+                else:
+                    security.number_held -= quantity
+                    self.update_portfolio()
+                    logging.info(
+                        f"Sold {quantity} units of '{ticker}'. New number held: {security.number_held}."
+                    )
+
+                # Update portfolio
+                self.update_portfolio()
+
+                return
+        logging.error(f"Security '{ticker}' not found in the portfolio.")
+        raise ValueError(f"Security '{ticker}' not found in the portfolio.")
 
     def remove_security(self, ticker: str) -> None:
         """
