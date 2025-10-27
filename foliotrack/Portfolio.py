@@ -141,7 +141,7 @@ class Portfolio:
         for security in self.securities:
             if security.ticker == security_ticker:
                 purchase = security.buy(quantity, buy_price, fee, date)
-                self.compute_actual_shares()
+                self.update_portfolio()
                 self.staged_purchases.append(purchase)
                 logging.info(
                     f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. New number held: {security.number_held}."
@@ -150,9 +150,9 @@ class Portfolio:
         logging.error(f"Security '{security_ticker}' not found in the portfolio.")
         raise ValueError(f"Security '{security_ticker}' not found in the portfolio.")
 
-    def compute_actual_shares(self) -> None:
+    def update_portfolio(self) -> None:
         """
-        Computes the actual share of each Security in the portfolio.
+        Update the portfolio by updating security prices and computing actual shares.
         It will raise an Exception if the portfolio is not complete.
         It first computes the total amount invested in the portfolio.
         Then it iterates over each Security in the portfolio, ensuring its price is in the portfolio currency,
@@ -167,13 +167,6 @@ class Portfolio:
             )  # Ensure price is in portfolio currency
             security.compute_actual_share(total_invested)
 
-    def update_security_prices(self) -> None:
-        """
-        Update the price of each Security in the portfolio using yfinance.
-        """
-        for security in self.securities:
-            security.update_prices(self.currency)
-
     def to_json(self, filepath: str) -> None:
         """
         Saves the portfolio to a JSON file.
@@ -184,7 +177,7 @@ class Portfolio:
         Raises:
             Exception: If an error occurs while saving the portfolio to JSON.
         """
-        self.compute_actual_shares()  # Ensure shares are up to date
+        self.update_portfolio()  # Ensure shares are up to date
         try:
             with open(filepath, "w") as f:
                 json.dump(

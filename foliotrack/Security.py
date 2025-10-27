@@ -117,7 +117,7 @@ class Security:
             self.actual_share = 0.0
         else:
             self.actual_share = round(self.amount_invested / total_invested, 2)
-            
+
     def update_prices(self, portfolio_currency: str) -> None:
         """
         Update the Security price using yfinance based on its ticker,
@@ -130,10 +130,11 @@ class Security:
                 self.price_in_security_currency = price_from_market
 
             if self.currency.lower() != portfolio_currency.lower():
-                
                 try:
                     self.exchange_rate = float(
-                        get_rate_between(self.currency.upper(), portfolio_currency.upper())
+                        get_rate_between(
+                            self.currency.upper(), portfolio_currency.upper()
+                        )
                     )
                 except Exception as e:
                     logging.error(
@@ -149,46 +150,6 @@ class Security:
             )
         except Exception as e:
             logging.error(f"Could not update price for {self.ticker}: {e}")
-
-    # Need to keep one function update_prices that get currency and compute prices
-    # def update_price_from_yfinance(self) -> None:
-    #     """
-    #     Update the Security price using yfinance based on its ticker, and update amount invested.
-    #     """
-    #     ticker = yf.Ticker(self.ticker)
-    #     try:
-    #         price_from_market = ticker.info.get("regularMarketPrice")
-    #         if price_from_market is not None:
-    #             self.price_in_security_currency = price_from_market
-    #             self.price_in_portfolio_currency = (
-    #                 self.price_in_security_currency * self.exchange_rate
-    #             )
-
-    #             self.amount_invested = round(
-    #                 self.number_held * self.price_in_portfolio_currency, 2
-    #             )
-    #     except Exception as e:
-    #         logging.error(f"Could not update price for {self.ticker}: {e}")
-
-    # def compute_price_in_portfolio_currency(self, portfolio_currency: str) -> None:
-    #     """
-    #     Compute and update the price of this Security in the specified portfolio currency.
-    #     If the currency of this Security is different from the portfolio currency, it will
-    #     fetch the exchange rate and update the price accordingly.
-    #     If an error occurs while fetching the exchange rate, it will log the error.
-    #     """
-    #     if self.currency.lower() != portfolio_currency.lower():
-    #         try:
-    #             self.exchange_rate = float(
-    #                 get_rate_between(self.currency.upper(), portfolio_currency.upper())
-    #             )
-    #             self.price_in_portfolio_currency = round(
-    #                 float(self.price_in_security_currency * self.exchange_rate), 2
-    #             )
-    #         except Exception as e:
-    #             logging.error(
-    #                 f"Could not get exchange rate for {self.currency} to {portfolio_currency}: {e}"
-    #             )
 
     def to_json(self) -> Dict[str, Any]:
         """

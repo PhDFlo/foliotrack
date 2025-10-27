@@ -38,8 +38,7 @@ def portfolio_from_scratch():
 
     portfolio.to_json("Portfolios/investment_example.json")
 
-    portfolio.update_security_prices()  # Update prices from yfinance
-    portfolio.compute_actual_shares()
+    portfolio.update_portfolio()
 
     # Solve for equilibrium
     solve_equilibrium(portfolio, investment_amount=500.0, min_percent_to_invest=0.99)
@@ -56,8 +55,7 @@ def portfolio_from_scratch():
 def use_existing_portfolio():
     # Load an existing portfolio from CSV
     portfolio = Portfolio.from_json("Portfolios/investment_example.json")
-    portfolio.update_security_prices()
-    portfolio.compute_actual_shares()
+    portfolio.update_portfolio()
 
     # Solve for equilibrium
     solve_equilibrium(portfolio, investment_amount=1000.0, min_percent_to_invest=0.99)
