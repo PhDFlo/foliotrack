@@ -13,10 +13,12 @@ class Portfolio:
     Represents a portfolio containing multiple Securitys and a currency.
     """
 
+    name: str = "Unnamed portfolio"  # Name of the Portfolio
     securities: List[Security] = field(
         default_factory=list
     )  # List of Securitys in the portfolio
     currency: str = "EUR"  # Portfolio currency
+    total_invested: float = field(init=False)  # Total amount invested in the portfolio
     symbol: str = field(init=False)  # Currency symbol
     staged_purchases: List[Dict[str, Any]] = field(
         default_factory=list
@@ -29,6 +31,7 @@ class Portfolio:
         Sets the `symbol` attribute to the symbol of the `currency` attribute.
         """
         self.symbol = get_symbol(self.currency) or ""
+        self.total_invested = 0.0
 
     def add_security(self, security: Security) -> None:
         """
@@ -48,18 +51,16 @@ class Portfolio:
         for p_sec in self.securities:
             if p_sec.ticker == security.ticker:
                 p_sec.number_held = p_sec.number_held + security.number_held
+
+                # Update portfolio after buying security
+                self.update_portfolio()
                 return
 
         self.securities.append(security)
+        self.update_portfolio()
         logging.info(
             f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
         )
-
-    def update_security_values(self, ticker: str) -> None:
-        for security in self.securities:
-            if security.ticker == ticker:
-                # Update price
-                security.update_price_from_yfinance()
 
     def remove_security(self, ticker: str) -> None:
         """
@@ -160,12 +161,17 @@ class Portfolio:
         """
         if not self.verify_target_share_sum():
             raise Exception("Error, the portfolio is not complete.")
-        total_invested = sum(security.amount_invested for security in self.securities)
+
+        # Update security prices
         for security in self.securities:
-            security.update_prices(
-                self.currency
-            )  # Ensure price is in portfolio currency
-            security.compute_actual_share(total_invested)
+            security.update_prices(self.currency)
+
+        # Compute actual shares
+        self.total_invested = sum(
+            security.amount_invested for security in self.securities
+        )
+        for security in self.securities:
+            security.compute_actual_share(self.total_invested)
 
     def to_json(self, filepath: str) -> None:
         """

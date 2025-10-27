@@ -15,7 +15,7 @@
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
             "amount_invested": 1240.0,
-            "actual_share": 0.11,
+            "actual_share": 0.82,
             "final_share": 0.0,
             "fill": true
         },
@@ -33,7 +33,7 @@
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
             "amount_invested": 160.41,
-            "actual_share": 0.01,
+            "actual_share": 0.11,
             "final_share": 0.0,
             "fill": true
         },
@@ -51,7 +51,7 @@
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
             "amount_invested": 115.59,
-            "actual_share": 0.01,
+            "actual_share": 0.08,
             "final_share": 0.0,
             "fill": true
         }
