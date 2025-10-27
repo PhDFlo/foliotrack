@@ -14,6 +14,29 @@ class ShareInfo:
     actual: float = 0.0
     final: float = 0.0
 
+    def to_dict(self) -> Dict[str, float]:
+        """Serialize ShareInfo to a plain dict."""
+        return {
+            "target": float(self.target),
+            "actual": float(self.actual),
+            "final": float(self.final),
+        }
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "ShareInfo":
+        """Create ShareInfo from a dict, tolerates missing keys."""
+        si = ShareInfo()
+        if not isinstance(d, dict):
+            return si
+        try:
+            si.target = float(d.get("target", si.target))
+            si.actual = float(d.get("actual", si.actual))
+            si.final = float(d.get("final", si.final))
+        except Exception:
+            # Keep defaults if conversion fails
+            pass
+        return si
+
 
 @dataclass
 class Portfolio:
@@ -278,20 +301,7 @@ class Portfolio:
         """
         self.update_portfolio()  # Ensure shares are up to date
         try:
-            data = {
-                "currency": self.currency,
-                # Serialize securities using their own to_json / get_info method
-                "securities": [security.get_info() for security in self.securities],
-                # Serialize shares mapping (target/actual/final) per ticker
-                "shares": {
-                    ticker: {
-                        "target": info.target,
-                        "actual": info.actual,
-                        "final": info.final,
-                    }
-                    for ticker, info in self.shares.items()
-                },
-            }
+            data = self.to_dict()
             with open(filepath, "w") as f:
                 json.dump(data, f, indent=4)
             logging.info(f"Portfolio saved to {filepath}")
@@ -315,28 +325,44 @@ class Portfolio:
         try:
             with open(filepath, "r") as f:
                 data = json.load(f)
+            return cls.from_dict(data)
+        except Exception as e:
+            logging.error(f"Error loading portfolio from JSON: {e}")
+            return cls()
 
-            # Deserialize securities
-            securities = [
-                Security.from_json(security_data)
-                for security_data in data.get("securities", [])
-            ]
+    def to_dict(self) -> Dict[str, Any]:
+        """Return a JSON-serializable dict representing the portfolio."""
+        # Ensure shares and securities are up to date
+        # (do not call update_portfolio here to avoid side effects in to_dict)
+        return {
+            "currency": self.currency,
+            "securities": [security.get_info() for security in self.securities],
+            "shares": {ticker: info.to_dict() for ticker, info in self.shares.items()},
+        }
 
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Portfolio":
+        """Create a Portfolio from a dict (the inverse of to_dict).
+
+        This expects 'securities' to be a list of security dicts and 'shares' a mapping.
+        """
+        try:
+            securities = [Security.from_json(sd) for sd in data.get("securities", [])]
             portfolio = cls(securities=securities, currency=data.get("currency", "EUR"))
-
-            # Load shares mapping (new data format expects a 'shares' dict)
+            # Load shares mapping using ShareInfo.from_dict
             shares_data = data.get("shares", {})
-            # Load shares via helper to centralize ShareInfo creation
-            portfolio._load_shares(shares_data)
+            if isinstance(shares_data, dict):
+                for ticker, sd in shares_data.items():
+                    si = ShareInfo.from_dict(sd)
+                    portfolio.shares[ticker] = si
 
-            # If no shares mapping was provided, ensure all securities have ShareInfo entries
-            # Ensure every security has a ShareInfo entry
+            # Ensure every security has a ShareInfo
             for security in portfolio.securities:
                 portfolio._get_share(security.ticker)
 
             return portfolio
         except Exception as e:
-            logging.error(f"Error loading portfolio from JSON: {e}")
+            logging.error(f"Error creating Portfolio from dict: {e}")
             return cls()
 
     # --- Helper methods to centralize ShareInfo creation and access ---

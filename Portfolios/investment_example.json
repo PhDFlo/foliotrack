@@ -7,12 +7,12 @@
             "currency": "USD",
             "symbol": "$",
             "exchange_rate": 0.8591,
-            "price_in_security_currency": 72.375,
-            "price_in_portfolio_currency": 62.18,
+            "price_in_security_currency": 72.335,
+            "price_in_portfolio_currency": 62.14,
             "quantity": 20.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 1243.6,
+            "amount_invested": 1242.8,
             "fill": true
         },
         {
@@ -21,12 +21,12 @@
             "currency": "USD",
             "symbol": "$",
             "exchange_rate": 0.8591,
-            "price_in_security_currency": 190.879,
-            "price_in_portfolio_currency": 163.98,
+            "price_in_security_currency": 191.5801,
+            "price_in_portfolio_currency": 164.59,
             "quantity": 1.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 163.98,
+            "amount_invested": 164.59,
             "fill": true
         },
         {
@@ -47,12 +47,12 @@
     "shares": {
         "AMDW": {
             "target": 0.5,
-            "actual": 0.816,
+            "actual": 0.8156,
             "final": 0.0
         },
         "NVDA": {
             "target": 0.2,
-            "actual": 0.1076,
+            "actual": 0.108,
             "final": 0.0
         },
         "EIMI.L": {
