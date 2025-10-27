@@ -2,7 +2,7 @@ import numpy as np
 import cvxpy as cp
 import logging
 from typing import Tuple
-from .Portfolio import Portfolio, ShareInfo
+from .Portfolio import Portfolio
 
 
 class Equilibrate:
@@ -134,12 +134,9 @@ class Equilibrate:
         invested_amounts = np.array(
             [security.amount_invested for security in portfolio.securities]
         )
-        # Read target shares from the portfolio's shares mapping
+        # Read target shares from the portfolio using helper (ordered by securities)
         target_shares = np.array(
-            [
-                portfolio.shares[security.ticker].target
-                for security in portfolio.securities
-            ]
+            [portfolio._get_share(s.ticker).target for s in portfolio.securities]
         )
         return investments, price_matrix, invested_amounts, target_shares
 
@@ -220,12 +217,9 @@ class Equilibrate:
         else:
             final_shares = np.zeros_like(final_invested)
 
-        for i, security in enumerate(portfolio.securities):
-            # Ensure share info exists for this ticker
-            if security.ticker not in portfolio.shares:
-                portfolio.shares[security.ticker] = ShareInfo()
-            # Assign final share into the shares mapping
-            portfolio.shares[security.ticker].final = round(float(final_shares[i]), 4)
+        # Write final shares back into portfolio shares mapping via helper
+        for s, val in zip(portfolio.securities, final_shares):
+            portfolio._get_share(s.ticker).final = round(float(val), 4)
 
         return total_to_invest, final_shares
 

@@ -56,10 +56,8 @@ class Portfolio:
         Logs a message indicating the Security has been added with its target share and number held.
         """
         self.securities.append(security)
-        # Ensure share info exists for this ticker before assigning
-        if security.ticker not in self.shares:
-            self.shares[security.ticker] = ShareInfo()
-        self.shares[security.ticker].target = target_share
+        # Ensure share info exists for this ticker before assigning via helper
+        self._get_share(security.ticker).target = target_share
         logging.info(
             f"Security '{security.name}' added to portfolio with share {target_share} and number held {round(security.quantity, 4)}."
         )
@@ -88,10 +86,8 @@ class Portfolio:
         # If adding new security, initialize target share
         if target_share is None:
             target_share = 0.0  # Default to 0 if not specified
-        # Ensure share info exists for this ticker before assigning
-        if security.ticker not in self.shares:
-            self.shares[security.ticker] = ShareInfo()
-        self.shares[security.ticker].target = target_share
+        # Ensure share info exists for this ticker before assigning via helper
+        self._get_share(security.ticker).target = target_share
 
         self.update_portfolio()
         logging.info(
@@ -206,7 +202,7 @@ class Portfolio:
         """
         if not any(s.ticker == ticker for s in self.securities):
             raise ValueError(f"Security '{ticker}' not found in portfolio")
-        self.shares[ticker].target = share
+        self._get_share(ticker).target = share
 
     def distribute_remaining_share(
         self, excluded_tickers: Optional[List[str]] = None
@@ -238,40 +234,7 @@ class Portfolio:
         # Distribute remaining share evenly
         share_per_security = remaining_share / len(distribute_tickers)
         for ticker in distribute_tickers:
-            self.shares[ticker].target = share_per_security
-
-    # def buy_security(
-    #     self,
-    #     security_ticker: str,
-    #     quantity: float,
-    #     buy_price: Optional[float] = None,
-    #     fee: float = 0.0,
-    #     date: Optional[str] = None,
-    # ) -> None:
-    #     """
-    #     Buys a specified quantity of a Security in the portfolio, updating number held and amount invested.
-
-    #     Args:
-    #         security_ticker (str): The ticker of the Security to buy.
-    #         quantity (float): The quantity of the Security to buy.
-    #         buy_price (Optional[float], optional): The price at which the Security is bought. Defaults to None.
-    #         fee (float, optional): The fee associated with the purchase. Defaults to 0.0.
-    #         date (Optional[str], optional): The date of the purchase. Defaults to None.
-
-    #     Raises:
-    #         ValueError: If the Security is not found in the portfolio.
-    #     """
-    #     for security in self.securities:
-    #         if security.ticker == security_ticker:
-    #             purchase = security.buy(quantity, buy_price, fee, date)
-    #             self.update_portfolio()
-    #             self.staged_purchases.append(purchase)
-    #             logging.info(
-    #                 f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. New number held: {security.quantity}."
-    #             )
-    #             return
-    #     logging.error(f"Security '{security_ticker}' not found in the portfolio.")
-    #     raise ValueError(f"Security '{security_ticker}' not found in the portfolio.")
+            self._get_share(ticker).target = share_per_security
 
     def update_portfolio(self) -> None:
         """
@@ -296,10 +259,10 @@ class Portfolio:
         # Update actual shares
         if self.total_invested == 0:
             for security in self.securities:
-                self.shares[security.ticker].actual = 0.0
+                self._get_share(security.ticker).actual = 0.0
         else:
             for security in self.securities:
-                self.shares[security.ticker].actual = round(
+                self._get_share(security.ticker).actual = round(
                     security.amount_invested / self.total_invested, 4
                 )
 
@@ -363,31 +326,36 @@ class Portfolio:
 
             # Load shares mapping (new data format expects a 'shares' dict)
             shares_data = data.get("shares", {})
-            if isinstance(shares_data, dict):
-                for ticker, share_vals in shares_data.items():
-                    # Ensure a ShareInfo exists for this ticker
-                    if ticker not in portfolio.shares:
-                        portfolio.shares[ticker] = ShareInfo()
-                    self_share = portfolio.shares[ticker]
-
-                    # Expect a dict with target/actual/final values
-                    if isinstance(share_vals, dict):
-                        self_share.target = float(
-                            share_vals.get("target", self_share.target)
-                        )
-                        self_share.actual = float(
-                            share_vals.get("actual", self_share.actual)
-                        )
-                        self_share.final = float(
-                            share_vals.get("final", self_share.final)
-                        )
+            # Load shares via helper to centralize ShareInfo creation
+            portfolio._load_shares(shares_data)
 
             # If no shares mapping was provided, ensure all securities have ShareInfo entries
+            # Ensure every security has a ShareInfo entry
             for security in portfolio.securities:
-                if security.ticker not in portfolio.shares:
-                    portfolio.shares[security.ticker] = ShareInfo()
+                portfolio._get_share(security.ticker)
 
             return portfolio
         except Exception as e:
             logging.error(f"Error loading portfolio from JSON: {e}")
             return cls()
+
+    # --- Helper methods to centralize ShareInfo creation and access ---
+    def _get_share(self, ticker: str) -> ShareInfo:
+        """Return ShareInfo for ticker, creating it when missing."""
+        if ticker not in self.shares:
+            self.shares[ticker] = ShareInfo()
+        return self.shares[ticker]
+
+    def _load_shares(self, shares_data: Dict[str, Any]) -> None:
+        """Populate self.shares from a mapping loaded from JSON.
+
+        Expects shares_data to be a dict: ticker -> {target, actual, final}
+        """
+        if not isinstance(shares_data, dict):
+            return
+        for ticker, share_vals in shares_data.items():
+            si = self._get_share(ticker)
+            if isinstance(share_vals, dict):
+                si.target = float(share_vals.get("target", si.target))
+                si.actual = float(share_vals.get("actual", si.actual))
+                si.final = float(share_vals.get("final", si.final))
