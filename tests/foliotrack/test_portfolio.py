@@ -99,7 +99,7 @@ def test_buy_security():
     )
     portfolio.add_security(security)
     portfolio.buy_security("SEC1", 10, buy_price=100)
-    assert portfolio.securities[0].number_held == 10
+    assert portfolio.securities[0].quantity == 10
     assert portfolio.securities[0].amount_invested == 1000
 
 
@@ -115,13 +115,20 @@ def test_to_json():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=1.0,
         fill=False,
     )
     portfolio.add_security(security)
-    portfolio.buy_security("SEC1", 10, buy_price=100)
+    portfolio.set_target_share("SEC1", 1.0)
 
-    filepath = "test_portfolio.json"
+    buySEC1 = Security(
+        ticker="SEC1",
+        price_in_security_currency=100.0,
+        quantity=10.0,
+        fill=False,
+    )
+    portfolio.buy_security(buySEC1)
+
+    filepath = "Portfolios/test_portfolio.json"
     portfolio.to_json(filepath)
 
     with open(filepath, "r") as f:
@@ -130,7 +137,7 @@ def test_to_json():
     assert data["currency"] == "EUR"
     assert len(data["securities"]) == 1
     assert data["securities"][0]["name"] == "Security1"
-    assert data["securities"][0]["number_held"] == 10
+    assert data["securities"][0]["quantity"] == 10
     assert data["securities"][0]["amount_invested"] == 1000
 
     os.remove(filepath)
@@ -150,15 +157,13 @@ def test_from_json():
                 "ticker": "SEC1",
                 "currency": "EUR",
                 "price_in_security_currency": 100,
-                "target_share": 1.0,
-                "number_held": 10,
+                "quantity": 10,
                 "amount_invested": 1000,
             }
         ],
-        "staged_purchases": [],
     }
 
-    filepath = "test_portfolio.json"
+    filepath = "Portfolios/test_portfolio.json"
     with open(filepath, "w") as f:
         json.dump(portfolio_data, f)
 
@@ -167,7 +172,7 @@ def test_from_json():
     assert portfolio.currency == "EUR"
     assert len(portfolio.securities) == 1
     assert portfolio.securities[0].name == "Security1"
-    assert portfolio.securities[0].number_held == 10
+    assert portfolio.securities[0].quantity == 10
     assert portfolio.securities[0].amount_invested == 1000
 
     os.remove(filepath)
