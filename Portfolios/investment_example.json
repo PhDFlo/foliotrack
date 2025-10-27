@@ -7,15 +7,12 @@
             "currency": "USD",
             "symbol": "$",
             "exchange_rate": 0.8591,
-            "price_in_security_currency": 71.3942,
-            "price_in_portfolio_currency": 61.33,
+            "price_in_security_currency": 71.435,
+            "price_in_portfolio_currency": 61.37,
             "quantity": 20.0,
-            "target_share": 0.5,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 1226.6,
-            "actual_share": 0.81,
-            "final_share": 0.0,
+            "amount_invested": 1227.4,
             "fill": true
         },
         {
@@ -24,15 +21,12 @@
             "currency": "USD",
             "symbol": "$",
             "exchange_rate": 0.8591,
-            "price_in_security_currency": 190.9801,
-            "price_in_portfolio_currency": 164.07,
+            "price_in_security_currency": 190.3601,
+            "price_in_portfolio_currency": 163.54,
             "quantity": 1.0,
-            "target_share": 0.2,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 164.07,
-            "actual_share": 0.11,
-            "final_share": 0.0,
+            "amount_invested": 163.54,
             "fill": true
         },
         {
@@ -44,13 +38,27 @@
             "price_in_security_currency": 45.16,
             "price_in_portfolio_currency": 38.8,
             "quantity": 3.0,
-            "target_share": 0.3,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
             "amount_invested": 116.4,
-            "actual_share": 0.08,
-            "final_share": 0.0,
             "fill": true
         }
-    ]
+    ],
+    "shares": {
+        "AMDW": {
+            "target": 0.5,
+            "actual": 0.8143,
+            "final": 0.0
+        },
+        "NVDA": {
+            "target": 0.2,
+            "actual": 0.1085,
+            "final": 0.0
+        },
+        "EIMI.L": {
+            "target": 0.3,
+            "actual": 0.0772,
+            "final": 0.0
+        }
+    }
 }

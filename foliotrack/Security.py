@@ -21,16 +21,9 @@ class Security:
         init=False
     )  # Security price in portfolio currency
     quantity: float = 0.0  # Number of Security units held
-    target_share: float = 1.0  # Target share of the Security in the portfolio
     number_to_buy: float = field(init=False)  # Number of Security units to buy
     amount_to_invest: float = field(init=False)  # Amount to invest in this Security
     amount_invested: float = field(init=False)  # Total amount invested in this Security
-    actual_share: float = field(
-        init=False
-    )  # Actual share of the Security in the portfolio
-    final_share: float = field(
-        init=False
-    )  # Final share of the Security after investment
     fill: bool = True  # Boolean to fill attributes from yfinance
 
     def __post_init__(self):
@@ -50,8 +43,6 @@ class Security:
             except Exception as e:
                 logging.warning(f"Could not fetch security info for {self.ticker}: {e}")
 
-        self.actual_share = 0.0
-        self.final_share = 0.0
         self.exchange_rate = 1.0
         self.number_to_buy = 0.0
         self.amount_to_invest = 0.0
@@ -108,15 +99,6 @@ class Security:
             "date": date,
         }
 
-    def compute_actual_share(self, total_invested: float) -> None:
-        """
-        Compute and update the actual share of this Security in the portfolio.
-        """
-        if total_invested == 0:
-            self.actual_share = 0.0
-        else:
-            self.actual_share = round(self.amount_invested / total_invested, 2)
-
     def update_prices(self, portfolio_currency: str) -> None:
         """
         Update the Security price using yfinance based on its ticker,
@@ -169,6 +151,5 @@ class Security:
                 data.get("price_in_security_currency", 500.0)
             ),
             quantity=float(data.get("number_held", 0.0)),
-            target_share=float(data.get("target_share", 1.0)),
             fill=False,
         )

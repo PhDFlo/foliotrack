@@ -7,23 +7,20 @@ logging.basicConfig(level=logging.INFO)
 
 
 def portfolio_from_scratch():
-    # Create Security instances
+    # Create Security instances (disable remote fetching with fill=False)
     security1 = Security(
         ticker="AMDW",  # Amundi MSCI World UCITS Security
         price_in_security_currency=500.0,
-        target_share=0.5,
         quantity=20.0,
     )
     security2 = Security(
         ticker="NVDA",  # NVIDIA Corporation
         price_in_security_currency=300.0,
-        target_share=0.2,
         quantity=1.0,
     )
     security3 = Security(
         ticker="EIMI.L",  # iShares Core MSCI Emerging Markets IMI UCITS Security
         price_in_security_currency=200.0,
-        target_share=0.3,
         quantity=3.0,
     )
 
@@ -32,6 +29,10 @@ def portfolio_from_scratch():
     portfolio.add_security(security1)
     portfolio.add_security(security2)
     portfolio.add_security(security3)
+
+    portfolio.set_target_share("AMDW", 0.5)
+    portfolio.set_target_share("NVDA", 0.2)
+    portfolio.set_target_share("EIMI.L", 0.3)
 
     portfolio.to_json("Portfolios/investment_example.json")
 
@@ -61,29 +62,26 @@ def use_existing_portfolio():
     nvda1 = Security(
         ticker="NVDA",  # NVIDIA Corporation
         price_in_security_currency=300.0,
-        target_share=0.2,
         quantity=1.0,
     )
-
     portfolio.buy_security(nvda1)
 
-    aapl5 = Security(
+    eimi5 = Security(
         ticker="EIMI.L",  # iShares Core MSCI Emerging Markets IMI UCITS Security
         price_in_security_currency=200.0,
-        target_share=0.3,
         quantity=5.0,
     )
-    portfolio.buy_security(aapl5)
+    portfolio.buy_security(eimi5)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
-    logging.info("Portfolio info:")
+    logging.info("Portfolio info after buys:")
     for security_info in info:
         logging.info("Security:")
         for k, v in security_info.items():
             logging.info(f"  {k}: {v}")
 
-    # Export updated portfolio to CSV
+    # Export updated portfolio
     portfolio.to_json("Portfolios/portfolio_output.json")
 
 
