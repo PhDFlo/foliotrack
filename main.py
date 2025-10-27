@@ -11,23 +11,20 @@ def portfolio_from_scratch():
     security1 = Security(
         ticker="AMDW",  # Amundi MSCI World UCITS Security
         price_in_security_currency=500.0,
-        yearly_charge=0.2,
         target_share=0.5,
-        number_held=20.0,
+        quantity=20.0,
     )
     security2 = Security(
         ticker="NVDA",  # NVIDIA Corporation
         price_in_security_currency=300.0,
-        yearly_charge=0.1,
         target_share=0.2,
-        number_held=1.0,
+        quantity=1.0,
     )
     security3 = Security(
         ticker="EIMI.L",  # iShares Core MSCI Emerging Markets IMI UCITS Security
         price_in_security_currency=200.0,
-        yearly_charge=0.25,
         target_share=0.3,
-        number_held=3.0,
+        quantity=3.0,
     )
 
     # Create a Portfolio instance
@@ -61,8 +58,22 @@ def use_existing_portfolio():
     solve_equilibrium(portfolio, investment_amount=1000.0, min_percent_to_invest=0.99)
 
     # Buy some Securitys
-    portfolio.buy_security("NVDA", 1.0)
-    portfolio.buy_security("EIMI.L", 9.0, buy_price=210.0)
+    nvda1 = Security(
+        ticker="NVDA",  # NVIDIA Corporation
+        price_in_security_currency=300.0,
+        target_share=0.2,
+        quantity=1.0,
+    )
+
+    portfolio.buy_security(nvda1)
+
+    aapl5 = Security(
+        ticker="EIMI.L",  # iShares Core MSCI Emerging Markets IMI UCITS Security
+        price_in_security_currency=200.0,
+        target_share=0.3,
+        quantity=5.0,
+    )
+    portfolio.buy_security(aapl5)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()

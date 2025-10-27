@@ -20,8 +20,7 @@ class Security:
     price_in_portfolio_currency: float = field(
         init=False
     )  # Security price in portfolio currency
-    yearly_charge: float = 0.2  # Yearly charge in percentage
-    number_held: float = 0.0  # Number of Security units held
+    quantity: float = 0.0  # Number of Security units held
     target_share: float = 1.0  # Target share of the Security in the portfolio
     number_to_buy: float = field(init=False)  # Number of Security units to buy
     amount_to_invest: float = field(init=False)  # Amount to invest in this Security
@@ -66,7 +65,7 @@ class Security:
         """
         return (
             f"Security(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-            f"price={self.price_in_security_currency}{self.symbol}, yearly_charge={self.yearly_charge})"
+            f"price={self.price_in_security_currency}{self.symbol})"
         )
 
     def get_info(self) -> Dict[str, Any]:
@@ -81,7 +80,7 @@ class Security:
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
         )  # Security price in portfolio currency
-        self.amount_invested = self.number_held * self.price_in_portfolio_currency
+        self.amount_invested = self.quantity * self.price_in_portfolio_currency
 
     def buy(
         self,
@@ -99,7 +98,7 @@ class Security:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
         if buy_price is None:
             buy_price = self.price_in_portfolio_currency
-        self.number_held += quantity
+        self.quantity += quantity
         self.amount_invested += quantity * buy_price
         return {
             "ticker": self.ticker,
@@ -146,7 +145,7 @@ class Security:
             )
 
             self.amount_invested = round(
-                self.number_held * self.price_in_portfolio_currency, 2
+                self.quantity * self.price_in_portfolio_currency, 2
             )
         except Exception as e:
             logging.error(f"Could not update price for {self.ticker}: {e}")
@@ -169,8 +168,7 @@ class Security:
             price_in_security_currency=float(
                 data.get("price_in_security_currency", 500.0)
             ),
-            yearly_charge=float(data.get("yearly_charge", 0.2)),
-            number_held=float(data.get("number_held", 0.0)),
+            quantity=float(data.get("number_held", 0.0)),
             target_share=float(data.get("target_share", 1.0)),
             fill=False,
         )

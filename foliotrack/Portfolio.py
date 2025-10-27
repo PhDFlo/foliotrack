@@ -20,9 +20,6 @@ class Portfolio:
     currency: str = "EUR"  # Portfolio currency
     total_invested: float = field(init=False)  # Total amount invested in the portfolio
     symbol: str = field(init=False)  # Currency symbol
-    staged_purchases: List[Dict[str, Any]] = field(
-        default_factory=list
-    )  # Securitys being bought
 
     def __post_init__(self):
         """
@@ -44,14 +41,14 @@ class Portfolio:
         """
         self.securities.append(security)
         logging.info(
-            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
+            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.quantity, 4)}."
         )
 
     # Need to validate this method with two test cases (one where security exists, one where it does not) and validate add sell_security method. Also remove remove_security method
-    def buy_security_v2(self, security: Security) -> None:
+    def buy_security(self, security: Security) -> None:
         for p_sec in self.securities:
             if p_sec.ticker == security.ticker:
-                p_sec.number_held = p_sec.number_held + security.number_held
+                p_sec.quantity = p_sec.quantity + security.quantity
 
                 # Update portfolio after buying security
                 self.update_portfolio()
@@ -60,7 +57,7 @@ class Portfolio:
         self.securities.append(security)
         self.update_portfolio()
         logging.info(
-            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
+            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.quantity, 4)}."
         )
 
     def sell_security(self, ticker: str, quantity: float) -> None:
@@ -73,14 +70,14 @@ class Portfolio:
         """
         for security in self.securities:
             if security.ticker == ticker:
-                if quantity > security.number_held:
+                if quantity > security.quantity:
                     logging.error(
-                        f"Cannot sell {quantity} units of '{ticker}'. Only {security.number_held} units held."
+                        f"Cannot sell {quantity} units of '{ticker}'. Only {security.quantity} units held."
                     )
                     raise ValueError(
-                        f"Cannot sell {quantity} units of '{ticker}'. Only {security.number_held} units held."
+                        f"Cannot sell {quantity} units of '{ticker}'. Only {security.quantity} units held."
                     )
-                elif quantity == security.number_held:
+                elif quantity == security.quantity:
                     self.securities = [
                         security
                         for security in self.securities
@@ -88,10 +85,10 @@ class Portfolio:
                     ]
                     logging.info(f"Sold all units of '{ticker}'.")
                 else:
-                    security.number_held -= quantity
+                    security.quantity -= quantity
                     self.update_portfolio()
                     logging.info(
-                        f"Sold {quantity} units of '{ticker}'. New number held: {security.number_held}."
+                        f"Sold {quantity} units of '{ticker}'. New number held: {security.quantity}."
                     )
 
                 # Update portfolio
@@ -130,7 +127,7 @@ class Portfolio:
         - target_share: float
         - actual_share: float
         - final_share: float
-        - number_held: float
+        - quantity: float
         - number_to_buy: float
         - amount_to_invest: float
         - amount_invested: float
@@ -157,38 +154,38 @@ class Portfolio:
         logging.info("Portfolio shares sum equal to 1. Portfolio is complete.")
         return True
 
-    def buy_security(
-        self,
-        security_ticker: str,
-        quantity: float,
-        buy_price: Optional[float] = None,
-        fee: float = 0.0,
-        date: Optional[str] = None,
-    ) -> None:
-        """
-        Buys a specified quantity of a Security in the portfolio, updating number held and amount invested.
+    # def buy_security(
+    #     self,
+    #     security_ticker: str,
+    #     quantity: float,
+    #     buy_price: Optional[float] = None,
+    #     fee: float = 0.0,
+    #     date: Optional[str] = None,
+    # ) -> None:
+    #     """
+    #     Buys a specified quantity of a Security in the portfolio, updating number held and amount invested.
 
-        Args:
-            security_ticker (str): The ticker of the Security to buy.
-            quantity (float): The quantity of the Security to buy.
-            buy_price (Optional[float], optional): The price at which the Security is bought. Defaults to None.
-            fee (float, optional): The fee associated with the purchase. Defaults to 0.0.
-            date (Optional[str], optional): The date of the purchase. Defaults to None.
+    #     Args:
+    #         security_ticker (str): The ticker of the Security to buy.
+    #         quantity (float): The quantity of the Security to buy.
+    #         buy_price (Optional[float], optional): The price at which the Security is bought. Defaults to None.
+    #         fee (float, optional): The fee associated with the purchase. Defaults to 0.0.
+    #         date (Optional[str], optional): The date of the purchase. Defaults to None.
 
-        Raises:
-            ValueError: If the Security is not found in the portfolio.
-        """
-        for security in self.securities:
-            if security.ticker == security_ticker:
-                purchase = security.buy(quantity, buy_price, fee, date)
-                self.update_portfolio()
-                self.staged_purchases.append(purchase)
-                logging.info(
-                    f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. New number held: {security.number_held}."
-                )
-                return
-        logging.error(f"Security '{security_ticker}' not found in the portfolio.")
-        raise ValueError(f"Security '{security_ticker}' not found in the portfolio.")
+    #     Raises:
+    #         ValueError: If the Security is not found in the portfolio.
+    #     """
+    #     for security in self.securities:
+    #         if security.ticker == security_ticker:
+    #             purchase = security.buy(quantity, buy_price, fee, date)
+    #             self.update_portfolio()
+    #             self.staged_purchases.append(purchase)
+    #             logging.info(
+    #                 f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. New number held: {security.quantity}."
+    #             )
+    #             return
+    #     logging.error(f"Security '{security_ticker}' not found in the portfolio.")
+    #     raise ValueError(f"Security '{security_ticker}' not found in the portfolio.")
 
     def update_portfolio(self) -> None:
         """
@@ -231,7 +228,6 @@ class Portfolio:
                         "securities": [
                             security.get_info() for security in self.securities
                         ],
-                        "staged_purchases": self.staged_purchases,
                     },
                     f,
                     indent=4,
@@ -261,11 +257,9 @@ class Portfolio:
                 Security.from_json(security_data)
                 for security_data in data["securities"]
             ]
-            staged_purchases = data.get("staged_purchases", [])
             return cls(
                 securities=securities,
                 currency=data["currency"],
-                staged_purchases=staged_purchases,
             )
         except Exception as e:
             logging.error(f"Error loading portfolio from JSON: {e}")
