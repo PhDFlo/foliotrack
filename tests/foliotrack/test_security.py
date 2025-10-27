@@ -38,7 +38,7 @@ def test_compute_actual_share():
     assert security.actual_share == 0.5
 
 
-def test_update_price_from_yfinance():
+def test_update_prices():
     """
     Test the update_price_from_yfinance method of Security.
 
@@ -51,17 +51,6 @@ def test_update_price_from_yfinance():
         price_in_security_currency=100,
         target_share=0.5,
     )
-    security.update_price_from_yfinance()
+    security.update_prices("EUR")
     assert security.price_in_security_currency > 0
-
-
-def test_compute_price_in_portfolio_currency():
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="USD",
-        price_in_security_currency=100,
-        target_share=0.5,
-    )
-    security.compute_price_in_portfolio_currency("EUR")
     assert security.price_in_portfolio_currency > 0

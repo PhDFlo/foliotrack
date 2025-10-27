@@ -162,7 +162,7 @@ class Portfolio:
             raise Exception("Error, the portfolio is not complete.")
         total_invested = sum(security.amount_invested for security in self.securities)
         for security in self.securities:
-            security.compute_price_in_portfolio_currency(
+            security.update_prices(
                 self.currency
             )  # Ensure price is in portfolio currency
             security.compute_actual_share(total_invested)
@@ -172,7 +172,7 @@ class Portfolio:
         Update the price of each Security in the portfolio using yfinance.
         """
         for security in self.securities:
-            security.update_price_from_yfinance()
+            security.update_prices(self.currency)
 
     def to_json(self, filepath: str) -> None:
         """

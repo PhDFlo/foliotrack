@@ -66,9 +66,6 @@ def use_existing_portfolio():
     portfolio.buy_security("NVDA", 1.0)
     portfolio.buy_security("EIMI.L", 9.0, buy_price=210.0)
 
-    # Write staged purchases for Wealthfolio import
-    portfolio.purchases_to_wealthfolio_csv("Purchases/new_purchases_example.csv")
-
     # Log portfolio info
     info = portfolio.get_portfolio_info()
     logging.info("Portfolio info:")
