@@ -15,12 +15,14 @@ def test_solve_equilibrium():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
+        fill=False,
     )
     security2 = Security(
         name="Security2",
         ticker="SEC2",
         currency="EUR",
         price_in_security_currency=200,
+        fill=False,
     )
     portfolio.add_security(security1)
     portfolio.add_security(security2)

@@ -23,7 +23,7 @@ class Security:
     quantity: float = 0.0  # Number of Security units held
     number_to_buy: float = field(init=False)  # Number of Security units to buy
     amount_to_invest: float = field(init=False)  # Amount to invest in this Security
-    amount_invested: float = field(init=False)  # Total amount invested in this Security
+    value: float = field(init=False)  # Total security value in portfolio currency
     fill: bool = True  # Boolean to fill attributes from yfinance
 
     def __post_init__(self):
@@ -51,7 +51,7 @@ class Security:
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
         )  # Security price in portfolio currency
-        self.amount_invested = self.quantity * self.price_in_portfolio_currency
+        self.value = self.quantity * self.price_in_portfolio_currency
 
     def __repr__(self) -> str:
         """
@@ -87,7 +87,7 @@ class Security:
         if buy_price is None:
             buy_price = self.price_in_portfolio_currency
         self.quantity += quantity
-        self.amount_invested += quantity * buy_price
+        self.value += quantity * buy_price
         return {
             "ticker": self.ticker,
             "quantity": quantity,
@@ -128,9 +128,7 @@ class Security:
                 logging.error(f"Could not update price for {self.ticker}: {e}")
 
         else:
-            self.amount_invested = round(
-                self.quantity * self.price_in_portfolio_currency, 2
-            )
+            self.value = round(self.quantity * self.price_in_portfolio_currency, 2)
 
     def to_json(self) -> Dict[str, Any]:
         """

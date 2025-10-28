@@ -17,7 +17,7 @@ def test_buy_security():
 
     security.buy(10, buy_price=100)
     assert security.quantity == 10
-    assert security.amount_invested == 1000
+    assert security.value == 1000
 
 
 def test_update_security():

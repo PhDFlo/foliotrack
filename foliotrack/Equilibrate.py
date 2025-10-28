@@ -24,7 +24,7 @@ class Equilibrate:
         Args:
             securities (List[Any]): List of Security objects. Each Security must have attributes:
                 - price (float)
-                - amount_invested (float)
+                - value (float)
                 - target_share (float)
                 - name (str)
                 - symbol (str)
@@ -101,7 +101,7 @@ class Equilibrate:
         """
         required_attrs = [
             "price_in_portfolio_currency",
-            "amount_invested",
+            "value",
             "name",
             "symbol",
         ]
@@ -131,14 +131,12 @@ class Equilibrate:
         price_matrix = np.diag(
             [security.price_in_portfolio_currency for security in portfolio.securities]
         )
-        invested_amounts = np.array(
-            [security.amount_invested for security in portfolio.securities]
-        )
+        total_value = np.array([security.value for security in portfolio.securities])
         # Read target shares from the portfolio using helper (ordered by securities)
         target_shares = np.array(
             [portfolio._get_share(s.ticker).target for s in portfolio.securities]
         )
-        return investments, price_matrix, invested_amounts, target_shares
+        return investments, price_matrix, total_value, target_shares
 
     def setup_constraints(
         self,
