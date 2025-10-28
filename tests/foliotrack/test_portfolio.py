@@ -92,14 +92,27 @@ def test_buy_security():
         name="Security1",
         ticker="SEC1",
         currency="EUR",
+        quantity=25,
+        price_in_security_currency=200,
+        fill=False,
+    )
+    portfolio.add_security(security)
+    portfolio.set_target_share("SEC1", 1.0)
+
+    assert portfolio.securities[0].quantity == 25
+    assert portfolio.securities[0].amount_invested == 5000
+
+    security = Security(
+        ticker="SEC1",
         quantity=10,
         price_in_security_currency=100,
+        fill=False,
     )
     # portfolio.add_security(security)
-    portfolio.buy_security(security, target_share=1.0)
+    portfolio.buy_security(security)
 
-    assert portfolio.securities[0].quantity == 10
-    assert portfolio.securities[0].amount_invested == 1000
+    assert portfolio.securities[0].quantity == 35
+    assert portfolio.securities[0].amount_invested == 6000
 
 
 def test_to_json():

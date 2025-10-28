@@ -20,7 +20,7 @@ def test_buy_security():
     assert security.amount_invested == 1000
 
 
-def test_update_prices():
+def test_update_security():
     """
     Test the update_price_from_yfinance method of Security.
 
@@ -32,6 +32,6 @@ def test_update_prices():
         currency="EUR",
         price_in_security_currency=100,
     )
-    security.update_prices("EUR")
+    security.update_security("EUR")
     assert security.price_in_security_currency > 0
     assert security.price_in_portfolio_currency > 0

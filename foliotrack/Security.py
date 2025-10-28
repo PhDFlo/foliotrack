@@ -96,38 +96,41 @@ class Security:
             "date": date,
         }
 
-    def update_prices(self, portfolio_currency: str) -> None:
+    def update_security(self, portfolio_currency: str) -> None:
         """
         Update the Security price using yfinance based on its ticker,
         compute the exchange rate if needed, and update amount invested.
         """
-        ticker = yf.Ticker(self.ticker)
-        try:
-            price_from_market = ticker.info.get("regularMarketPrice")
-            if price_from_market is not None:
-                self.price_in_security_currency = price_from_market
+        if self.fill:
+            try:
+                ticker = yf.Ticker(self.ticker)
+                price_from_market = ticker.info.get("regularMarketPrice")
+                if price_from_market is not None:
+                    self.price_in_security_currency = price_from_market
 
-            if self.currency.lower() != portfolio_currency.lower():
-                try:
-                    self.exchange_rate = float(
-                        get_rate_between(
-                            self.currency.upper(), portfolio_currency.upper()
+                if self.currency.lower() != portfolio_currency.lower():
+                    try:
+                        self.exchange_rate = float(
+                            get_rate_between(
+                                self.currency.upper(), portfolio_currency.upper()
+                            )
                         )
-                    )
-                except Exception as e:
-                    logging.error(
-                        f"Could not get exchange rate for {self.currency} to {portfolio_currency}: {e}"
-                    )
+                    except Exception as e:
+                        logging.error(
+                            f"Could not get exchange rate for {self.currency} to {portfolio_currency}: {e}"
+                        )
 
-            self.price_in_portfolio_currency = round(
-                float(self.price_in_security_currency * self.exchange_rate), 2
-            )
+                self.price_in_portfolio_currency = round(
+                    float(self.price_in_security_currency * self.exchange_rate), 2
+                )
 
+            except Exception as e:
+                logging.error(f"Could not update price for {self.ticker}: {e}")
+
+        else:
             self.amount_invested = round(
                 self.quantity * self.price_in_portfolio_currency, 2
             )
-        except Exception as e:
-            logging.error(f"Could not update price for {self.ticker}: {e}")
 
     def to_json(self) -> Dict[str, Any]:
         """

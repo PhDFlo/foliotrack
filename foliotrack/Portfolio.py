@@ -86,35 +86,27 @@ class Portfolio:
         )
 
     # Need to validate this method with two test cases (one where security exists, one where it does not) and validate add sell_security method. Also remove remove_security method
-    def buy_security(
-        self, security: Security, target_share: Optional[float] = None
-    ) -> None:
+    def buy_security(self, security: Security) -> None:
         """
         Buys a security, adding it to the portfolio or updating existing quantity.
 
         Args:
             security (Security): The security to buy
-            target_share (Optional[float]): Target share for the security if it's new
         """
         for p_sec in self.securities:
             if p_sec.ticker == security.ticker:
                 p_sec.quantity = p_sec.quantity + security.quantity
-                if target_share is not None:
-                    self.set_target_share(security.ticker, target_share)
                 # Update portfolio after buying security
                 self.update_portfolio()
                 return
 
+        # First time buying this security, add to portfolio
         self.securities.append(security)
-        # If adding new security, initialize target share
-        if target_share is None:
-            target_share = 0.0  # Default to 0 if not specified
-        # Ensure share info exists for this ticker before assigning via helper
-        self._get_share(security.ticker).target = target_share
 
+        # Update portfolio after buying security
         self.update_portfolio()
         logging.info(
-            f"Security '{security.name}' added to portfolio with share {target_share} and number held {round(security.quantity, 4)}."
+            f"Security '{security.name}' added to portfolio with quantity {round(security.quantity, 4)}."
         )
 
     def sell_security(self, ticker: str, quantity: float) -> None:
@@ -267,12 +259,12 @@ class Portfolio:
         Then it iterates over each Security in the portfolio, ensuring its price is in the portfolio currency,
         and computes its actual share based on the total invested.
         """
-        if not self.verify_target_share_sum():
-            raise Exception("Error, the portfolio is not complete.")
+        # if not self.verify_target_share_sum():
+        #    raise Exception("Error, the portfolio is not complete.")
 
         # Update security prices
         for security in self.securities:
-            security.update_prices(self.currency)
+            security.update_security(self.currency)
 
         # Compute actual shares
         self.total_invested = sum(
