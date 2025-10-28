@@ -15,17 +15,18 @@ def test_solve_equilibrium():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=0.5,
     )
     security2 = Security(
         name="Security2",
         ticker="SEC2",
         currency="EUR",
         price_in_security_currency=200,
-        target_share=0.5,
     )
     portfolio.add_security(security1)
     portfolio.add_security(security2)
+
+    portfolio.set_target_share("SEC1", 0.6)
+    portfolio.set_target_share("SEC2", 0.4)
 
     # Solve for equilibrium
     security_counts, total_to_invest, final_shares = solve_equilibrium(

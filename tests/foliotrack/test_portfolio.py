@@ -17,7 +17,6 @@ def test_add_security():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=0.5,
         fill=False,
     )
     portfolio.add_security(security)
@@ -38,7 +37,6 @@ def test_remove_security():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=0.5,
         fill=False,
     )
     security2 = Security(
@@ -46,7 +44,6 @@ def test_remove_security():
         ticker="SEC2",
         currency="EUR",
         price_in_security_currency=200,
-        target_share=0.5,
         fill=False,
     )
     portfolio.add_security(security1)
@@ -68,17 +65,18 @@ def test_verify_target_share_sum():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=0.5,
     )
     security2 = Security(
         name="Security2",
         ticker="SEC2",
         currency="EUR",
         price_in_security_currency=200,
-        target_share=0.5,
     )
     portfolio.add_security(security1)
     portfolio.add_security(security2)
+    portfolio.set_target_share("SEC1", 0.5)
+    portfolio.set_target_share("SEC2", 0.5)
+
     assert portfolio.verify_target_share_sum() is True
 
 
@@ -94,11 +92,12 @@ def test_buy_security():
         name="Security1",
         ticker="SEC1",
         currency="EUR",
+        quantity=10,
         price_in_security_currency=100,
-        target_share=1.0,
     )
-    portfolio.add_security(security)
-    portfolio.buy_security("SEC1", 10, buy_price=100)
+    # portfolio.add_security(security)
+    portfolio.buy_security(security, target_share=1.0)
+
     assert portfolio.securities[0].quantity == 10
     assert portfolio.securities[0].amount_invested == 1000
 

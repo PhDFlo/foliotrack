@@ -48,7 +48,10 @@ class Security:
         self.amount_to_invest = 0.0
         self.symbol = get_symbol(self.currency) or ""
 
-        self.update_portfolio_price_and_amount()
+        self.price_in_portfolio_currency = round(
+            self.price_in_security_currency * self.exchange_rate, 2
+        )  # Security price in portfolio currency
+        self.amount_invested = self.quantity * self.price_in_portfolio_currency
 
     def __repr__(self) -> str:
         """
@@ -66,12 +69,6 @@ class Security:
         info = asdict(self)
         info["symbol"] = self.symbol
         return info
-
-    def update_portfolio_price_and_amount(self) -> None:
-        self.price_in_portfolio_currency = round(
-            self.price_in_security_currency * self.exchange_rate, 2
-        )  # Security price in portfolio currency
-        self.amount_invested = self.quantity * self.price_in_portfolio_currency
 
     def buy(
         self,

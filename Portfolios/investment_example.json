@@ -6,13 +6,13 @@
             "ticker": "AMDW",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8591,
-            "price_in_security_currency": 72.335,
-            "price_in_portfolio_currency": 62.14,
+            "exchange_rate": 0.8598,
+            "price_in_security_currency": 73.03,
+            "price_in_portfolio_currency": 62.79,
             "quantity": 20.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 1242.8,
+            "amount_invested": 1255.8,
             "fill": true
         },
         {
@@ -20,13 +20,13 @@
             "ticker": "NVDA",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8591,
-            "price_in_security_currency": 191.5801,
-            "price_in_portfolio_currency": 164.59,
+            "exchange_rate": 0.8598,
+            "price_in_security_currency": 201.5751,
+            "price_in_portfolio_currency": 173.31,
             "quantity": 1.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 164.59,
+            "amount_invested": 173.31,
             "fill": true
         },
         {
@@ -34,30 +34,30 @@
             "ticker": "EIMI.L",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8591,
-            "price_in_security_currency": 45.16,
-            "price_in_portfolio_currency": 38.8,
+            "exchange_rate": 0.8598,
+            "price_in_security_currency": 45.12,
+            "price_in_portfolio_currency": 38.79,
             "quantity": 3.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 116.4,
+            "amount_invested": 116.37,
             "fill": true
         }
     ],
     "shares": {
         "AMDW": {
             "target": 0.5,
-            "actual": 0.8156,
+            "actual": 0.8126,
             "final": 0.0
         },
         "NVDA": {
             "target": 0.2,
-            "actual": 0.108,
+            "actual": 0.1121,
             "final": 0.0
         },
         "EIMI.L": {
             "target": 0.3,
-            "actual": 0.0764,
+            "actual": 0.0753,
             "final": 0.0
         }
     }
