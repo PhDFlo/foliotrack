@@ -73,8 +73,6 @@ class Security:
     def buy(
         self,
         quantity: float,
-        buy_price: Optional[float] = None,
-        fee: float = 0.0,
         date: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
@@ -84,15 +82,11 @@ class Security:
 
         if date is None:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
-        if buy_price is None:
-            buy_price = self.price_in_portfolio_currency
         self.quantity += quantity
-        self.value += quantity * buy_price
+        self.value = quantity * self.price_in_portfolio_currency
         return {
             "ticker": self.ticker,
             "quantity": quantity,
-            "buy_price": buy_price,
-            "fee": fee,
             "date": date,
         }
 

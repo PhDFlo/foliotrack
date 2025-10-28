@@ -108,9 +108,7 @@ class Portfolio:
             f"Security '{security.name}' added to portfolio with quantity {round(security.quantity, 4)}."
         )
 
-    def buy_existing_security(
-        self, ticker: str, quantity: float, buy_price: Optional[float] = None
-    ) -> None:
+    def buy_existing_security(self, ticker: str, quantity: float) -> None:
         """
         Buys an existing Security in the portfolio, updating its quantity and amount invested.
 
@@ -121,7 +119,7 @@ class Portfolio:
         """
         for security in self.securities:
             if security.ticker == ticker:
-                security.buy(quantity, buy_price)
+                security.buy(quantity)
                 # Update portfolio after buying security
                 print(security.quantity, security.value)
                 self.update_portfolio()
