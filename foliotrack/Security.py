@@ -121,8 +121,7 @@ class Security:
             except Exception as e:
                 logging.error(f"Could not update price for {self.ticker}: {e}")
 
-        else:
-            self.value = round(self.quantity * self.price_in_portfolio_currency, 2)
+        self.value = round(self.quantity * self.price_in_portfolio_currency, 2)
 
     def to_json(self) -> Dict[str, Any]:
         """
