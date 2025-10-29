@@ -133,7 +133,7 @@ class Currency:
         return None
 
     def get_rate_between(
-        self, from_currency: str, to_currency: str, date: str = None
+        self, from_currency: str, to_currency: str, date: str = ""
     ) -> float:
         """
         Returns the exchange rate from `from_currency` to `to_currency`

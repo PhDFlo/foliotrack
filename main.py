@@ -17,8 +17,6 @@ def portfolio_from_scratch():
     portfolio.set_target_share("NVDA", 0.2)
     portfolio.set_target_share("EIMI.L", 0.3)
 
-    portfolio.update_portfolio()
-
     portfolio.to_json("Portfolios/investment_example.json")
 
     # Solve for equilibrium
