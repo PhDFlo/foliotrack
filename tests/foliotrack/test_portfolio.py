@@ -88,22 +88,15 @@ def test_buy_security():
     The amount invested in the Security should be equal to the quantity multiplied by the buy price.
     """
     portfolio = Portfolio(currency="EUR")
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        quantity=25,
-        price_in_security_currency=200,
-        fill=False,
+    portfolio.buy_security(
+        "SEC1", quantity=25.0, currency="EUR", price=200.0, fill=False
     )
-    portfolio.add_security(security)
     portfolio.set_target_share("SEC1", 1.0)
 
     assert portfolio.securities[0].quantity == 25
     assert portfolio.securities[0].value == 5000
 
-    # portfolio.add_security(security)
-    portfolio.buy_existing_security("SEC1", quantity=10.0)
+    portfolio.buy_security("SEC1", quantity=10.0)
 
     assert portfolio.securities[0].quantity == 35
     assert portfolio.securities[0].value == 7000
