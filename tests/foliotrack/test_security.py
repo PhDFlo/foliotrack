@@ -20,6 +20,26 @@ def test_buy_security():
     assert security.value == 1000
 
 
+def test_sell_security():
+    """
+    Test the sell method of Security.
+
+    The sell method should decrease the number of held units and the amount invested according \
+        to the specified quantity and sell price.
+    """
+    security = Security(
+        name="Security1",
+        ticker="SEC1",
+        currency="EUR",
+        price_in_security_currency=100,
+    )
+
+    security.buy(10)
+    security.sell(4)
+    assert security.quantity == 6
+    assert security.value == 400
+
+
 def test_update_security():
     """
     Test the update_price_from_yfinance method of Security.

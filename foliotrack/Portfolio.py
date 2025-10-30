@@ -68,22 +68,22 @@ class Portfolio:
             if security.ticker not in self.shares:
                 self.shares[security.ticker] = ShareInfo()
 
-    def add_security(self, security: Security, target_share: float = 0.0) -> None:
-        """
-        Adds a Security to the portfolio.
+    # def add_security(self, security: Security, target_share: float = 0.0) -> None:
+    #     """
+    #     Adds a Security to the portfolio.
 
-        Args:
-            security (Security): Security instance to add to the portfolio.
-            target_share (float): Target share for the security in the portfolio. Defaults to 0.0.
+    #     Args:
+    #         security (Security): Security instance to add to the portfolio.
+    #         target_share (float): Target share for the security in the portfolio. Defaults to 0.0.
 
-        Logs a message indicating the Security has been added with its target share and number held.
-        """
-        self.securities.append(security)
-        # Ensure share info exists for this ticker before assigning via helper
-        self._get_share(security.ticker).target = target_share
-        logging.info(
-            f"Security '{security.name}' added to portfolio with share {target_share} and number held {round(security.quantity, 4)}."
-        )
+    #     Logs a message indicating the Security has been added with its target share and number held.
+    #     """
+    #     self.securities.append(security)
+    #     # Ensure share info exists for this ticker before assigning via helper
+    #     self._get_share(security.ticker).target = target_share
+    #     logging.info(
+    #         f"Security '{security.name}' added to portfolio with share {target_share} and number held {round(security.quantity, 4)}."
+    #     )
 
     def buy_security(
         self,
@@ -130,18 +130,60 @@ class Portfolio:
             f"Security '{ticker}' added to portfolio with quantity {round(quantity, 4)}."
         )
 
-    def remove_security(self, ticker: str) -> None:
+    def sell_security(self, ticker: str, quantity: float) -> None:
         """
-        Removes a Security from the portfolio.
+        Sells a quantity of a security in the portfolio.
 
         Args:
-            ticker (str): Ticker of the Security to remove from the portfolio.
+            ticker (str): The ticker of the security to sell
+            quantity (float): The quantity of the security to sell
 
-        Logs a message indicating the Security has been removed.
+        Raises:
+            ValueError: If the security is not found in the portfolio or if there is insufficient quantity to sell.
         """
-        self.securities = [
-            security for security in self.securities if security.ticker != ticker
-        ]
+        for p_sec in self.securities:
+            if p_sec.ticker == ticker:
+                if p_sec.quantity < quantity:
+                    raise ValueError(
+                        f"Insufficient quantity to sell. Available: {p_sec.quantity}, Requested: {quantity}"
+                    )
+                elif p_sec.quantity == quantity:
+                    # Selling all units, remove security from portfolio
+                    self.securities = [
+                        security
+                        for security in self.securities
+                        if security.ticker != ticker
+                    ]
+                    # Update portfolio after removing security
+                    self.update_portfolio()
+                    logging.info(
+                        f"Sold all units of security '{ticker}'. Security removed from portfolio."
+                    )
+                    return
+                else:
+                    # Selling partial quantity
+                    p_sec.sell(quantity)
+                    # Update portfolio after selling security
+                    self.update_portfolio()
+                    logging.info(
+                        f"Sold {quantity} units of security '{ticker}'. New number held: {round(p_sec.quantity, 4)}."
+                    )
+                    return
+
+        raise ValueError(f"Security '{ticker}' not found in portfolio")
+
+    # def remove_security(self, ticker: str) -> None:
+    #     """
+    #     Removes a Security from the portfolio.
+
+    #     Args:
+    #         ticker (str): Ticker of the Security to remove from the portfolio.
+
+    #     Logs a message indicating the Security has been removed.
+    #     """
+    #     self.securities = [
+    #         security for security in self.securities if security.ticker != ticker
+    #     ]
 
     def get_portfolio_info(self) -> List[Dict[str, Any]]:
         """

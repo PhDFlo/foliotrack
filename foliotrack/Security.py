@@ -90,6 +90,30 @@ class Security:
             "date": date,
         }
 
+    def sell(
+        self,
+        quantity: float,
+        date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Sell a specified quantity of this Security, updating number held and amount invested.
+        """
+        import datetime
+
+        if date is None:
+            date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if quantity > self.quantity:
+            raise ValueError(
+                f"Cannot sell {quantity} units; only {self.quantity} available."
+            )
+        self.quantity -= quantity
+        self.value = quantity * self.price_in_portfolio_currency
+        return {
+            "ticker": self.ticker,
+            "quantity": -quantity,
+            "date": date,
+        }
+
     def update_security(self, portfolio_currency: str) -> None:
         """
         Update the Security price using yfinance based on its ticker,

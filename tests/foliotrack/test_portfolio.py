@@ -4,55 +4,6 @@ import json
 import os
 
 
-def test_add_security():
-    """
-    Test adding a Security to a Portfolio.
-
-    Adding a Security to a Portfolio should increase the number of Securities in the Portfolio by 1.
-    The added Security should be the first element in the list of Securities in the Portfolio.
-    """
-    portfolio = Portfolio(currency="EUR")
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        fill=False,
-    )
-    portfolio.add_security(security)
-    assert len(portfolio.securities) == 1
-    assert portfolio.securities[0].name == "Security1"
-
-
-def test_remove_security():
-    """
-    Test removing a Security from a Portfolio.
-
-    Removing a Security from a Portfolio should decrease the number of securities in the Portfolio by 1.
-    The removed Security should not be in the list of securities in the Portfolio.
-    """
-    portfolio = Portfolio(currency="EUR")
-    security1 = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        fill=False,
-    )
-    security2 = Security(
-        name="Security2",
-        ticker="SEC2",
-        currency="EUR",
-        price_in_security_currency=200,
-        fill=False,
-    )
-    portfolio.add_security(security1)
-    portfolio.add_security(security2)
-    portfolio.remove_security("SEC1")
-    assert len(portfolio.securities) == 1
-    assert portfolio.securities[0].name == "Security2"
-
-
 def test_verify_target_share_sum():
     """
     Test the verify_target_share_sum method of a Portfolio.
@@ -60,20 +11,8 @@ def test_verify_target_share_sum():
     The method should return True if the target shares of all Securities in the Portfolio sum to 1.0.
     """
     portfolio = Portfolio(currency="EUR")
-    security1 = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-    )
-    security2 = Security(
-        name="Security2",
-        ticker="SEC2",
-        currency="EUR",
-        price_in_security_currency=200,
-    )
-    portfolio.add_security(security1)
-    portfolio.add_security(security2)
+    portfolio.buy_security("SEC1", quantity=10.0, price=100.0, fill=False)
+    portfolio.buy_security("SEC2", quantity=5.0, price=200.0, fill=False)
     portfolio.set_target_share("SEC1", 0.5)
     portfolio.set_target_share("SEC2", 0.5)
 
@@ -88,9 +27,7 @@ def test_buy_security():
     The amount invested in the Security should be equal to the quantity multiplied by the buy price.
     """
     portfolio = Portfolio(currency="EUR")
-    portfolio.buy_security(
-        "SEC1", quantity=25.0, currency="EUR", price=200.0, fill=False
-    )
+    portfolio.buy_security("SEC1", quantity=25.0, price=200.0, fill=False)
     portfolio.set_target_share("SEC1", 1.0)
 
     assert portfolio.securities[0].quantity == 25
@@ -109,15 +46,16 @@ def test_to_json():
     The to_json method should save the Portfolio to a JSON file with the correct structure and data.
     """
     portfolio = Portfolio(currency="EUR")
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        quantity=10,
-        fill=False,
-    )
-    portfolio.add_security(security)
+    # security = Security(
+    #     name="Security1",
+    #     ticker="SEC1",
+    #     currency="EUR",
+    #     price_in_security_currency=100,
+    #     quantity=10,
+    #     fill=False,
+    # )
+    # portfolio.add_security(security)
+    portfolio.buy_security("SEC1", quantity=10.0, price=100.0, fill=False)
     portfolio.set_target_share("SEC1", 1.0)
 
     filepath = "Portfolios/test_portfolio.json"
@@ -128,7 +66,6 @@ def test_to_json():
 
     assert data["currency"] == "EUR"
     assert len(data["securities"]) == 1
-    assert data["securities"][0]["name"] == "Security1"
     assert data["securities"][0]["quantity"] == 10
     assert data["securities"][0]["value"] == 1000
 

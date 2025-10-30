@@ -10,23 +10,8 @@ def test_solve_equilibrium():
     Test solving for equilibrium given a portfolio and an investment amount.
     """
     portfolio = Portfolio(currency="EUR")
-    security1 = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        fill=False,
-    )
-    security2 = Security(
-        name="Security2",
-        ticker="SEC2",
-        currency="EUR",
-        price_in_security_currency=200,
-        fill=False,
-    )
-    portfolio.add_security(security1)
-    portfolio.add_security(security2)
-
+    portfolio.buy_security("SEC1", quantity=0.0, price=100.0, fill=False)
+    portfolio.buy_security("SEC2", quantity=0.0, price=200.0, fill=False)
     portfolio.set_target_share("SEC1", 0.6)
     portfolio.set_target_share("SEC2", 0.4)
 
