@@ -2,17 +2,17 @@
     "currency": "EUR",
     "securities": [
         {
-            "name": "Roundhill AMD WeeklyPay ETF",
-            "ticker": "AMDW",
-            "currency": "USD",
-            "symbol": "$",
-            "exchange_rate": 0.8594,
-            "price_in_security_currency": 74.38,
-            "price_in_portfolio_currency": 63.92,
+            "name": "Airbus SE",
+            "ticker": "AIR.PA",
+            "currency": "EUR",
+            "symbol": "\u20ac",
+            "exchange_rate": 1.0,
+            "price_in_security_currency": 212.7,
+            "price_in_portfolio_currency": 212.7,
             "quantity": 20.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 1278.4,
+            "value": 4254.0,
             "fill": true
         },
         {
@@ -20,44 +20,44 @@
             "ticker": "NVDA",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8594,
-            "price_in_security_currency": 207.04,
-            "price_in_portfolio_currency": 177.93,
+            "exchange_rate": 0.8658,
+            "price_in_security_currency": 203.11,
+            "price_in_portfolio_currency": 175.85,
             "quantity": 1.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 177.93,
+            "value": 175.85,
             "fill": true
         },
         {
-            "name": "iShares Core MSCI EM IMI UCITS ETF USD (Acc)",
-            "ticker": "EIMI.L",
-            "currency": "USD",
-            "symbol": "$",
-            "exchange_rate": 0.8594,
-            "price_in_security_currency": 45.57,
-            "price_in_portfolio_currency": 39.16,
-            "quantity": 3.0,
+            "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9enne",
+            "ticker": "MC.PA",
+            "currency": "EUR",
+            "symbol": "\u20ac",
+            "exchange_rate": 1.0,
+            "price_in_security_currency": 610.1,
+            "price_in_portfolio_currency": 610.1,
+            "quantity": 1.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 117.48,
+            "value": 610.1,
             "fill": true
         }
     ],
     "shares": {
-        "AMDW": {
+        "AIR.PA": {
             "target": 0.5,
-            "actual": 0.8123,
+            "actual": 0.8441,
             "final": 0.0
         },
         "NVDA": {
             "target": 0.2,
-            "actual": 0.1131,
+            "actual": 0.0349,
             "final": 0.0
         },
-        "EIMI.L": {
+        "MC.PA": {
             "target": 0.3,
-            "actual": 0.0746,
+            "actual": 0.1211,
             "final": 0.0
         }
     }

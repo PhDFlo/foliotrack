@@ -9,18 +9,18 @@ logging.basicConfig(level=logging.INFO)
 def portfolio_from_scratch():
     # Create a Portfolio instance
     portfolio = Portfolio()
-    portfolio.buy_security("AMDW", quantity=20.0, price=500.0, fill=True)
-    portfolio.buy_security("NVDA", quantity=1.0, price=300.0, fill=True)
-    portfolio.buy_security("EIMI.L", quantity=3.0, price=200.0, fill=True)
+    portfolio.buy_security("AIR.PA", quantity=20.0, price=200.0, fill=True)
+    portfolio.buy_security("NVDA", quantity=1.0, price=600.0, fill=True)
+    portfolio.buy_security("MC.PA", quantity=1.0, price=300.0, fill=True)
 
-    portfolio.set_target_share("AMDW", 0.5)
+    portfolio.set_target_share("AIR.PA", 0.5)
     portfolio.set_target_share("NVDA", 0.2)
-    portfolio.set_target_share("EIMI.L", 0.3)
+    portfolio.set_target_share("MC.PA", 0.3)
 
     portfolio.to_json("Portfolios/investment_example.json")
 
     # Solve for equilibrium
-    solve_equilibrium(portfolio, investment_amount=500.0, min_percent_to_invest=0.99)
+    solve_equilibrium(portfolio, investment_amount=1000.0, min_percent_to_invest=0.99)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
@@ -37,11 +37,11 @@ def use_existing_portfolio():
     portfolio.update_portfolio()
 
     # Solve for equilibrium
-    solve_equilibrium(portfolio, investment_amount=1000.0, min_percent_to_invest=0.99)
+    solve_equilibrium(portfolio, investment_amount=10000.0, min_percent_to_invest=0.99)
 
     # Buy additional securities
     portfolio.buy_security("NVDA", quantity=1.0, price=300.0)
-    portfolio.buy_security("EIMI.L", quantity=5.0, price=200.0)
+    portfolio.buy_security("MC.PA", quantity=2.0, price=200.0)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
@@ -57,4 +57,4 @@ def use_existing_portfolio():
 
 if __name__ == "__main__":
     portfolio_from_scratch()
-    # use_existing_portfolio()
+    use_existing_portfolio()
