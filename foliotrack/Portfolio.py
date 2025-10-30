@@ -120,7 +120,7 @@ class Portfolio:
             currency=currency if currency is not None else self.currency,
             price_in_security_currency=price if price is not None else 0.0,
             quantity=quantity,
-            fill=fill,
+            fill=fill if fill is not None else True,
         )
         self.securities.append(new_security)
 
@@ -171,19 +171,6 @@ class Portfolio:
                     return
 
         raise ValueError(f"Security '{ticker}' not found in portfolio")
-
-    # def remove_security(self, ticker: str) -> None:
-    #     """
-    #     Removes a Security from the portfolio.
-
-    #     Args:
-    #         ticker (str): Ticker of the Security to remove from the portfolio.
-
-    #     Logs a message indicating the Security has been removed.
-    #     """
-    #     self.securities = [
-    #         security for security in self.securities if security.ticker != ticker
-    #     ]
 
     def get_portfolio_info(self) -> List[Dict[str, Any]]:
         """
@@ -243,38 +230,6 @@ class Portfolio:
         if not any(s.ticker == ticker for s in self.securities):
             raise ValueError(f"Security '{ticker}' not found in portfolio")
         self._get_share(ticker).target = share
-
-    def distribute_remaining_share(
-        self, excluded_tickers: Optional[List[str]] = None
-    ) -> None:
-        """
-        Evenly distributes the remaining share (1 - sum of fixed shares) among non-excluded securities.
-
-        Args:
-            excluded_tickers (Optional[List[str]]): List of tickers to exclude from distribution
-        """
-        if excluded_tickers is None:
-            excluded_tickers = []
-
-        # Calculate remaining share
-        fixed_share = sum(
-            share.target
-            for ticker, share in self.shares.items()
-            if ticker in excluded_tickers
-        )
-        remaining_share = 1.0 - fixed_share
-
-        # Get number of securities to distribute remaining share among
-        distribute_tickers = [
-            s.ticker for s in self.securities if s.ticker not in excluded_tickers
-        ]
-        if not distribute_tickers:
-            return
-
-        # Distribute remaining share evenly
-        share_per_security = remaining_share / len(distribute_tickers)
-        for ticker in distribute_tickers:
-            self._get_share(ticker).target = share_per_security
 
     def update_portfolio(self) -> None:
         """
