@@ -68,23 +68,6 @@ class Portfolio:
             if security.ticker not in self.shares:
                 self.shares[security.ticker] = ShareInfo()
 
-    # def add_security(self, security: Security, target_share: float = 0.0) -> None:
-    #     """
-    #     Adds a Security to the portfolio.
-
-    #     Args:
-    #         security (Security): Security instance to add to the portfolio.
-    #         target_share (float): Target share for the security in the portfolio. Defaults to 0.0.
-
-    #     Logs a message indicating the Security has been added with its target share and number held.
-    #     """
-    #     self.securities.append(security)
-    #     # Ensure share info exists for this ticker before assigning via helper
-    #     self._get_share(security.ticker).target = target_share
-    #     logging.info(
-    #         f"Security '{security.name}' added to portfolio with share {target_share} and number held {round(security.quantity, 4)}."
-    #     )
-
     def buy_security(
         self,
         ticker,
