@@ -154,10 +154,11 @@ class Portfolio:
                     return
 
         raise ValueError(f"Security '{ticker}' not found in portfolio")
-
+   
     def get_portfolio_info(self) -> List[Dict[str, Any]]:
         """
-        Returns a list of dictionaries containing information about each Security in the portfolio.
+        Returns a list of dictionaries containing information about each Security in the portfolio,
+        including share information.
 
         The list will contain dictionaries with the following keys:
 
@@ -176,11 +177,19 @@ class Portfolio:
         - amount_to_invest: float
         - value: float
 
-        :return: List of dictionaries containing Security information.
+        :return: List of dictionaries containing Security and share information.
         :rtype: List[Dict[str, Any]]
         """
-        return [security.get_info() for security in self.securities]
-
+        info_list = []
+        for security in self.securities:
+            info = security.get_info()
+            share_info = self._get_share(security.ticker)
+            info["target_share"] = share_info.target
+            info["actual_share"] = share_info.actual
+            info["final_share"] = share_info.final
+            info_list.append(info)
+        return info_list
+    
     def verify_target_share_sum(self) -> bool:
         """
         Verifies if the target shares of all Securities in the portfolio sum to 1.
