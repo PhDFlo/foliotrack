@@ -88,6 +88,7 @@ def test_from_json():
                 "price_in_security_currency": 100,
                 "quantity": 10,
                 "value": 1000,
+                "fill": False,
             }
         ],
     }

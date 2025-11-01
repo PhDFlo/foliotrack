@@ -166,5 +166,5 @@ class Security:
                 data.get("price_in_security_currency", 500.0)
             ),
             quantity=float(data.get("quantity", 0.0)),
-            fill=False,
+            fill=bool(data.get("fill", True)),
         )

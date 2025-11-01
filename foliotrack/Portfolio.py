@@ -222,9 +222,6 @@ class Portfolio:
         Then it iterates over each Security in the portfolio, ensuring its price is in the portfolio currency,
         and computes its actual share based on the total invested.
         """
-        # if not self.verify_target_share_sum():
-        #    raise Exception("Error, the portfolio is not complete.")
-
         # Update security prices
         for security in self.securities:
             security.update_security(self.currency)
