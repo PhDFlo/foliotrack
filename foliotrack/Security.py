@@ -39,6 +39,8 @@ class Security:
                 sec = yf.Ticker(self.ticker)
 
                 self.name = sec.info.get("longName", "Unnamed Security")
+                if self.name == "Unnamed Security":
+                    self.name = sec.info.get("shortName", "Unnamed Security")
                 self.currency = sec.info.get("currency", "EUR")
             except Exception as e:
                 logging.warning(f"Could not fetch security info for {self.ticker}: {e}")
