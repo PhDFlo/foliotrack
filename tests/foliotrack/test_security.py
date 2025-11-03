@@ -13,32 +13,34 @@ def test_buy_security():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=0.5,
     )
-    security.buy(10, buy_price=100)
-    assert security.number_held == 10
-    assert security.amount_invested == 1000
+
+    security.buy(10)
+    assert security.quantity == 10
+    assert security.value == 1000
 
 
-def test_compute_actual_share():
+def test_sell_security():
     """
-    Test the compute_actual_share method of Security.
+    Test the sell method of Security.
 
-    The method should compute and update the actual share of this Security in the portfolio.
+    The sell method should decrease the number of held units and the amount invested according \
+        to the specified quantity and sell price.
     """
     security = Security(
         name="Security1",
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=0.5,
     )
-    security.buy(10, buy_price=100)
-    security.compute_actual_share(2000)
-    assert security.actual_share == 0.5
+
+    security.buy(10)
+    security.sell(4)
+    assert security.quantity == 6
+    assert security.value == 400
 
 
-def test_update_price_from_yfinance():
+def test_update_security():
     """
     Test the update_price_from_yfinance method of Security.
 
@@ -49,19 +51,7 @@ def test_update_price_from_yfinance():
         ticker="SEC1",
         currency="EUR",
         price_in_security_currency=100,
-        target_share=0.5,
     )
-    security.update_price_from_yfinance()
+    security.update_security("EUR")
     assert security.price_in_security_currency > 0
-
-
-def test_compute_price_in_portfolio_currency():
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="USD",
-        price_in_security_currency=100,
-        target_share=0.5,
-    )
-    security.compute_price_in_portfolio_currency("EUR")
     assert security.price_in_portfolio_currency > 0

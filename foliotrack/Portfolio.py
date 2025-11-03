@@ -1,10 +1,41 @@
 import logging
 import json
-import csv
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
 from .Security import Security
 from .Currency import get_symbol
+
+
+@dataclass
+class ShareInfo:
+    """Represents share information for a security in the portfolio"""
+
+    target: float = 0.0
+    actual: float = 0.0
+    final: float = 0.0
+
+    def to_dict(self) -> Dict[str, float]:
+        """Serialize ShareInfo to a plain dict."""
+        return {
+            "target": float(self.target),
+            "actual": float(self.actual),
+            "final": float(self.final),
+        }
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "ShareInfo":
+        """Create ShareInfo from a dict, tolerates missing keys."""
+        si = ShareInfo()
+        if not isinstance(d, dict):
+            return si
+        try:
+            si.target = float(d.get("target", si.target))
+            si.actual = float(d.get("actual", si.actual))
+            si.final = float(d.get("final", si.final))
+        except Exception:
+            # Keep defaults if conversion fails
+            pass
+        return si
 
 
 @dataclass
@@ -13,14 +44,16 @@ class Portfolio:
     Represents a portfolio containing multiple Securitys and a currency.
     """
 
+    name: str = "Unnamed portfolio"  # Name of the Portfolio
     securities: List[Security] = field(
         default_factory=list
     )  # List of Securitys in the portfolio
+    shares: Dict[str, ShareInfo] = field(
+        default_factory=dict
+    )  # Maps ticker to ShareInfo
     currency: str = "EUR"  # Portfolio currency
+    total_invested: float = field(init=False)  # Total amount invested in the portfolio
     symbol: str = field(init=False)  # Currency symbol
-    staged_purchases: List[Dict[str, Any]] = field(
-        default_factory=list
-    )  # Securitys being bought
 
     def __post_init__(self):
         """
@@ -29,37 +62,104 @@ class Portfolio:
         Sets the `symbol` attribute to the symbol of the `currency` attribute.
         """
         self.symbol = get_symbol(self.currency) or ""
+        self.total_invested = 0.0
+        # Initialize shares entries for any pre-existing securities
+        for security in self.securities:
+            if security.ticker not in self.shares:
+                self.shares[security.ticker] = ShareInfo()
 
-    def add_security(self, security: Security) -> None:
+    def buy_security(
+        self,
+        ticker,
+        quantity: float,
+        currency: Optional[str] = None,
+        price: Optional[float] = None,
+        fill: Optional[bool] = True,
+    ) -> None:
         """
-        Adds a Security to the portfolio.
+        Buys a security, adding it to the portfolio or updating existing quantity.
 
         Args:
-            security (Security): Security instance to add to the portfolio.
-
-        Logs a message indicating the Security has been added with its target share and number held.
+            ticker (str): The ticker of the security to buy
+            quantity (float): The quantity of the security to buy
+            currency (Optional[str]): The currency of the security. If None, defaults to portfolio currency
+            price (Optional[float]): The price of the security. If None, will be fetched during update_portfolio
+            fill (Optional[bool]): Whether to fetch security info from remote source
         """
-        self.securities.append(security)
+        # Check if security already exists in portfolio
+        for p_sec in self.securities:
+            if p_sec.ticker == ticker:
+                p_sec.buy(quantity)
+                # Update portfolio after buying security
+                self.update_portfolio()
+                logging.info(
+                    f"Bought {quantity} units of existing security '{ticker}'. New number held: {round(p_sec.quantity, 4)}."
+                )
+                return
+
+        # First time buying this security, create new Security instance
+        new_security = Security(
+            ticker=ticker,
+            currency=currency if currency is not None else self.currency,
+            price_in_security_currency=price if price is not None else 0.0,
+            quantity=quantity,
+            fill=fill if fill is not None else True,
+        )
+        self.securities.append(new_security)
+
+        # Update portfolio after buying security
+        self.update_portfolio()
         logging.info(
-            f"Security '{security.name}' added to portfolio with share {security.target_share} and number held {round(security.number_held, 4)}."
+            f"Security '{ticker}' added to portfolio with quantity {round(quantity, 4)}."
         )
 
-    def remove_security(self, ticker: str) -> None:
+    def sell_security(self, ticker: str, quantity: float) -> None:
         """
-        Removes a Security from the portfolio.
+        Sells a quantity of a security in the portfolio.
 
         Args:
-            ticker (str): Ticker of the Security to remove from the portfolio.
+            ticker (str): The ticker of the security to sell
+            quantity (float): The quantity of the security to sell
 
-        Logs a message indicating the Security has been removed.
+        Raises:
+            ValueError: If the security is not found in the portfolio or if there is insufficient quantity to sell.
         """
-        self.securities = [
-            security for security in self.securities if security.ticker != ticker
-        ]
+        for p_sec in self.securities:
+            if p_sec.ticker == ticker:
+                if p_sec.quantity < quantity:
+                    raise ValueError(
+                        f"Insufficient quantity to sell. Available: {p_sec.quantity}, Requested: {quantity}"
+                    )
+                elif p_sec.quantity == quantity:
+                    # Selling all units, remove security from portfolio and corresponding share
+                    self.securities = [
+                        security
+                        for security in self.securities
+                        if security.ticker != ticker
+                    ]
+                    self.shares.pop(ticker, None)
+                    # Update portfolio after removing security
+                    self.update_portfolio()
+                    logging.info(
+                        f"Sold all units of security '{ticker}'. Security removed from portfolio."
+                    )
+                    return
+                else:
+                    # Selling partial quantity
+                    p_sec.sell(quantity)
+                    # Update portfolio after selling security
+                    self.update_portfolio()
+                    logging.info(
+                        f"Sold {quantity} units of security '{ticker}'. New number held: {round(p_sec.quantity, 4)}."
+                    )
+                    return
+
+        raise ValueError(f"Security '{ticker}' not found in portfolio")
 
     def get_portfolio_info(self) -> List[Dict[str, Any]]:
         """
-        Returns a list of dictionaries containing information about each Security in the portfolio.
+        Returns a list of dictionaries containing information about each Security in the portfolio,
+        including share information.
 
         The list will contain dictionaries with the following keys:
 
@@ -73,15 +173,23 @@ class Portfolio:
         - target_share: float
         - actual_share: float
         - final_share: float
-        - number_held: float
+        - quantity: float
         - number_to_buy: float
         - amount_to_invest: float
-        - amount_invested: float
+        - value: float
 
-        :return: List of dictionaries containing Security information.
+        :return: List of dictionaries containing Security and share information.
         :rtype: List[Dict[str, Any]]
         """
-        return [security.get_info() for security in self.securities]
+        info_list = []
+        for security in self.securities:
+            info = security.get_info()
+            share_info = self._get_share(security.ticker)
+            info["target_share"] = share_info.target
+            info["actual_share"] = share_info.actual
+            info["final_share"] = share_info.final
+            info_list.append(info)
+        return info_list
 
     def verify_target_share_sum(self) -> bool:
         """
@@ -93,69 +201,53 @@ class Portfolio:
         :return: True if the target shares sum to 1, False otherwise
         :rtype: bool
         """
-        total_share = sum(security.target_share for security in self.securities)
+        # Sum target shares from the shares mapping
+        total_share = sum(share.target for share in self.shares.values())
         if abs(total_share - 1.0) > 1e-6:
             logging.warning(f"Portfolio shares do not sum to 1. (Sum: {total_share})")
             return False
         logging.info("Portfolio shares sum equal to 1. Portfolio is complete.")
         return True
 
-    def buy_security(
-        self,
-        security_ticker: str,
-        quantity: float,
-        buy_price: Optional[float] = None,
-        fee: float = 0.0,
-        date: Optional[str] = None,
-    ) -> None:
+    def set_target_share(self, ticker: str, share: float) -> None:
         """
-        Buys a specified quantity of a Security in the portfolio, updating number held and amount invested.
+        Sets the target share for a security in the portfolio.
 
         Args:
-            security_ticker (str): The ticker of the Security to buy.
-            quantity (float): The quantity of the Security to buy.
-            buy_price (Optional[float], optional): The price at which the Security is bought. Defaults to None.
-            fee (float, optional): The fee associated with the purchase. Defaults to 0.0.
-            date (Optional[str], optional): The date of the purchase. Defaults to None.
+            ticker (str): The ticker of the security
+            share (float): The target share to set (between 0 and 1)
 
         Raises:
-            ValueError: If the Security is not found in the portfolio.
+            ValueError: If the security is not in the portfolio
         """
-        for security in self.securities:
-            if security.ticker == security_ticker:
-                purchase = security.buy(quantity, buy_price, fee, date)
-                self.compute_actual_shares()
-                self.staged_purchases.append(purchase)
-                logging.info(
-                    f"Bought {quantity} units of '{security_ticker}' on {purchase['date']}. New number held: {security.number_held}."
-                )
-                return
-        logging.error(f"Security '{security_ticker}' not found in the portfolio.")
-        raise ValueError(f"Security '{security_ticker}' not found in the portfolio.")
+        if not any(s.ticker == ticker for s in self.securities):
+            raise ValueError(f"Security '{ticker}' not found in portfolio")
+        self._get_share(ticker).target = share
 
-    def compute_actual_shares(self) -> None:
+    def update_portfolio(self) -> None:
         """
-        Computes the actual share of each Security in the portfolio.
+        Update the portfolio by updating security prices and computing actual shares.
         It will raise an Exception if the portfolio is not complete.
         It first computes the total amount invested in the portfolio.
         Then it iterates over each Security in the portfolio, ensuring its price is in the portfolio currency,
         and computes its actual share based on the total invested.
         """
-        if not self.verify_target_share_sum():
-            raise Exception("Error, the portfolio is not complete.")
-        total_invested = sum(security.amount_invested for security in self.securities)
+        # Update security prices
         for security in self.securities:
-            security.compute_price_in_portfolio_currency(
-                self.currency
-            )  # Ensure price is in portfolio currency
-            security.compute_actual_share(total_invested)
+            security.update_security(self.currency)
 
-    def update_security_prices(self) -> None:
-        """
-        Update the price of each Security in the portfolio using yfinance.
-        """
-        for security in self.securities:
-            security.update_price_from_yfinance()
+        # Compute actual shares
+        self.total_invested = sum(security.value for security in self.securities)
+
+        # Update actual shares
+        if self.total_invested == 0:
+            for security in self.securities:
+                self._get_share(security.ticker).actual = 0.0
+        else:
+            for security in self.securities:
+                self._get_share(security.ticker).actual = round(
+                    security.value / self.total_invested, 4
+                )
 
     def to_json(self, filepath: str) -> None:
         """
@@ -167,20 +259,11 @@ class Portfolio:
         Raises:
             Exception: If an error occurs while saving the portfolio to JSON.
         """
-        self.compute_actual_shares()  # Ensure shares are up to date
+        self.update_portfolio()  # Ensure shares are up to date
         try:
+            data = self.to_dict()
             with open(filepath, "w") as f:
-                json.dump(
-                    {
-                        "currency": self.currency,
-                        "securities": [
-                            security.get_info() for security in self.securities
-                        ],
-                        "staged_purchases": self.staged_purchases,
-                    },
-                    f,
-                    indent=4,
-                )
+                json.dump(data, f, indent=4)
             logging.info(f"Portfolio saved to {filepath}")
         except Exception as e:
             logging.error(f"Error saving portfolio to JSON: {e}")
@@ -202,68 +285,63 @@ class Portfolio:
         try:
             with open(filepath, "r") as f:
                 data = json.load(f)
-            securities = [
-                Security.from_json(security_data)
-                for security_data in data["securities"]
-            ]
-            staged_purchases = data.get("staged_purchases", [])
-            return cls(
-                securities=securities,
-                currency=data["currency"],
-                staged_purchases=staged_purchases,
-            )
+            return cls.from_dict(data)
         except Exception as e:
             logging.error(f"Error loading portfolio from JSON: {e}")
             return cls()
 
-    def purchases_to_wealthfolio_csv(self, filepath: str) -> None:
-        """
-        Exports the staged purchases to a Wealthfolio-compatible CSV file.
+    def to_dict(self) -> Dict[str, Any]:
+        """Return a JSON-serializable dict representing the portfolio."""
+        # Ensure shares and securities are up to date
+        # (do not call update_portfolio here to avoid side effects in to_dict)
+        return {
+            "currency": self.currency,
+            "securities": [security.get_info() for security in self.securities],
+            "shares": {ticker: info.to_dict() for ticker, info in self.shares.items()},
+        }
 
-        Args:
-            filepath (str): Path to the CSV file to export the purchases to.
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Portfolio":
+        """Create a Portfolio from a dict (the inverse of to_dict).
 
-        Raises:
-            Exception: If an error occurs while exporting the purchases to CSV.
+        This expects 'securities' to be a list of security dicts and 'shares' a mapping.
         """
-        fieldnames = [
-            "date",
-            "symbol",
-            "quantity",
-            "activityType",
-            "unitPrice",
-            "currency",
-            "fee",
-            "amount",
-        ]
         try:
-            with open(filepath, mode="w", newline="", encoding="utf-8") as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                for purchase in self.staged_purchases:
-                    currency = next(
-                        (
-                            security.currency
-                            for security in self.securities
-                            if security.ticker == purchase["ticker"]
-                        ),
-                        "",
-                    )
-                    amount = (
-                        purchase["quantity"] * purchase["buy_price"] + purchase["fee"]
-                    )
-                    writer.writerow(
-                        {
-                            "date": purchase["date"],
-                            "symbol": purchase["ticker"],
-                            "quantity": purchase["quantity"],
-                            "activityType": "Buy",
-                            "unitPrice": purchase["buy_price"],
-                            "currency": currency,
-                            "fee": purchase["fee"],
-                            "amount": amount,
-                        }
-                    )
-            logging.info(f"Purchases exported to {filepath}")
+            securities = [Security.from_json(sd) for sd in data.get("securities", [])]
+            portfolio = cls(securities=securities, currency=data.get("currency", "EUR"))
+            # Load shares mapping using ShareInfo.from_dict
+            shares_data = data.get("shares", {})
+            if isinstance(shares_data, dict):
+                for ticker, sd in shares_data.items():
+                    si = ShareInfo.from_dict(sd)
+                    portfolio.shares[ticker] = si
+
+            # Ensure every security has a ShareInfo
+            for security in portfolio.securities:
+                portfolio._get_share(security.ticker)
+
+            return portfolio
         except Exception as e:
-            logging.error(f"Error exporting purchases to Wealthfolio CSV: {e}")
+            logging.error(f"Error creating Portfolio from dict: {e}")
+            return cls()
+
+    # --- Helper methods to centralize ShareInfo creation and access ---
+    def _get_share(self, ticker: str) -> ShareInfo:
+        """Return ShareInfo for ticker, creating it when missing."""
+        if ticker not in self.shares:
+            self.shares[ticker] = ShareInfo()
+        return self.shares[ticker]
+
+    def _load_shares(self, shares_data: Dict[str, Any]) -> None:
+        """Populate self.shares from a mapping loaded from JSON.
+
+        Expects shares_data to be a dict: ticker -> {target, actual, final}
+        """
+        if not isinstance(shares_data, dict):
+            return
+        for ticker, share_vals in shares_data.items():
+            si = self._get_share(ticker)
+            if isinstance(share_vals, dict):
+                si.target = float(share_vals.get("target", si.target))
+                si.actual = float(share_vals.get("actual", si.actual))
+                si.final = float(share_vals.get("final", si.final))

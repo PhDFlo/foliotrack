@@ -24,7 +24,7 @@ class Equilibrate:
         Args:
             securities (List[Any]): List of Security objects. Each Security must have attributes:
                 - price (float)
-                - amount_invested (float)
+                - value (float)
                 - target_share (float)
                 - name (str)
                 - symbol (str)
@@ -54,7 +54,7 @@ class Equilibrate:
 
         # Set up optimization variables
         investments, price_matrix, invested_amounts, target_shares = (
-            self.setup_optimization_variables(securities, n)
+            self.setup_optimization_variables(portfolio, n)
         )
 
         # Set up constraints
@@ -81,11 +81,11 @@ class Equilibrate:
 
         # Update Security objects and collect results
         total_to_invest, final_shares = self.update_security_objects(
-            securities, security_counts, price_matrix, invested_amounts
+            portfolio, security_counts, price_matrix, invested_amounts
         )
 
         # Log results
-        self.log_results(securities, total_to_invest, portfolio.symbol)
+        self.log_results(portfolio, total_to_invest)
 
         return security_counts, total_to_invest, final_shares
 
@@ -101,8 +101,7 @@ class Equilibrate:
         """
         required_attrs = [
             "price_in_portfolio_currency",
-            "amount_invested",
-            "target_share",
+            "value",
             "name",
             "symbol",
         ]
@@ -115,13 +114,13 @@ class Equilibrate:
                     )
 
     def setup_optimization_variables(
-        self, securities: list, n: int
+        self, portfolio: Portfolio, n: int
     ) -> Tuple[cp.Variable, np.ndarray, np.ndarray, np.ndarray]:
         """
         Sets up the optimization variables and matrices.
 
         Args:
-            securities (list): List of Security objects.
+            portfolio (Portfolio): The portfolio containing securities and target shares.
             n (int): Number of securities.
 
         Returns:
@@ -130,13 +129,14 @@ class Equilibrate:
         """
         investments = cp.Variable(n, integer=True)
         price_matrix = np.diag(
-            [security.price_in_portfolio_currency for security in securities]
+            [security.price_in_portfolio_currency for security in portfolio.securities]
         )
-        invested_amounts = np.array(
-            [security.amount_invested for security in securities]
+        total_value = np.array([security.value for security in portfolio.securities])
+        # Read target shares from the portfolio using helper (ordered by securities)
+        target_shares = np.array(
+            [portfolio._get_share(s.ticker).target for s in portfolio.securities]
         )
-        target_shares = np.array([security.target_share for security in securities])
-        return investments, price_matrix, invested_amounts, target_shares
+        return investments, price_matrix, total_value, target_shares
 
     def setup_constraints(
         self,
@@ -183,7 +183,7 @@ class Equilibrate:
 
     def update_security_objects(
         self,
-        securities: list,
+        portfolio: Portfolio,
         security_counts: np.ndarray,
         price_matrix: np.ndarray,
         invested_amounts: np.ndarray,
@@ -192,7 +192,7 @@ class Equilibrate:
         Updates the Security objects with the number to buy and final share.
 
         Args:
-            securities (list): List of Security objects.
+            portfolio (Portfolio): Portfolio containing the securities to update.
             security_counts (np.ndarray): Number of each Security to buy.
             price_matrix (np.ndarray): Price matrix.
             invested_amounts (np.ndarray): Invested amounts.
@@ -200,7 +200,7 @@ class Equilibrate:
         Returns:
             Tuple[float, np.ndarray]: Total amount to invest and final shares.
         """
-        for i, security in enumerate(securities):
+        for i, security in enumerate(portfolio.securities):
             security.number_to_buy = int(security_counts[i])
             security.amount_to_invest = round(
                 price_matrix[i, i] * security_counts[i], 2
@@ -215,36 +215,34 @@ class Equilibrate:
         else:
             final_shares = np.zeros_like(final_invested)
 
-        for i, security in enumerate(securities):
-            security.final_share = round(float(final_shares[i]), 4)
+        # Write final shares back into portfolio shares mapping via helper
+        for s, val in zip(portfolio.securities, final_shares):
+            portfolio._get_share(s.ticker).final = round(float(val), 4)
 
         return total_to_invest, final_shares
 
-    def log_results(
-        self, securities: list, total_to_invest: float, portfolio_symbol: str
-    ) -> None:
+    def log_results(self, portfolio: Portfolio, total_to_invest: float) -> None:
         """
         Logs the results of the optimization.
 
         Args:
-            securities (list): List of Security objects.
+            portfolio (Portfolio): The portfolio containing securities and shares.
             total_to_invest (float): Total amount to invest.
-            portfolio_symbol (str): Portfolio symbol.
         """
         logging.info("Number of each Security to buy:")
-        for i, security in enumerate(securities):
+        for security in portfolio.securities:
             logging.info(f"  {security.name}: {security.number_to_buy} units")
 
         logging.info("Amount to spend and final share of each Security:")
-        for i, security in enumerate(securities):
+        for security in portfolio.securities:
             logging.info(
-                f"  {security.name}: {security.amount_to_invest:.2f}{portfolio_symbol}, Final share = {security.final_share:.4f}"
+                f"  {security.name}: {security.amount_to_invest:.2f}{portfolio.symbol}, Final share = {portfolio.shares[security.ticker].final:.4f}"
             )
 
         total_amount = 0.0
-        for security in securities:
+        for security in portfolio.securities:
             total_amount += security.amount_to_invest
-        logging.info(f"Total amount to invest: {total_amount:.2f}{portfolio_symbol}")
+        logging.info(f"Total amount to invest: {total_amount:.2f}{portfolio.symbol}")
 
 
 _EQUILIBRIUM = Equilibrate()

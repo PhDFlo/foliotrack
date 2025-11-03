@@ -11,21 +11,20 @@ class Security:
     A class to represent any security including Exchange-Traded Fund (ETF).
     """
 
-    name: str  # Security name
+    name: str = "Unnamed security"  # Name of the Security
     ticker: str = "DCAM"  # Security ticker symbol
-    currency: str = "EUR"  # Security currency, either "EUR" or "USD"
+    currency: str = "EUR"  # Currency of the Security
     symbol: str = field(init=False)  # Symbol of the Security currency
-    exchange_rate: float = 1.0  # Exchange rate to portfolio currency
+    exchange_rate: float = field(init=False)  # Exchange rate to portfolio currency
     price_in_security_currency: float = 500.0  # Security price in its currency
-    price_in_portfolio_currency: float = 500.0  # Security price in portfolio currency
-    yearly_charge: float = 0.2  # Yearly charge in percentage
-    number_held: float = 0.0  # Number of Security units held
-    number_to_buy: float = 0.0  # Number of Security units to buy
-    amount_to_invest: float = 0.0  # Amount to invest in this Security
-    amount_invested: float = 0.0  # Total amount invested in this Security
-    target_share: float = 1.0  # Target share of the Security in the portfolio
-    actual_share: float = 0.0  # Actual share of the Security in the portfolio
-    final_share: float = 0.0  # Final share of the Security after investment
+    price_in_portfolio_currency: float = field(
+        init=False
+    )  # Security price in portfolio currency
+    quantity: float = 0.0  # Number of Security units held
+    number_to_buy: float = field(init=False)  # Number of Security units to buy
+    amount_to_invest: float = field(init=False)  # Amount to invest in this Security
+    value: float = field(init=False)  # Total security value in portfolio currency
+    fill: bool = True  # Boolean to fill attributes from yfinance
 
     def __post_init__(self):
         """
@@ -34,11 +33,29 @@ class Security:
         Computes the Security price in the portfolio currency and
         updates the amount invested in the Security.
         """
+
+        if self.fill:
+            try:
+                sec = yf.Ticker(self.ticker)
+
+                self.name = sec.info.get("longName", "Unnamed Security")
+
+                # If the security name is too short, only shortName is available
+                if self.name == "Unnamed Security":
+                    self.name = sec.info.get("shortName", "Unnamed Security")
+                self.currency = sec.info.get("currency", "EUR")
+            except Exception as e:
+                logging.warning(f"Could not fetch security info for {self.ticker}: {e}")
+
+        self.exchange_rate = 1.0
+        self.number_to_buy = 0.0
+        self.amount_to_invest = 0.0
+        self.symbol = get_symbol(self.currency) or ""
+
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
         )  # Security price in portfolio currency
-        self.symbol = get_symbol(self.currency) or ""
-        self.amount_invested = self.number_held * self.price_in_portfolio_currency
+        self.value = self.quantity * self.price_in_portfolio_currency
 
     def __repr__(self) -> str:
         """
@@ -46,7 +63,7 @@ class Security:
         """
         return (
             f"Security(name={self.name}, ticker={self.ticker}, currency={self.currency}, "
-            f"price={self.price_in_security_currency}{self.symbol}, yearly_charge={self.yearly_charge})"
+            f"price={self.price_in_security_currency}{self.symbol})"
         )
 
     def get_info(self) -> Dict[str, Any]:
@@ -60,8 +77,6 @@ class Security:
     def buy(
         self,
         quantity: float,
-        buy_price: Optional[float] = None,
-        fee: float = 0.0,
         date: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
@@ -71,65 +86,70 @@ class Security:
 
         if date is None:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
-        if buy_price is None:
-            buy_price = self.price_in_portfolio_currency
-        self.number_held += quantity
-        self.amount_invested += quantity * buy_price
+        self.quantity += quantity
+        self.value = quantity * self.price_in_portfolio_currency
         return {
             "ticker": self.ticker,
             "quantity": quantity,
-            "buy_price": buy_price,
-            "fee": fee,
             "date": date,
         }
 
-    def compute_actual_share(self, total_invested: float) -> None:
+    def sell(
+        self,
+        quantity: float,
+        date: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
-        Compute and update the actual share of this Security in the portfolio.
+        Sell a specified quantity of this Security, updating number held and amount invested.
         """
-        if total_invested == 0:
-            self.actual_share = 0.0
-        else:
-            self.actual_share = round(self.amount_invested / total_invested, 2)
+        import datetime
 
-    def update_price_from_yfinance(self) -> None:
-        """
-        Update the Security price using yfinance based on its ticker, and update amount invested.
-        """
-        ticker = yf.Ticker(self.ticker)
-        try:
-            price_from_market = ticker.info.get("regularMarketPrice")
-            if price_from_market is not None:
-                self.price_in_security_currency = price_from_market
-                self.price_in_portfolio_currency = (
-                    self.price_in_security_currency * self.exchange_rate
-                )
+        if date is None:
+            date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if quantity > self.quantity:
+            raise ValueError(
+                f"Cannot sell {quantity} units; only {self.quantity} available."
+            )
+        self.quantity -= quantity
+        self.value = quantity * self.price_in_portfolio_currency
+        return {
+            "ticker": self.ticker,
+            "quantity": -quantity,
+            "date": date,
+        }
 
-                self.amount_invested = round(
-                    self.number_held * self.price_in_portfolio_currency, 2
-                )
-        except Exception as e:
-            logging.error(f"Could not update price for {self.ticker}: {e}")
-
-    def compute_price_in_portfolio_currency(self, portfolio_currency: str) -> None:
+    def update_security(self, portfolio_currency: str) -> None:
         """
-        Compute and update the price of this Security in the specified portfolio currency.
-        If the currency of this Security is different from the portfolio currency, it will
-        fetch the exchange rate and update the price accordingly.
-        If an error occurs while fetching the exchange rate, it will log the error.
+        Update the Security price using yfinance based on its ticker,
+        compute the exchange rate if needed, and update amount invested.
         """
-        if self.currency.lower() != portfolio_currency.lower():
+        if self.fill:
             try:
-                self.exchange_rate = float(
-                    get_rate_between(self.currency.upper(), portfolio_currency.upper())
-                )
+                ticker = yf.Ticker(self.ticker)
+                price_from_market = ticker.info.get("regularMarketPrice")
+                if price_from_market is not None:
+                    self.price_in_security_currency = price_from_market
+
+                if self.currency.lower() != portfolio_currency.lower():
+                    try:
+                        self.exchange_rate = float(
+                            get_rate_between(
+                                self.currency.upper(), portfolio_currency.upper()
+                            )
+                        )
+                    except Exception as e:
+                        logging.error(
+                            f"Could not get exchange rate for {self.currency} to {portfolio_currency}: {e}"
+                        )
+
                 self.price_in_portfolio_currency = round(
                     float(self.price_in_security_currency * self.exchange_rate), 2
                 )
+
             except Exception as e:
-                logging.error(
-                    f"Could not get exchange rate for {self.currency} to {portfolio_currency}: {e}"
-                )
+                logging.error(f"Could not update price for {self.ticker}: {e}")
+
+        self.value = round(self.quantity * self.price_in_portfolio_currency, 2)
 
     def to_json(self) -> Dict[str, Any]:
         """
@@ -146,19 +166,9 @@ class Security:
             name=data.get("name", "Unnamed Security"),
             ticker=data.get("ticker", "DCAM"),
             currency=data.get("currency", "EUR"),
-            exchange_rate=float(data.get("exchange_rate", 1.0)),
             price_in_security_currency=float(
                 data.get("price_in_security_currency", 500.0)
             ),
-            price_in_portfolio_currency=float(
-                data.get("price_in_portfolio_currency", 500.0)
-            ),
-            yearly_charge=float(data.get("yearly_charge", 0.2)),
-            number_held=float(data.get("number_held", 0.0)),
-            number_to_buy=float(data.get("number_to_buy", 0.0)),
-            amount_to_invest=float(data.get("amount_to_invest", 0.0)),
-            amount_invested=float(data.get("amount_invested", 0.0)),
-            target_share=float(data.get("target_share", 1.0)),
-            actual_share=float(data.get("actual_share", 0.0)),
-            final_share=float(data.get("final_share", 0.0)),
+            quantity=float(data.get("quantity", 0.0)),
+            fill=bool(data.get("fill", True)),
         )

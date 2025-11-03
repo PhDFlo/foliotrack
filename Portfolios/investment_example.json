@@ -2,56 +2,63 @@
     "currency": "EUR",
     "securities": [
         {
-            "name": "Amundi MSCI World UCITS Security",
-            "ticker": "AMDW",
+            "name": "Airbus SE",
+            "ticker": "AIR.PA",
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 500.0,
-            "price_in_portfolio_currency": 500.0,
-            "yearly_charge": 0.2,
-            "number_held": 20.0,
+            "price_in_security_currency": 213.4,
+            "price_in_portfolio_currency": 213.4,
+            "quantity": 17.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 10000.0,
-            "target_share": 0.5,
-            "actual_share": 0.92,
-            "final_share": 0.0
+            "value": 3627.8,
+            "fill": true
         },
         {
             "name": "NVIDIA Corporation",
             "ticker": "NVDA",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8521,
-            "price_in_security_currency": 300.0,
-            "price_in_portfolio_currency": 255.63,
-            "yearly_charge": 0.1,
-            "number_held": 1.0,
+            "exchange_rate": 0.8655,
+            "price_in_security_currency": 202.49,
+            "price_in_portfolio_currency": 175.26,
+            "quantity": 1.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 300.0,
-            "target_share": 0.2,
-            "actual_share": 0.03,
-            "final_share": 0.0
+            "value": 175.26,
+            "fill": true
         },
         {
-            "name": "iShares Core MSCI Emerging Markets IMI UCITS Security",
-            "ticker": "EIMI.L",
+            "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9enne",
+            "ticker": "MC.PA",
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 200.0,
-            "price_in_portfolio_currency": 200.0,
-            "yearly_charge": 0.25,
-            "number_held": 3.0,
+            "price_in_security_currency": 612.1,
+            "price_in_portfolio_currency": 612.1,
+            "quantity": 1.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "amount_invested": 600.0,
-            "target_share": 0.3,
-            "actual_share": 0.06,
-            "final_share": 0.0
+            "value": 612.1,
+            "fill": true
         }
     ],
-    "staged_purchases": []
+    "shares": {
+        "AIR.PA": {
+            "target": 0.5,
+            "actual": 0.8217,
+            "final": 0.0
+        },
+        "NVDA": {
+            "target": 0.2,
+            "actual": 0.0397,
+            "final": 0.0
+        },
+        "MC.PA": {
+            "target": 0.3,
+            "actual": 0.1386,
+            "final": 0.0
+        }
+    }
 }

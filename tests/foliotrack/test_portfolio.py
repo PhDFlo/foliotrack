@@ -1,56 +1,6 @@
 from foliotrack.Portfolio import Portfolio
-from foliotrack.Security import Security
 import json
 import os
-
-
-def test_add_security():
-    """
-    Test adding a Security to a Portfolio.
-
-    Adding a Security to a Portfolio should increase the number of Securities in the Portfolio by 1.
-    The added Security should be the first element in the list of Securities in the Portfolio.
-    """
-    portfolio = Portfolio(currency="EUR")
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        target_share=0.5,
-    )
-    portfolio.add_security(security)
-    assert len(portfolio.securities) == 1
-    assert portfolio.securities[0].name == "Security1"
-
-
-def test_remove_security():
-    """
-    Test removing a Security from a Portfolio.
-
-    Removing a Security from a Portfolio should decrease the number of securities in the Portfolio by 1.
-    The removed Security should not be in the list of securities in the Portfolio.
-    """
-    portfolio = Portfolio(currency="EUR")
-    security1 = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        target_share=0.5,
-    )
-    security2 = Security(
-        name="Security2",
-        ticker="SEC2",
-        currency="EUR",
-        price_in_security_currency=200,
-        target_share=0.5,
-    )
-    portfolio.add_security(security1)
-    portfolio.add_security(security2)
-    portfolio.remove_security("SEC1")
-    assert len(portfolio.securities) == 1
-    assert portfolio.securities[0].name == "Security2"
 
 
 def test_verify_target_share_sum():
@@ -60,22 +10,11 @@ def test_verify_target_share_sum():
     The method should return True if the target shares of all Securities in the Portfolio sum to 1.0.
     """
     portfolio = Portfolio(currency="EUR")
-    security1 = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        target_share=0.5,
-    )
-    security2 = Security(
-        name="Security2",
-        ticker="SEC2",
-        currency="EUR",
-        price_in_security_currency=200,
-        target_share=0.5,
-    )
-    portfolio.add_security(security1)
-    portfolio.add_security(security2)
+    portfolio.buy_security("SEC1", quantity=10.0, price=100.0, fill=False)
+    portfolio.buy_security("SEC2", quantity=5.0, price=200.0, fill=False)
+    portfolio.set_target_share("SEC1", 0.5)
+    portfolio.set_target_share("SEC2", 0.5)
+
     assert portfolio.verify_target_share_sum() is True
 
 
@@ -87,17 +26,42 @@ def test_buy_security():
     The amount invested in the Security should be equal to the quantity multiplied by the buy price.
     """
     portfolio = Portfolio(currency="EUR")
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        target_share=1.0,
-    )
-    portfolio.add_security(security)
-    portfolio.buy_security("SEC1", 10, buy_price=100)
-    assert portfolio.securities[0].number_held == 10
-    assert portfolio.securities[0].amount_invested == 1000
+    portfolio.buy_security("SEC1", quantity=25.0, price=200.0, fill=False)
+    portfolio.set_target_share("SEC1", 1.0)
+
+    assert portfolio.securities[0].quantity == 25
+    assert portfolio.securities[0].value == 5000
+
+    portfolio.buy_security("SEC1", quantity=10.0)
+
+    assert portfolio.securities[0].quantity == 35
+    assert portfolio.securities[0].value == 7000
+
+
+def test_sell_security():
+    """
+    Test selling a Security in a Portfolio.
+
+    Selling a Security in a Portfolio should decrease the number held of the Security by the specified quantity.
+    The amount invested in the Security should be updated accordingly.
+    """
+    portfolio = Portfolio(currency="EUR")
+    portfolio.buy_security("SEC1", quantity=30.0, price=150.0, fill=False)
+    portfolio.buy_security("SEC2", quantity=5.0, price=100.0, fill=False)
+    portfolio.set_target_share("SEC1", 1.0)
+
+    assert portfolio.securities[0].quantity == 30
+    assert portfolio.securities[0].value == 4500
+
+    portfolio.sell_security("SEC1", quantity=10.0)
+
+    assert portfolio.securities[0].quantity == 20
+    assert portfolio.securities[0].value == 3000
+
+    portfolio.sell_security("SEC2", quantity=5.0)
+
+    assert len(portfolio.securities) == 1  # SEC2 should be removed from portfolio
+    assert "SEC2" not in portfolio.shares
 
 
 def test_to_json():
@@ -107,17 +71,11 @@ def test_to_json():
     The to_json method should save the Portfolio to a JSON file with the correct structure and data.
     """
     portfolio = Portfolio(currency="EUR")
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-        target_share=1.0,
-    )
-    portfolio.add_security(security)
-    portfolio.buy_security("SEC1", 10, buy_price=100)
 
-    filepath = "test_portfolio.json"
+    portfolio.buy_security("SEC1", quantity=10.0, price=100.0, fill=False)
+    portfolio.set_target_share("SEC1", 1.0)
+
+    filepath = "Portfolios/test_portfolio.json"
     portfolio.to_json(filepath)
 
     with open(filepath, "r") as f:
@@ -125,9 +83,8 @@ def test_to_json():
 
     assert data["currency"] == "EUR"
     assert len(data["securities"]) == 1
-    assert data["securities"][0]["name"] == "Security1"
-    assert data["securities"][0]["number_held"] == 10
-    assert data["securities"][0]["amount_invested"] == 1000
+    assert data["securities"][0]["quantity"] == 10
+    assert data["securities"][0]["value"] == 1000
 
     os.remove(filepath)
 
@@ -146,15 +103,14 @@ def test_from_json():
                 "ticker": "SEC1",
                 "currency": "EUR",
                 "price_in_security_currency": 100,
-                "target_share": 1.0,
-                "number_held": 10,
-                "amount_invested": 1000,
+                "quantity": 10,
+                "value": 1000,
+                "fill": False,
             }
         ],
-        "staged_purchases": [],
     }
 
-    filepath = "test_portfolio.json"
+    filepath = "Portfolios/test_portfolio.json"
     with open(filepath, "w") as f:
         json.dump(portfolio_data, f)
 
@@ -163,7 +119,7 @@ def test_from_json():
     assert portfolio.currency == "EUR"
     assert len(portfolio.securities) == 1
     assert portfolio.securities[0].name == "Security1"
-    assert portfolio.securities[0].number_held == 10
-    assert portfolio.securities[0].amount_invested == 1000
+    assert portfolio.securities[0].quantity == 10
+    assert portfolio.securities[0].value == 1000
 
     os.remove(filepath)
