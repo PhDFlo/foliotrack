@@ -27,7 +27,7 @@ def portfolio_from_scratch():
     portfolio.to_json("Portfolios/investment_example.json")
 
     # Solve for equilibrium
-    solve_equilibrium(portfolio, investment_amount=1000.0, min_percent_to_invest=0.99)
+    solve_equilibrium(portfolio, investment_amount=2000.0, min_percent_to_invest=0.99)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
@@ -47,10 +47,9 @@ def use_existing_portfolio():
     solve_equilibrium(portfolio, investment_amount=10000.0, min_percent_to_invest=0.99)
 
     # Buy additional securities
-    portfolio.sell_security("AIR.PA", quantity=20.0)
+    portfolio.sell_security("AIR.PA", quantity=17.0)
     portfolio.buy_security("NVDA", quantity=1.0, price=300.0)
     portfolio.buy_security("MC.PA", quantity=2.0, price=200.0)
-    print(portfolio.shares)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
@@ -66,4 +65,4 @@ def use_existing_portfolio():
 
 if __name__ == "__main__":
     portfolio_from_scratch()
-    # use_existing_portfolio()
+    use_existing_portfolio()
