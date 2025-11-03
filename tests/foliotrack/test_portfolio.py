@@ -39,6 +39,32 @@ def test_buy_security():
     assert portfolio.securities[0].value == 7000
 
 
+def test_sell_security():
+    """
+    Test selling a Security in a Portfolio.
+
+    Selling a Security in a Portfolio should decrease the number held of the Security by the specified quantity.
+    The amount invested in the Security should be updated accordingly.
+    """
+    portfolio = Portfolio(currency="EUR")
+    portfolio.buy_security("SEC1", quantity=30.0, price=150.0, fill=False)
+    portfolio.buy_security("SEC2", quantity=5.0, price=100.0, fill=False)
+    portfolio.set_target_share("SEC1", 1.0)
+
+    assert portfolio.securities[0].quantity == 30
+    assert portfolio.securities[0].value == 4500
+
+    portfolio.sell_security("SEC1", quantity=10.0)
+
+    assert portfolio.securities[0].quantity == 20
+    assert portfolio.securities[0].value == 3000
+
+    portfolio.sell_security("SEC2", quantity=5.0)
+
+    assert len(portfolio.securities) == 1  # SEC2 should be removed from portfolio
+    assert "SEC2" not in portfolio.shares
+
+
 def test_to_json():
     """
     Test saving a Portfolio to a JSON file.
@@ -46,15 +72,7 @@ def test_to_json():
     The to_json method should save the Portfolio to a JSON file with the correct structure and data.
     """
     portfolio = Portfolio(currency="EUR")
-    # security = Security(
-    #     name="Security1",
-    #     ticker="SEC1",
-    #     currency="EUR",
-    #     price_in_security_currency=100,
-    #     quantity=10,
-    #     fill=False,
-    # )
-    # portfolio.add_security(security)
+
     portfolio.buy_security("SEC1", quantity=10.0, price=100.0, fill=False)
     portfolio.set_target_share("SEC1", 1.0)
 

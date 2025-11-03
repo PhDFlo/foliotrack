@@ -39,6 +39,8 @@ class Security:
                 sec = yf.Ticker(self.ticker)
 
                 self.name = sec.info.get("longName", "Unnamed Security")
+
+                # If the security name is too short, only shortName is available
                 if self.name == "Unnamed Security":
                     self.name = sec.info.get("shortName", "Unnamed Security")
                 self.currency = sec.info.get("currency", "EUR")

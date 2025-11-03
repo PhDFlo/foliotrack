@@ -131,12 +131,13 @@ class Portfolio:
                         f"Insufficient quantity to sell. Available: {p_sec.quantity}, Requested: {quantity}"
                     )
                 elif p_sec.quantity == quantity:
-                    # Selling all units, remove security from portfolio
+                    # Selling all units, remove security from portfolio and corresponding share
                     self.securities = [
                         security
                         for security in self.securities
                         if security.ticker != ticker
                     ]
+                    self.shares.pop(ticker, None)
                     # Update portfolio after removing security
                     self.update_portfolio()
                     logging.info(
@@ -154,7 +155,7 @@ class Portfolio:
                     return
 
         raise ValueError(f"Security '{ticker}' not found in portfolio")
-   
+
     def get_portfolio_info(self) -> List[Dict[str, Any]]:
         """
         Returns a list of dictionaries containing information about each Security in the portfolio,
@@ -189,7 +190,7 @@ class Portfolio:
             info["final_share"] = share_info.final
             info_list.append(info)
         return info_list
-    
+
     def verify_target_share_sum(self) -> bool:
         """
         Verifies if the target shares of all Securities in the portfolio sum to 1.

@@ -40,8 +40,10 @@ def use_existing_portfolio():
     solve_equilibrium(portfolio, investment_amount=10000.0, min_percent_to_invest=0.99)
 
     # Buy additional securities
+    portfolio.sell_security("AIR.PA", quantity=20.0)
     portfolio.buy_security("NVDA", quantity=1.0, price=300.0)
     portfolio.buy_security("MC.PA", quantity=2.0, price=200.0)
+    print(portfolio.shares)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
