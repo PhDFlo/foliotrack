@@ -1,5 +1,4 @@
 import logging
-from foliotrack.Security import Security
 from foliotrack.Portfolio import Portfolio
 from foliotrack.Equilibrate import solve_equilibrium
 

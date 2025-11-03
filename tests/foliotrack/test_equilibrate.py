@@ -1,7 +1,6 @@
 import pytest
 from foliotrack.Equilibrate import solve_equilibrium
 from foliotrack.Portfolio import Portfolio
-from foliotrack.Security import Security
 
 
 def test_solve_equilibrium():
