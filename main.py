@@ -9,14 +9,21 @@ logging.basicConfig(level=logging.INFO)
 def portfolio_from_scratch():
     # Create a Portfolio instance
     portfolio = Portfolio()
+
+    # Buy some securities
     portfolio.buy_security("AIR.PA", quantity=20.0, price=200.0, fill=True)
     portfolio.buy_security("NVDA", quantity=1.0, price=600.0, fill=True)
     portfolio.buy_security("MC.PA", quantity=1.0, price=300.0, fill=True)
 
+    # Sell some of them
+    portfolio.sell_security("AIR.PA", 3.0)
+
+    # Set target shares
     portfolio.set_target_share("AIR.PA", 0.5)
     portfolio.set_target_share("NVDA", 0.2)
     portfolio.set_target_share("MC.PA", 0.3)
 
+    # Save in JSON file
     portfolio.to_json("Portfolios/investment_example.json")
 
     # Solve for equilibrium
@@ -59,4 +66,4 @@ def use_existing_portfolio():
 
 if __name__ == "__main__":
     portfolio_from_scratch()
-    use_existing_portfolio()
+    # use_existing_portfolio()

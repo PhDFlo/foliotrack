@@ -9,10 +9,10 @@
             "exchange_rate": 1.0,
             "price_in_security_currency": 213.4,
             "price_in_portfolio_currency": 213.4,
-            "quantity": 20.0,
+            "quantity": 17.0,
             "number_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 4268.0,
+            "value": 3627.8,
             "fill": true
         },
         {
@@ -47,17 +47,17 @@
     "shares": {
         "AIR.PA": {
             "target": 0.5,
-            "actual": 0.8443,
+            "actual": 0.8217,
             "final": 0.0
         },
         "NVDA": {
             "target": 0.2,
-            "actual": 0.0347,
+            "actual": 0.0397,
             "final": 0.0
         },
         "MC.PA": {
             "target": 0.3,
-            "actual": 0.1211,
+            "actual": 0.1386,
             "final": 0.0
         }
     }
