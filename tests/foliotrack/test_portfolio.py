@@ -29,13 +29,13 @@ def test_buy_security():
     portfolio.buy_security("SEC1", quantity=25.0, price=200.0, fill=False)
     portfolio.set_target_share("SEC1", 1.0)
 
-    assert portfolio.securities[0].quantity == 25
-    assert portfolio.securities[0].value == 5000
+    assert portfolio.securities["SEC1"].quantity == 25
+    assert portfolio.securities["SEC1"].value == 5000
 
     portfolio.buy_security("SEC1", quantity=10.0)
 
-    assert portfolio.securities[0].quantity == 35
-    assert portfolio.securities[0].value == 7000
+    assert portfolio.securities["SEC1"].quantity == 35
+    assert portfolio.securities["SEC1"].value == 7000
 
 
 def test_sell_security():
@@ -50,13 +50,13 @@ def test_sell_security():
     portfolio.buy_security("SEC2", quantity=5.0, price=100.0, fill=False)
     portfolio.set_target_share("SEC1", 1.0)
 
-    assert portfolio.securities[0].quantity == 30
-    assert portfolio.securities[0].value == 4500
+    assert portfolio.securities["SEC1"].quantity == 30
+    assert portfolio.securities["SEC1"].value == 4500
 
     portfolio.sell_security("SEC1", quantity=10.0)
 
-    assert portfolio.securities[0].quantity == 20
-    assert portfolio.securities[0].value == 3000
+    assert portfolio.securities["SEC1"].quantity == 20
+    assert portfolio.securities["SEC1"].value == 3000
 
     portfolio.sell_security("SEC2", quantity=5.0)
 
@@ -83,8 +83,8 @@ def test_to_json():
 
     assert data["currency"] == "EUR"
     assert len(data["securities"]) == 1
-    assert data["securities"][0]["quantity"] == 10
-    assert data["securities"][0]["value"] == 1000
+    assert data["securities"]["SEC1"]["quantity"] == 10
+    assert data["securities"]["SEC1"]["value"] == 1000
 
     os.remove(filepath)
 
@@ -97,8 +97,8 @@ def test_from_json():
     """
     portfolio_data = {
         "currency": "EUR",
-        "securities": [
-            {
+        "securities": {
+            "SEC1": {
                 "name": "Security1",
                 "ticker": "SEC1",
                 "currency": "EUR",
@@ -107,7 +107,7 @@ def test_from_json():
                 "value": 1000,
                 "fill": False,
             }
-        ],
+        },
     }
 
     filepath = "Portfolios/test_portfolio.json"
@@ -118,8 +118,8 @@ def test_from_json():
 
     assert portfolio.currency == "EUR"
     assert len(portfolio.securities) == 1
-    assert portfolio.securities[0].name == "Security1"
-    assert portfolio.securities[0].quantity == 10
-    assert portfolio.securities[0].value == 1000
+    assert portfolio.securities["SEC1"].name == "Security1"
+    assert portfolio.securities["SEC1"].quantity == 10
+    assert portfolio.securities["SEC1"].value == 1000
 
     os.remove(filepath)
