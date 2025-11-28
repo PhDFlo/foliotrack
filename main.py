@@ -42,7 +42,7 @@ def use_existing_portfolio():
     portfolio = Portfolio.from_json("Portfolios/investment_example.json")
     portfolio.update_portfolio()
 
-    portfolio.buy_security("NVDA", quantity=300.0, price=300.0)
+    portfolio.buy_security("NVDA", quantity=100.0, price=300.0)
 
     # Solve for equilibrium
     solve_equilibrium(

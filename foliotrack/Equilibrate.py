@@ -31,7 +31,7 @@ class Equilibrate:
                 - symbol (str)
             investment_amount (float, optional): Amount to invest. Defaults to 1000.0.
             min_percent_to_invest (float, optional): Minimum percentage of the total investment to consider. Defaults to 0.99.
-            selling (bool, optional): Whether selling is allowed to reach closer to target. Defaults to False.
+            selling (bool, optional): Whether selling is allowed. Maximizes target shares but not investment. Defaults to False.
 
         Returns:
             Tuple[np.ndarray, float, np.ndarray]:
@@ -165,6 +165,20 @@ class Equilibrate:
         Returns:
             list: List of optimization constraints.
         """
+        return (
+            [
+                investments >= 0,
+                cp.sum(price_matrix @ investments)
+                >= min_percent_to_invest * investment_amount,
+                cp.sum(price_matrix @ investments) <= investment_amount,
+            ]
+            if not selling
+            else [
+                cp.sum(price_matrix @ investments)
+                >= min_percent_to_invest * investment_amount,
+                cp.sum(price_matrix @ investments) <= investment_amount,
+            ]
+        )
         constrains = [
             cp.sum(price_matrix @ investments)
             >= min_percent_to_invest * investment_amount,
