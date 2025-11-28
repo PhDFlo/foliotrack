@@ -42,8 +42,12 @@ def use_existing_portfolio():
     portfolio = Portfolio.from_json("Portfolios/investment_example.json")
     portfolio.update_portfolio()
 
+    portfolio.buy_security("NVDA", quantity=300.0, price=300.0)
+
     # Solve for equilibrium
-    solve_equilibrium(portfolio, investment_amount=10000.0, min_percent_to_invest=0.99)
+    solve_equilibrium(
+        portfolio, investment_amount=10000.0, min_percent_to_invest=0.99, selling=True
+    )
 
     # Buy additional securities
     portfolio.sell_security("AIR.PA", quantity=17.0)

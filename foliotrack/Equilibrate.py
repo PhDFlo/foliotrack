@@ -15,6 +15,7 @@ class Equilibrate:
         portfolio: Portfolio,
         investment_amount: float = 1000.0,
         min_percent_to_invest: float = 0.99,
+        selling: bool = False,
     ) -> Tuple[np.ndarray, float, np.ndarray]:
         """
         Solves for the optimal number of each Security to buy to approach target shares,
@@ -30,6 +31,7 @@ class Equilibrate:
                 - symbol (str)
             investment_amount (float, optional): Amount to invest. Defaults to 1000.0.
             min_percent_to_invest (float, optional): Minimum percentage of the total investment to consider. Defaults to 0.99.
+            selling (bool, optional): Whether selling is allowed to reach closer to target. Defaults to False.
 
         Returns:
             Tuple[np.ndarray, float, np.ndarray]:
@@ -59,7 +61,7 @@ class Equilibrate:
 
         # Set up constraints
         constraints = self.setup_constraints(
-            investments, price_matrix, investment_amount, min_percent_to_invest
+            investments, price_matrix, investment_amount, min_percent_to_invest, selling
         )
 
         # Define the optimization objective
@@ -148,6 +150,7 @@ class Equilibrate:
         price_matrix: np.ndarray,
         investment_amount: float,
         min_percent_to_invest: float,
+        selling: bool,
     ) -> list:
         """
         Sets up the optimization constraints.
@@ -157,16 +160,23 @@ class Equilibrate:
             price_matrix (np.ndarray): Price matrix.
             investment_amount (float): Amount to invest.
             min_percent_to_invest (float): Minimum percentage of the total investment to consider.
+            selling (bool): Whether selling is allowed.
 
         Returns:
             list: List of optimization constraints.
         """
-        return [
-            investments >= 0,
+        constrains = [
             cp.sum(price_matrix @ investments)
             >= min_percent_to_invest * investment_amount,
             cp.sum(price_matrix @ investments) <= investment_amount,
         ]
+
+        # If not selling, ensure we only buy (no negative investments)
+        if not selling:
+            constrains.insert(0, investments >= 0)
+
+        print(constrains)
+        return constrains
 
     def solve_optimization_problem(
         self, objective: cp.Minimize, constraints: list
