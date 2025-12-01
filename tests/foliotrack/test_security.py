@@ -6,7 +6,7 @@ def test_buy_security():
     Test the buy method of Security.
 
     The buy method should increase the number of held units and the amount invested according \
-        to the specified quantity and buy price.
+        to the specified volume and buy price.
     """
     security = Security(
         name="Security1",
@@ -16,7 +16,7 @@ def test_buy_security():
     )
 
     security.buy(10)
-    assert security.quantity == 10
+    assert security.volume == 10
     assert security.value == 1000
 
 
@@ -25,7 +25,7 @@ def test_sell_security():
     Test the sell method of Security.
 
     The sell method should decrease the number of held units and the amount invested according \
-        to the specified quantity and sell price.
+        to the specified volume and sell price.
     """
     security = Security(
         name="Security1",
@@ -36,7 +36,7 @@ def test_sell_security():
 
     security.buy(10)
     security.sell(4)
-    assert security.quantity == 6
+    assert security.volume == 6
     assert security.value == 400
 
 

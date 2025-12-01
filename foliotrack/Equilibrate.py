@@ -230,7 +230,7 @@ class Equilibrate:
         """
         securities_list = list(portfolio.securities.values())
         for i, security in enumerate(securities_list):
-            security.number_to_buy = int(security_counts[i])
+            security.volume_to_buy = int(security_counts[i])
             security.amount_to_invest = round(
                 price_matrix[i, i] * security_counts[i], 2
             )
@@ -260,7 +260,7 @@ class Equilibrate:
         """
         logging.info("Number of each Security to buy:")
         for security in portfolio.securities.values():
-            logging.info(f"  {security.name}: {security.number_to_buy} units")
+            logging.info(f"  {security.name}: {security.volume_to_buy} units")
 
         logging.info("Amount to spend and final share of each Security:")
         for ticker, security in portfolio.securities.items():

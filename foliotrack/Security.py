@@ -20,8 +20,8 @@ class Security:
     price_in_portfolio_currency: float = field(
         init=False
     )  # Security price in portfolio currency
-    quantity: float = 0.0  # Number of Security units held
-    number_to_buy: float = field(init=False)  # Number of Security units to buy
+    volume: float = 0.0  # Number of Security units held
+    volume_to_buy: float = field(init=False)  # Number of Security units to buy
     amount_to_invest: float = field(init=False)  # Amount to invest in this Security
     value: float = field(init=False)  # Total security value in portfolio currency
     fill: bool = True  # Boolean to fill attributes from yfinance
@@ -48,14 +48,14 @@ class Security:
                 logging.warning(f"Could not fetch security info for {self.ticker}: {e}")
 
         self.exchange_rate = 1.0
-        self.number_to_buy = 0.0
+        self.volume_to_buy = 0.0
         self.amount_to_invest = 0.0
         self.symbol = get_symbol(self.currency) or ""
 
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
         )  # Security price in portfolio currency
-        self.value = self.quantity * self.price_in_portfolio_currency
+        self.value = self.volume * self.price_in_portfolio_currency
 
     def __repr__(self) -> str:
         """
@@ -76,45 +76,45 @@ class Security:
 
     def buy(
         self,
-        quantity: float,
+        volume: float,
         date: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Buy a specified quantity of this Security, updating number held and amount invested.
+        Buy a specified volume of this Security, updating number held and amount invested.
         """
         import datetime
 
         if date is None:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
-        self.quantity += quantity
-        self.value = quantity * self.price_in_portfolio_currency
+        self.volume += volume
+        self.value = volume * self.price_in_portfolio_currency
         return {
             "ticker": self.ticker,
-            "quantity": quantity,
+            "volume": volume,
             "date": date,
         }
 
     def sell(
         self,
-        quantity: float,
+        volume: float,
         date: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Sell a specified quantity of this Security, updating number held and amount invested.
+        Sell a specified volume of this Security, updating number held and amount invested.
         """
         import datetime
 
         if date is None:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
-        if quantity > self.quantity:
+        if volume > self.volume:
             raise ValueError(
-                f"Cannot sell {quantity} units; only {self.quantity} available."
+                f"Cannot sell {volume} units; only {self.volume} available."
             )
-        self.quantity -= quantity
-        self.value = quantity * self.price_in_portfolio_currency
+        self.volume -= volume
+        self.value = volume * self.price_in_portfolio_currency
         return {
             "ticker": self.ticker,
-            "quantity": -quantity,
+            "volume": -volume,
             "date": date,
         }
 
@@ -149,7 +149,7 @@ class Security:
             except Exception as e:
                 logging.error(f"Could not update price for {self.ticker}: {e}")
 
-        self.value = round(self.quantity * self.price_in_portfolio_currency, 2)
+        self.value = round(self.volume * self.price_in_portfolio_currency, 2)
 
     def to_json(self) -> Dict[str, Any]:
         """
@@ -169,6 +169,6 @@ class Security:
             price_in_security_currency=float(
                 data.get("price_in_security_currency", 500.0)
             ),
-            quantity=float(data.get("quantity", 0.0)),
+            volume=float(data.get("volume", 0.0)),
             fill=bool(data.get("fill", True)),
         )

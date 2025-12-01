@@ -71,25 +71,25 @@ class Portfolio:
     def buy_security(
         self,
         ticker,
-        quantity: float,
+        volume: float,
         currency: Optional[str] = None,
         price: Optional[float] = None,
         fill: Optional[bool] = True,
     ) -> None:
         """
-        Buys a security, adding it to the portfolio or updating existing quantity.
+        Buys a security, adding it to the portfolio or updating existing volume.
 
         Args:
             ticker (str): The ticker of the security to buy
-            quantity (float): The quantity of the security to buy
+            volume (float): The volume of the security to buy
             currency (Optional[str]): The currency of the security. If None, defaults to portfolio currency
             price (Optional[float]): The price of the security. If None, will be fetched during update_portfolio
             fill (Optional[bool]): Whether to fetch security info from remote source
         """
         if ticker in self.securities:
-            self.securities[ticker].buy(quantity)
+            self.securities[ticker].buy(volume)
             logging.info(
-                f"Bought {quantity} units of existing security '{ticker}'. New number held: {round(self.securities[ticker].quantity, 4)}."
+                f"Bought {volume} units of existing security '{ticker}'. New number held: {round(self.securities[ticker].volume, 4)}."
             )
         else:
             # First time buying this security, create new Security instance
@@ -97,37 +97,37 @@ class Portfolio:
                 ticker=ticker,
                 currency=currency if currency is not None else self.currency,
                 price_in_security_currency=price if price is not None else 0.0,
-                quantity=quantity,
+                volume=volume,
                 fill=fill if fill is not None else True,
             )
             self.securities[ticker] = new_security
             logging.info(
-                f"Security '{ticker}' added to portfolio with quantity {round(quantity, 4)}."
+                f"Security '{ticker}' added to portfolio with volume {round(volume, 4)}."
             )
 
         # Update portfolio after buying security
         self.update_portfolio()
 
-    def sell_security(self, ticker: str, quantity: float) -> None:
+    def sell_security(self, ticker: str, volume: float) -> None:
         """
-        Sells a quantity of a security in the portfolio.
+        Sells a volume of a security in the portfolio.
 
         Args:
             ticker (str): The ticker of the security to sell
-            quantity (float): The quantity of the security to sell
+            volume (float): The volume of the security to sell
 
         Raises:
-            ValueError: If the security is not found in the portfolio or if there is insufficient quantity to sell.
+            ValueError: If the security is not found in the portfolio or if there is insufficient volume to sell.
         """
         if ticker not in self.securities:
             raise ValueError(f"Security '{ticker}' not found in portfolio")
 
         security = self.securities[ticker]
-        if security.quantity < quantity:
+        if security.volume < volume:
             raise ValueError(
-                f"Insufficient quantity to sell. Available: {security.quantity}, Requested: {quantity}"
+                f"Insufficient volume to sell. Available: {security.volume}, Requested: {volume}"
             )
-        elif security.quantity == quantity:
+        elif security.volume == volume:
             # Selling all units, remove security from portfolio and corresponding share
             del self.securities[ticker]
             self.shares.pop(ticker, None)
@@ -135,10 +135,10 @@ class Portfolio:
                 f"Sold all units of security '{ticker}'. Security removed from portfolio."
             )
         else:
-            # Selling partial quantity
-            security.sell(quantity)
+            # Selling partial volume
+            security.sell(volume)
             logging.info(
-                f"Sold {quantity} units of security '{ticker}'. New number held: {round(security.quantity, 4)}."
+                f"Sold {volume} units of security '{ticker}'. New number held: {round(security.volume, 4)}."
             )
 
         # Update portfolio after selling security
@@ -161,8 +161,8 @@ class Portfolio:
         - target_share: float
         - actual_share: float
         - final_share: float
-        - quantity: float
-        - number_to_buy: float
+        - volume: float
+        - volume_to_buy: float
         - amount_to_invest: float
         - value: float
 

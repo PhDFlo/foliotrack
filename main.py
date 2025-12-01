@@ -10,9 +10,9 @@ def portfolio_from_scratch():
     portfolio = Portfolio()
 
     # Buy some securities
-    portfolio.buy_security("AIR.PA", quantity=20.0, price=200.0, fill=True)
-    portfolio.buy_security("NVDA", quantity=1.0, price=600.0, fill=True)
-    portfolio.buy_security("MC.PA", quantity=1.0, price=300.0, fill=True)
+    portfolio.buy_security("AIR.PA", volume=20.0, price=200.0, fill=True)
+    portfolio.buy_security("NVDA", volume=1.0, price=600.0, fill=True)
+    portfolio.buy_security("MC.PA", volume=1.0, price=300.0, fill=True)
 
     # Sell some of them
     portfolio.sell_security("AIR.PA", 3.0)
@@ -42,7 +42,7 @@ def use_existing_portfolio():
     portfolio = Portfolio.from_json("Portfolios/investment_example.json")
     portfolio.update_portfolio()
 
-    portfolio.buy_security("NVDA", quantity=100.0, price=300.0)
+    portfolio.buy_security("NVDA", volume=100.0, price=300.0)
 
     # Solve for equilibrium
     solve_equilibrium(
@@ -50,9 +50,9 @@ def use_existing_portfolio():
     )
 
     # Buy additional securities
-    portfolio.sell_security("AIR.PA", quantity=17.0)
-    portfolio.buy_security("NVDA", quantity=1.0, price=300.0)
-    portfolio.buy_security("MC.PA", quantity=2.0, price=200.0)
+    portfolio.sell_security("AIR.PA", volume=17.0)
+    portfolio.buy_security("NVDA", volume=1.0, price=300.0)
+    portfolio.buy_security("MC.PA", volume=2.0, price=200.0)
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()
