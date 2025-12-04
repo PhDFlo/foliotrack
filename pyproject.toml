@@ -19,6 +19,7 @@ dependencies = [
     "yfinance",
     "ecbdata",
     "pytest",
+    "bt",
 ]
 
 [project.urls]
