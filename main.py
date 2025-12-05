@@ -1,13 +1,14 @@
 import logging
 from foliotrack.Portfolio import Portfolio
 from foliotrack.Equilibrate import solve_equilibrium
+from foliotrack.Backtest import run_backtest
 
 logging.basicConfig(level=logging.INFO)
 
 
 def portfolio_from_scratch():
     # Create a Portfolio instance
-    portfolio = Portfolio()
+    portfolio = Portfolio("Example Portfolio", currency="EUR")
 
     # Buy some securities
     portfolio.buy_security("AIR.PA", volume=20.0, price=200.0, fill=True)
@@ -21,6 +22,10 @@ def portfolio_from_scratch():
     portfolio.set_target_share("AIR.PA", 0.5)
     portfolio.set_target_share("NVDA", 0.2)
     portfolio.set_target_share("MC.PA", 0.3)
+
+    # Run backtest
+    result = run_backtest(portfolio, start_date="2010-01-01", end_date="2023-01-01")
+    result.display()
 
     # Save in JSON file
     portfolio.to_json("Portfolios/investment_example.json")
@@ -68,4 +73,4 @@ def use_existing_portfolio():
 
 if __name__ == "__main__":
     portfolio_from_scratch()
-    use_existing_portfolio()
+    # use_existing_portfolio()
