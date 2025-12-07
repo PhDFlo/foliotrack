@@ -32,7 +32,7 @@ def test_get_currency_code_from_symbol():
     Verifies that function returns correct currency codes for given symbols.
     """
     currency = Currency()
-    assert currency.get_currency_code_from_symbol("$") == "ARS"
+    assert currency.get_currency_code_from_symbol("$") == "USD"
     assert currency.get_currency_code_from_symbol("€") == "EUR"
     assert currency.get_currency_code_from_symbol("¥") == "CNY"
 

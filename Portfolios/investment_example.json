@@ -1,4 +1,5 @@
 {
+    "name": "Example Portfolio",
     "currency": "EUR",
     "securities": {
         "AIR.PA": {
@@ -7,15 +8,15 @@
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 204.45,
-            "price_in_portfolio_currency": 204.45,
+            "price_in_security_currency": 196.7,
+            "price_in_portfolio_currency": 196.7,
             "volume": 17.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 3475.65,
+            "value": 3343.9,
             "fill": true,
             "target": 0.5,
-            "actual": 0.8151,
+            "actual": 0.8099,
             "final": 0.0
         },
         "NVDA": {
@@ -23,16 +24,16 @@
             "ticker": "NVDA",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8646,
-            "price_in_security_currency": 177.0,
-            "price_in_portfolio_currency": 153.03,
+            "exchange_rate": 0.8587,
+            "price_in_security_currency": 182.41,
+            "price_in_portfolio_currency": 156.64,
             "volume": 1.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 153.03,
+            "value": 156.64,
             "fill": true,
             "target": 0.2,
-            "actual": 0.0359,
+            "actual": 0.0379,
             "final": 0.0
         },
         "MC.PA": {
@@ -41,15 +42,15 @@
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 635.5,
-            "price_in_portfolio_currency": 635.5,
+            "price_in_security_currency": 628.1,
+            "price_in_portfolio_currency": 628.1,
             "volume": 1.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 635.5,
+            "value": 628.1,
             "fill": true,
             "target": 0.3,
-            "actual": 0.149,
+            "actual": 0.1521,
             "final": 0.0
         }
     }
