@@ -290,13 +290,20 @@ class Portfolio:
             security_info.update(share_info)
             securities_dict[ticker] = security_info
 
-        return {"currency": self.currency, "securities": securities_dict}
+        return {
+            "name": self.name,
+            "currency": self.currency,
+            "securities": securities_dict,
+        }
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Portfolio":
         """Create a Portfolio from a dict."""
         try:
-            portfolio = cls(currency=data.get("currency", "EUR"))
+            portfolio = cls(
+                name=data.get("name", "Unnamed Portfolio"),
+                currency=data.get("currency", "EUR"),
+            )
             securities_data = data.get("securities", {})
 
             if isinstance(securities_data, dict):
