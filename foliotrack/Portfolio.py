@@ -1,6 +1,7 @@
 import logging
 import json
 from typing import List, Optional, Dict, Any
+from datetime import datetime
 from dataclasses import dataclass, field
 from .Security import Security
 from .Currency import get_symbol
@@ -51,6 +52,9 @@ class Portfolio:
     shares: Dict[str, ShareInfo] = field(
         default_factory=dict
     )  # Maps ticker to ShareInfo
+    history: List[Dict[str, Any]] = field(
+        default_factory=list
+    )  # History of portfolio changes
     currency: str = "EUR"  # Portfolio currency
     total_invested: float = field(init=False)  # Total amount invested in the portfolio
     symbol: str = field(init=False)  # Currency symbol
@@ -74,6 +78,7 @@ class Portfolio:
         volume: float,
         currency: Optional[str] = None,
         price: Optional[float] = None,
+        date: Optional[str] = datetime.now().strftime("%Y-%m-%d"),
         fill: Optional[bool] = True,
     ) -> None:
         """
@@ -84,6 +89,7 @@ class Portfolio:
             volume (float): The volume of the security to buy
             currency (Optional[str]): The currency of the security. If None, defaults to portfolio currency
             price (Optional[float]): The price of the security. If None, will be fetched during update_portfolio
+            date (Optional[str]): The date of the purchase. Default is current date
             fill (Optional[bool]): Whether to fetch security info from remote source
         """
         if ticker in self.securities:
@@ -105,16 +111,32 @@ class Portfolio:
                 f"Security '{ticker}' added to portfolio with volume {round(volume, 4)}."
             )
 
+        # Register action in portfolio history
+        self.history.append(
+            {
+                "action": "buy",
+                "ticker": ticker,
+                "volume": volume,
+                "date": date,
+            }
+        )
+
         # Update portfolio after buying security
         self.update_portfolio()
 
-    def sell_security(self, ticker: str, volume: float) -> None:
+    def sell_security(
+        self,
+        ticker: str,
+        volume: float,
+        date: Optional[str] = datetime.now().strftime("%Y-%m-%d"),
+    ) -> None:
         """
         Sells a volume of a security in the portfolio.
 
         Args:
             ticker (str): The ticker of the security to sell
             volume (float): The volume of the security to sell
+            date (Optional[str]): The date of the sale. Default is current date
 
         Raises:
             ValueError: If the security is not found in the portfolio or if there is insufficient volume to sell.
@@ -140,6 +162,16 @@ class Portfolio:
             logging.info(
                 f"Sold {volume} units of security '{ticker}'. New number held: {round(security.volume, 4)}."
             )
+
+        # Register action in portfolio history
+        self.history.append(
+            {
+                "action": "sell",
+                "ticker": ticker,
+                "volume": volume,
+                "date": date,
+            }
+        )
 
         # Update portfolio after selling security
         self.update_portfolio()
@@ -294,6 +326,7 @@ class Portfolio:
             "name": self.name,
             "currency": self.currency,
             "securities": securities_dict,
+            "history": self.history,
         }
 
     @classmethod
@@ -305,7 +338,9 @@ class Portfolio:
                 currency=data.get("currency", "EUR"),
             )
             securities_data = data.get("securities", {})
+            history_data = data.get("history", [])
 
+            # Load securities and shares
             if isinstance(securities_data, dict):
                 for ticker, security_data in securities_data.items():
                     # Extract share data
@@ -319,6 +354,9 @@ class Portfolio:
                     portfolio.securities[ticker] = security
                     # Create share info
                     portfolio.shares[ticker] = ShareInfo.from_dict(share_data)
+
+            # Load history if history data
+            portfolio.history = history_data if isinstance(history_data, list) else []
 
             return portfolio
         except Exception as e:

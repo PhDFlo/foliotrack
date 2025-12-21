@@ -1,3 +1,4 @@
+from datetime import date
 import logging
 from foliotrack.Portfolio import Portfolio
 from foliotrack.Equilibrate import solve_equilibrium
@@ -11,12 +12,18 @@ def portfolio_from_scratch():
     portfolio = Portfolio("Example Portfolio", currency="EUR")
 
     # Buy some securities
-    portfolio.buy_security("AIR.PA", volume=20.0, price=200.0, fill=True)
-    portfolio.buy_security("NVDA", volume=1.0, price=600.0, fill=True)
-    portfolio.buy_security("MC.PA", volume=1.0, price=300.0, fill=True)
+    portfolio.buy_security(
+        "AIR.PA", volume=20.0, price=200.0, date="2023-02-14", fill=True
+    )
+    portfolio.buy_security(
+        "NVDA", volume=1.0, price=600.0, date="2024-05-12", fill=True
+    )
+    portfolio.buy_security(
+        "MC.PA", volume=1.0, price=300.0, date="2025-08-03", fill=True
+    )
 
     # Sell some of them
-    portfolio.sell_security("AIR.PA", 3.0)
+    portfolio.sell_security("AIR.PA", volume=3.0, date="2023-06-01")
 
     # Set target shares
     portfolio.set_target_share("AIR.PA", 0.5)
@@ -55,9 +62,9 @@ def use_existing_portfolio():
     )
 
     # Buy additional securities
-    portfolio.sell_security("AIR.PA", volume=17.0)
-    portfolio.buy_security("NVDA", volume=1.0, price=300.0)
-    portfolio.buy_security("MC.PA", volume=2.0, price=200.0)
+    portfolio.sell_security("AIR.PA", volume=17.0, date="2024-06-11")
+    portfolio.buy_security("NVDA", volume=1.0, price=300.0, date="2024-06-12")
+    portfolio.buy_security("MC.PA", volume=2.0, price=200.0, date="2024-06-13")
 
     # Log portfolio info
     info = portfolio.get_portfolio_info()

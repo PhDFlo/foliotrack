@@ -8,15 +8,15 @@
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 196.7,
-            "price_in_portfolio_currency": 196.7,
+            "price_in_security_currency": 195.84,
+            "price_in_portfolio_currency": 195.84,
             "volume": 17.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 3343.9,
+            "value": 3329.28,
             "fill": true,
             "target": 0.5,
-            "actual": 0.8099,
+            "actual": 0.809,
             "final": 0.0
         },
         "NVDA": {
@@ -24,16 +24,16 @@
             "ticker": "NVDA",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8587,
-            "price_in_security_currency": 182.41,
-            "price_in_portfolio_currency": 156.64,
+            "exchange_rate": 0.8538,
+            "price_in_security_currency": 180.99,
+            "price_in_portfolio_currency": 154.53,
             "volume": 1.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 156.64,
+            "value": 154.53,
             "fill": true,
             "target": 0.2,
-            "actual": 0.0379,
+            "actual": 0.0375,
             "final": 0.0
         },
         "MC.PA": {
@@ -42,16 +42,42 @@
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 628.1,
-            "price_in_portfolio_currency": 628.1,
+            "price_in_security_currency": 631.7,
+            "price_in_portfolio_currency": 631.7,
             "volume": 1.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 628.1,
+            "value": 631.7,
             "fill": true,
             "target": 0.3,
-            "actual": 0.1521,
+            "actual": 0.1535,
             "final": 0.0
         }
-    }
+    },
+    "history": [
+        {
+            "action": "buy",
+            "ticker": "AIR.PA",
+            "volume": 20.0,
+            "date": "2023-02-14"
+        },
+        {
+            "action": "buy",
+            "ticker": "NVDA",
+            "volume": 1.0,
+            "date": "2024-05-12"
+        },
+        {
+            "action": "buy",
+            "ticker": "MC.PA",
+            "volume": 1.0,
+            "date": "2025-08-03"
+        },
+        {
+            "action": "sell",
+            "ticker": "AIR.PA",
+            "volume": 3.0,
+            "date": "2023-06-01"
+        }
+    ]
 }
