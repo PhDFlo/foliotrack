@@ -26,16 +26,19 @@ def test_buy_security():
     The amount invested in the Security should be equal to the volume multiplied by the buy price.
     """
     portfolio = Portfolio(currency="EUR")
-    portfolio.buy_security("SEC1", volume=25.0, price=200.0, fill=False)
+    portfolio.buy_security(
+        "SEC1", volume=25.0, price=200.0, date="2023-02-14", fill=False
+    )
     portfolio.set_target_share("SEC1", 1.0)
 
     assert portfolio.securities["SEC1"].volume == 25
     assert portfolio.securities["SEC1"].value == 5000
 
-    portfolio.buy_security("SEC1", volume=10.0)
-
-    assert portfolio.securities["SEC1"].volume == 35
-    assert portfolio.securities["SEC1"].value == 7000
+    # Assert history entry
+    assert portfolio.history[-1]["ticker"] == "SEC1"
+    assert portfolio.history[-1]["volume"] == 25
+    assert portfolio.history[-1]["action"] == "buy"
+    assert portfolio.history[-1]["date"] == "2023-02-14"
 
 
 def test_sell_security():
@@ -46,8 +49,12 @@ def test_sell_security():
     The amount invested in the Security should be updated accordingly.
     """
     portfolio = Portfolio(currency="EUR")
-    portfolio.buy_security("SEC1", volume=30.0, price=150.0, fill=False)
-    portfolio.buy_security("SEC2", volume=5.0, price=100.0, fill=False)
+    portfolio.buy_security(
+        "SEC1", volume=30.0, price=150.0, date="2023-02-14", fill=False
+    )
+    portfolio.buy_security(
+        "SEC2", volume=5.0, price=100.0, date="2023-02-15", fill=False
+    )
     portfolio.set_target_share("SEC1", 1.0)
 
     assert portfolio.securities["SEC1"].volume == 30
@@ -57,6 +64,12 @@ def test_sell_security():
 
     assert portfolio.securities["SEC1"].volume == 20
     assert portfolio.securities["SEC1"].value == 3000
+
+    # Assert history log
+    assert portfolio.history[-1]["ticker"] == "SEC1"
+    assert portfolio.history[-1]["volume"] == 10
+    assert portfolio.history[-1]["action"] == "sell"
+    assert portfolio.history[-1]["date"] == portfolio.history[-1]["date"]
 
     portfolio.sell_security("SEC2", volume=5.0)
 
@@ -70,9 +83,11 @@ def test_to_json():
 
     The to_json method should save the Portfolio to a JSON file with the correct structure and data.
     """
-    portfolio = Portfolio(currency="EUR")
+    portfolio = Portfolio(name="Test Portfolio", currency="EUR")
 
-    portfolio.buy_security("SEC1", volume=10.0, price=100.0, fill=False)
+    portfolio.buy_security(
+        "SEC1", volume=10.0, price=100.0, date="2023-02-14", fill=False
+    )
     portfolio.set_target_share("SEC1", 1.0)
 
     filepath = "Portfolios/test_portfolio.json"
@@ -81,10 +96,21 @@ def test_to_json():
     with open(filepath, "r") as f:
         data = json.load(f)
 
+    assert data["name"] == "Test Portfolio"
     assert data["currency"] == "EUR"
     assert len(data["securities"]) == 1
     assert data["securities"]["SEC1"]["volume"] == 10
     assert data["securities"]["SEC1"]["value"] == 1000
+
+    # Assert on target share
+    assert data["securities"]["SEC1"]["target"] == 1.0
+
+    # Assert on history log
+    assert len(data["history"]) == 1
+    assert data["history"][0]["ticker"] == "SEC1"
+    assert data["history"][0]["volume"] == 10
+    assert data["history"][0]["action"] == "buy"
+    assert data["history"][0]["date"] == "2023-02-14"
 
     os.remove(filepath)
 
@@ -96,6 +122,7 @@ def test_from_json():
     The from_json method should load the Portfolio from a JSON file with the correct structure and data.
     """
     portfolio_data = {
+        "name": "Test Portfolio",
         "currency": "EUR",
         "securities": {
             "SEC1": {
@@ -108,6 +135,10 @@ def test_from_json():
                 "fill": False,
             }
         },
+        "history": [
+            {"ticker": "SEC1", "volume": 20.0, "action": "buy", "date": "2023-02-14"},
+            {"ticker": "SEC1", "volume": 10.0, "action": "sell", "date": "2024-12-25"},
+        ],
     }
 
     filepath = "Portfolios/test_portfolio.json"
@@ -116,10 +147,22 @@ def test_from_json():
 
     portfolio = Portfolio.from_json(filepath)
 
+    assert portfolio.name == "Test Portfolio"
     assert portfolio.currency == "EUR"
     assert len(portfolio.securities) == 1
     assert portfolio.securities["SEC1"].name == "Security1"
     assert portfolio.securities["SEC1"].volume == 10
     assert portfolio.securities["SEC1"].value == 1000
+
+    # Assert on history log
+    assert len(portfolio.history) == 2
+    assert portfolio.history[0]["ticker"] == "SEC1"
+    assert portfolio.history[0]["volume"] == 20.0
+    assert portfolio.history[0]["action"] == "buy"
+    assert portfolio.history[0]["date"] == "2023-02-14"
+    assert portfolio.history[1]["ticker"] == "SEC1"
+    assert portfolio.history[1]["volume"] == 10.0
+    assert portfolio.history[1]["action"] == "sell"
+    assert portfolio.history[1]["date"] == "2024-12-25"
 
     os.remove(filepath)

@@ -1,4 +1,3 @@
-from datetime import date
 import logging
 from foliotrack.Portfolio import Portfolio
 from foliotrack.Equilibrate import solve_equilibrium
