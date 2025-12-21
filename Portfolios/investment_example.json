@@ -56,27 +56,27 @@
     },
     "history": [
         {
-            "action": "buy",
             "ticker": "AIR.PA",
             "volume": 20.0,
+            "action": "buy",
             "date": "2023-02-14"
         },
         {
-            "action": "buy",
             "ticker": "NVDA",
             "volume": 1.0,
+            "action": "buy",
             "date": "2024-05-12"
         },
         {
-            "action": "buy",
             "ticker": "MC.PA",
             "volume": 1.0,
+            "action": "buy",
             "date": "2025-08-03"
         },
         {
-            "action": "sell",
             "ticker": "AIR.PA",
             "volume": 3.0,
+            "action": "sell",
             "date": "2023-06-01"
         }
     ]

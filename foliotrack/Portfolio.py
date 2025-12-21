@@ -114,9 +114,9 @@ class Portfolio:
         # Register action in portfolio history
         self.history.append(
             {
-                "action": "buy",
                 "ticker": ticker,
                 "volume": volume,
+                "action": "buy",
                 "date": date,
             }
         )
@@ -166,9 +166,9 @@ class Portfolio:
         # Register action in portfolio history
         self.history.append(
             {
-                "action": "sell",
                 "ticker": ticker,
                 "volume": volume,
+                "action": "sell",
                 "date": date,
             }
         )
