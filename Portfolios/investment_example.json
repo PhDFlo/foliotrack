@@ -3,7 +3,7 @@
     "currency": "EUR",
     "securities": {
         "AIR.PA": {
-            "name": "Unnamed security",
+            "name": "Airbus SE",
             "ticker": "AIR.PA",
             "currency": "EUR",
             "symbol": "\u20ac",
@@ -16,7 +16,7 @@
             "value": 3327.24,
             "fill": true,
             "target": 0.5,
-            "actual": 0.8093,
+            "actual": 0.8094,
             "final": 0.0
         },
         "NVDA": {
@@ -25,15 +25,15 @@
             "currency": "USD",
             "symbol": "$",
             "exchange_rate": 0.8514,
-            "price_in_security_currency": 183.31,
-            "price_in_portfolio_currency": 156.07,
+            "price_in_security_currency": 183.215,
+            "price_in_portfolio_currency": 155.99,
             "volume": 1.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 156.07,
+            "value": 155.99,
             "fill": true,
             "target": 0.2,
-            "actual": 0.038,
+            "actual": 0.0379,
             "final": 0.0
         },
         "MC.PA": {
@@ -63,12 +63,12 @@
         {
             "ticker": "NVDA",
             "volume": 1.0,
-            "date": "2024-05-12"
+            "date": "2024-05-09"
         },
         {
             "ticker": "MC.PA",
             "volume": 1.0,
-            "date": "2025-08-03"
+            "date": "2025-08-01"
         },
         {
             "ticker": "AIR.PA",

@@ -15,10 +15,10 @@ def portfolio_from_scratch():
         "AIR.PA", volume=20.0, price=200.0, date="2023-02-14", fill=True
     )
     portfolio.buy_security(
-        "NVDA", volume=1.0, price=600.0, date="2024-05-12", fill=True
+        "NVDA", volume=1.0, price=600.0, date="2024-05-09", fill=True
     )
     portfolio.buy_security(
-        "MC.PA", volume=1.0, price=300.0, date="2025-08-03", fill=True
+        "MC.PA", volume=1.0, price=300.0, date="2025-08-01", fill=True
     )
 
     # Sell some of them
