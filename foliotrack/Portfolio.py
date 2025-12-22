@@ -116,7 +116,6 @@ class Portfolio:
             {
                 "ticker": ticker,
                 "volume": volume,
-                "action": "buy",
                 "date": date,
             }
         )
@@ -167,8 +166,7 @@ class Portfolio:
         self.history.append(
             {
                 "ticker": ticker,
-                "volume": volume,
-                "action": "sell",
+                "volume": -volume,
                 "date": date,
             }
         )

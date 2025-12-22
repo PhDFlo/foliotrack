@@ -3,20 +3,20 @@
     "currency": "EUR",
     "securities": {
         "AIR.PA": {
-            "name": "Airbus SE",
+            "name": "Unnamed security",
             "ticker": "AIR.PA",
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 195.84,
-            "price_in_portfolio_currency": 195.84,
+            "price_in_security_currency": 195.72,
+            "price_in_portfolio_currency": 195.72,
             "volume": 17.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 3329.28,
+            "value": 3327.24,
             "fill": true,
             "target": 0.5,
-            "actual": 0.809,
+            "actual": 0.8093,
             "final": 0.0
         },
         "NVDA": {
@@ -24,16 +24,16 @@
             "ticker": "NVDA",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8538,
-            "price_in_security_currency": 180.99,
-            "price_in_portfolio_currency": 154.53,
+            "exchange_rate": 0.8514,
+            "price_in_security_currency": 183.31,
+            "price_in_portfolio_currency": 156.07,
             "volume": 1.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 154.53,
+            "value": 156.07,
             "fill": true,
             "target": 0.2,
-            "actual": 0.0375,
+            "actual": 0.038,
             "final": 0.0
         },
         "MC.PA": {
@@ -42,15 +42,15 @@
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 631.7,
-            "price_in_portfolio_currency": 631.7,
+            "price_in_security_currency": 627.7,
+            "price_in_portfolio_currency": 627.7,
             "volume": 1.0,
             "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 631.7,
+            "value": 627.7,
             "fill": true,
             "target": 0.3,
-            "actual": 0.1535,
+            "actual": 0.1527,
             "final": 0.0
         }
     },
@@ -58,25 +58,21 @@
         {
             "ticker": "AIR.PA",
             "volume": 20.0,
-            "action": "buy",
             "date": "2023-02-14"
         },
         {
             "ticker": "NVDA",
             "volume": 1.0,
-            "action": "buy",
             "date": "2024-05-12"
         },
         {
             "ticker": "MC.PA",
             "volume": 1.0,
-            "action": "buy",
             "date": "2025-08-03"
         },
         {
             "ticker": "AIR.PA",
-            "volume": 3.0,
-            "action": "sell",
+            "volume": -3.0,
             "date": "2023-06-01"
         }
     ]
