@@ -15,6 +15,7 @@ class Equilibrate:
         portfolio: Portfolio,
         investment_amount: float = 1000.0,
         min_percent_to_invest: float = 0.99,
+        selling: bool = False,
     ) -> Tuple[np.ndarray, float, np.ndarray]:
         """
         Solves for the optimal number of each Security to buy to approach target shares,
@@ -30,6 +31,7 @@ class Equilibrate:
                 - symbol (str)
             investment_amount (float, optional): Amount to invest. Defaults to 1000.0.
             min_percent_to_invest (float, optional): Minimum percentage of the total investment to consider. Defaults to 0.99.
+            selling (bool, optional): Whether selling is allowed. Maximizes target shares but not investment. Defaults to False.
 
         Returns:
             Tuple[np.ndarray, float, np.ndarray]:
@@ -59,7 +61,7 @@ class Equilibrate:
 
         # Set up constraints
         constraints = self.setup_constraints(
-            investments, price_matrix, investment_amount, min_percent_to_invest
+            investments, price_matrix, investment_amount, min_percent_to_invest, selling
         )
 
         # Define the optimization objective
@@ -89,12 +91,12 @@ class Equilibrate:
 
         return security_counts, total_to_invest, final_shares
 
-    def validate_securities(self, securities: list) -> None:
+    def validate_securities(self, securities: dict) -> None:
         """
         Validates that each Security object has the required attributes.
 
         Args:
-            securities (list): List of Security objects.
+            securities (dict): Dictionary of Security objects keyed by ticker.
 
         Raises:
             ValueError: If any Security object is missing required attributes.
@@ -105,12 +107,14 @@ class Equilibrate:
             "name",
             "symbol",
         ]
-        for security in securities:
+        for ticker, security in securities.items():
             for attr in required_attrs:
                 if not hasattr(security, attr):
-                    logging.error(f"Security object missing required attribute: {attr}")
+                    logging.error(
+                        f"Security {ticker} missing required attribute: {attr}"
+                    )
                     raise ValueError(
-                        f"Security object missing required attribute: {attr}"
+                        f"Security {ticker} missing required attribute: {attr}"
                     )
 
     def setup_optimization_variables(
@@ -128,13 +132,15 @@ class Equilibrate:
                 Optimization variables and matrices.
         """
         investments = cp.Variable(n, integer=True)
+        # Convert dictionary values to ordered lists
+        securities_list = list(portfolio.securities.values())
         price_matrix = np.diag(
-            [security.price_in_portfolio_currency for security in portfolio.securities]
+            [security.price_in_portfolio_currency for security in securities_list]
         )
-        total_value = np.array([security.value for security in portfolio.securities])
+        total_value = np.array([security.value for security in securities_list])
         # Read target shares from the portfolio using helper (ordered by securities)
         target_shares = np.array(
-            [portfolio._get_share(s.ticker).target for s in portfolio.securities]
+            [portfolio._get_share(s.ticker).target for s in securities_list]
         )
         return investments, price_matrix, total_value, target_shares
 
@@ -144,6 +150,7 @@ class Equilibrate:
         price_matrix: np.ndarray,
         investment_amount: float,
         min_percent_to_invest: float,
+        selling: bool,
     ) -> list:
         """
         Sets up the optimization constraints.
@@ -153,16 +160,37 @@ class Equilibrate:
             price_matrix (np.ndarray): Price matrix.
             investment_amount (float): Amount to invest.
             min_percent_to_invest (float): Minimum percentage of the total investment to consider.
+            selling (bool): Whether selling is allowed.
 
         Returns:
             list: List of optimization constraints.
         """
-        return [
-            investments >= 0,
+        return (
+            [
+                investments >= 0,
+                cp.sum(price_matrix @ investments)
+                >= min_percent_to_invest * investment_amount,
+                cp.sum(price_matrix @ investments) <= investment_amount,
+            ]
+            if not selling
+            else [
+                cp.sum(price_matrix @ investments)
+                >= min_percent_to_invest * investment_amount,
+                cp.sum(price_matrix @ investments) <= investment_amount,
+            ]
+        )
+        constrains = [
             cp.sum(price_matrix @ investments)
             >= min_percent_to_invest * investment_amount,
             cp.sum(price_matrix @ investments) <= investment_amount,
         ]
+
+        # If not selling, ensure we only buy (no negative investments)
+        if not selling:
+            constrains.insert(0, investments >= 0)
+
+        print(constrains)
+        return constrains
 
     def solve_optimization_problem(
         self, objective: cp.Minimize, constraints: list
@@ -200,8 +228,9 @@ class Equilibrate:
         Returns:
             Tuple[float, np.ndarray]: Total amount to invest and final shares.
         """
-        for i, security in enumerate(portfolio.securities):
-            security.number_to_buy = int(security_counts[i])
+        securities_list = list(portfolio.securities.values())
+        for i, security in enumerate(securities_list):
+            security.volume_to_buy = int(security_counts[i])
             security.amount_to_invest = round(
                 price_matrix[i, i] * security_counts[i], 2
             )
@@ -215,8 +244,8 @@ class Equilibrate:
         else:
             final_shares = np.zeros_like(final_invested)
 
-        # Write final shares back into portfolio shares mapping via helper
-        for s, val in zip(portfolio.securities, final_shares):
+        # Write final shares back into portfolio shares mapping
+        for s, val in zip(securities_list, final_shares):
             portfolio._get_share(s.ticker).final = round(float(val), 4)
 
         return total_to_invest, final_shares
@@ -230,18 +259,18 @@ class Equilibrate:
             total_to_invest (float): Total amount to invest.
         """
         logging.info("Number of each Security to buy:")
-        for security in portfolio.securities:
-            logging.info(f"  {security.name}: {security.number_to_buy} units")
+        for security in portfolio.securities.values():
+            logging.info(f"  {security.name}: {security.volume_to_buy} units")
 
         logging.info("Amount to spend and final share of each Security:")
-        for security in portfolio.securities:
+        for ticker, security in portfolio.securities.items():
             logging.info(
-                f"  {security.name}: {security.amount_to_invest:.2f}{portfolio.symbol}, Final share = {portfolio.shares[security.ticker].final:.4f}"
+                f"  {security.name}: {security.amount_to_invest:.2f}{portfolio.symbol}, Final share = {portfolio.shares[ticker].final:.4f}"
             )
 
-        total_amount = 0.0
-        for security in portfolio.securities:
-            total_amount += security.amount_to_invest
+        total_amount = sum(
+            security.amount_to_invest for security in portfolio.securities.values()
+        )
         logging.info(f"Total amount to invest: {total_amount:.2f}{portfolio.symbol}")
 
 

@@ -1,64 +1,79 @@
 {
+    "name": "Example Portfolio",
     "currency": "EUR",
-    "securities": [
-        {
+    "securities": {
+        "AIR.PA": {
             "name": "Airbus SE",
             "ticker": "AIR.PA",
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 213.4,
-            "price_in_portfolio_currency": 213.4,
-            "quantity": 17.0,
-            "number_to_buy": 0.0,
+            "price_in_security_currency": 195.72,
+            "price_in_portfolio_currency": 195.72,
+            "volume": 17.0,
+            "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 3627.8,
-            "fill": true
+            "value": 3327.24,
+            "fill": true,
+            "target": 0.5,
+            "actual": 0.8094,
+            "final": 0.0
         },
-        {
+        "NVDA": {
             "name": "NVIDIA Corporation",
             "ticker": "NVDA",
             "currency": "USD",
             "symbol": "$",
-            "exchange_rate": 0.8655,
-            "price_in_security_currency": 202.49,
-            "price_in_portfolio_currency": 175.26,
-            "quantity": 1.0,
-            "number_to_buy": 0.0,
+            "exchange_rate": 0.8514,
+            "price_in_security_currency": 183.215,
+            "price_in_portfolio_currency": 155.99,
+            "volume": 1.0,
+            "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 175.26,
-            "fill": true
+            "value": 155.99,
+            "fill": true,
+            "target": 0.2,
+            "actual": 0.0379,
+            "final": 0.0
         },
-        {
+        "MC.PA": {
             "name": "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9enne",
             "ticker": "MC.PA",
             "currency": "EUR",
             "symbol": "\u20ac",
             "exchange_rate": 1.0,
-            "price_in_security_currency": 612.1,
-            "price_in_portfolio_currency": 612.1,
-            "quantity": 1.0,
-            "number_to_buy": 0.0,
+            "price_in_security_currency": 627.7,
+            "price_in_portfolio_currency": 627.7,
+            "volume": 1.0,
+            "volume_to_buy": 0.0,
             "amount_to_invest": 0.0,
-            "value": 612.1,
-            "fill": true
-        }
-    ],
-    "shares": {
-        "AIR.PA": {
-            "target": 0.5,
-            "actual": 0.8217,
-            "final": 0.0
-        },
-        "NVDA": {
-            "target": 0.2,
-            "actual": 0.0397,
-            "final": 0.0
-        },
-        "MC.PA": {
+            "value": 627.7,
+            "fill": true,
             "target": 0.3,
-            "actual": 0.1386,
+            "actual": 0.1527,
             "final": 0.0
         }
-    }
+    },
+    "history": [
+        {
+            "ticker": "AIR.PA",
+            "volume": 20.0,
+            "date": "2023-02-14"
+        },
+        {
+            "ticker": "NVDA",
+            "volume": 1.0,
+            "date": "2024-05-09"
+        },
+        {
+            "ticker": "MC.PA",
+            "volume": 1.0,
+            "date": "2025-08-01"
+        },
+        {
+            "ticker": "AIR.PA",
+            "volume": -3.0,
+            "date": "2023-06-01"
+        }
+    ]
 }
