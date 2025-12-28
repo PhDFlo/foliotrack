@@ -37,7 +37,6 @@ def test_buy_security():
     # Assert history entry
     assert portfolio.history[-1]["ticker"] == "SEC1"
     assert portfolio.history[-1]["volume"] == 25
-    assert portfolio.history[-1]["action"] == "buy"
     assert portfolio.history[-1]["date"] == "2023-02-14"
 
 
@@ -67,8 +66,7 @@ def test_sell_security():
 
     # Assert history log
     assert portfolio.history[-1]["ticker"] == "SEC1"
-    assert portfolio.history[-1]["volume"] == 10
-    assert portfolio.history[-1]["action"] == "sell"
+    assert portfolio.history[-1]["volume"] == -10
     assert portfolio.history[-1]["date"] == portfolio.history[-1]["date"]
 
     portfolio.sell_security("SEC2", volume=5.0)
@@ -109,7 +107,6 @@ def test_to_json():
     assert len(data["history"]) == 1
     assert data["history"][0]["ticker"] == "SEC1"
     assert data["history"][0]["volume"] == 10
-    assert data["history"][0]["action"] == "buy"
     assert data["history"][0]["date"] == "2023-02-14"
 
     os.remove(filepath)

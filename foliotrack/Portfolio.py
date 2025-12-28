@@ -356,6 +356,9 @@ class Portfolio:
             # Load history if history data
             portfolio.history = history_data if isinstance(history_data, list) else []
 
+            # Update after instanciation (to get price in portfolio currency, and other attributes...)
+            portfolio.update_portfolio()
+
             return portfolio
         except Exception as e:
             logging.error(f"Error creating Portfolio from dict: {e}")

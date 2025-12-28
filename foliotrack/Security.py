@@ -88,6 +88,9 @@ class Security:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
         self.volume += volume
         self.value = volume * self.price_in_portfolio_currency
+        self.volume_to_buy = (
+            self.volume_to_buy - volume if self.volume_to_buy > volume else 0
+        )
         return {
             "ticker": self.ticker,
             "volume": volume,
