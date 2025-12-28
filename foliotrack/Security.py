@@ -115,6 +115,7 @@ class Security:
             )
         self.volume -= volume
         self.value = volume * self.price_in_portfolio_currency
+        self.volume_to_buy -= self.volume_to_buy - volume
         return {
             "ticker": self.ticker,
             "volume": -volume,
