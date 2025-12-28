@@ -2,7 +2,7 @@
   <img src="images/logo.jpg" alt="foliotrack Logo" width="80%">
 </p>
 
-foliotrack is a Python package to manage, optimize, rebalance, and backtest portfolios of securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the package computes the optimal investment adjustments required to align the portfolio with the desired strategy, and can simulate historical performance with backtracking.
+foliotrack is a Python package to manage, optimize, rebalance, and backtest portfolios of securities, including Exchange-Traded Funds (ETFs). Given a set of securities and their target allocation weights, the package computes the optimal investment adjustments required to align the portfolio with the desired strategy, and can simulate historical performance with backtest.
 
 ## Key Features
 
@@ -86,7 +86,7 @@ source .venv/bin/activate
 
 ## Usage Examples
 
-foliotrack provides a comprehensive Python API for portfolio management and backtesting. Here is an updated example using the new backtracking feature:
+foliotrack provides a comprehensive Python API for portfolio management and backtesting. Here is an updated example using the backtest feature:
 
 ```python
 import logging
