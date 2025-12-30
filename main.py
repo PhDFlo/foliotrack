@@ -21,13 +21,13 @@ def portfolio_from_scratch(market_service: MarketService):
 
     # Buy some securities (Domain logic: adds to state)
     portfolio.buy_security(
-        "AIR.PA", volume=20.0, price=200.0, date="2023-02-14", fill=False
+        "AIR.PA", volume=20.0, price=200.0, date="2023-02-14", fill=True
     )
     portfolio.buy_security(
-        "NVDA", volume=1.0, price=600.0, date="2024-05-09", fill=False
+        "NVDA", volume=1.0, price=600.0, date="2024-05-09", fill=True
     )
     portfolio.buy_security(
-        "MC.PA", volume=1.0, price=300.0, date="2025-08-01", fill=False
+        "MC.PA", volume=1.0, price=300.0, date="2025-08-01", fill=True
     )
 
     # Fetch data to fill details (Service logic)
@@ -45,7 +45,7 @@ def portfolio_from_scratch(market_service: MarketService):
     # Note: Backtest might need data. If BacktestService handles fetching, it's fine.
     try:
         result = backtester.run_backtest(
-            portfolio, start_date="2010-01-01", end_date="2023-01-01"
+            portfolio, market_service, start_date="2010-01-01", end_date="2023-01-01"
         )
         result.display()
     except Exception as e:

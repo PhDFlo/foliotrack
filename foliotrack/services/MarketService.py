@@ -1,6 +1,7 @@
 import logging
 import yfinance as yf
-from typing import Optional
+from typing import List
+import pandas as pd
 from foliotrack.domain.Portfolio import Portfolio
 from foliotrack.domain.Security import Security
 from foliotrack.utils.Currency import get_rate_between
@@ -32,6 +33,18 @@ class MarketService:
 
         # After prices are updated, recalculate portfolio stats
         portfolio.recalculate_shares()
+
+    def get_historical_data(
+        self, tickers: List[str], start_date: str, end_date: str
+    ) -> pd.DataFrame:
+        """
+        Fetch historical closing prices for a list of tickers.
+        Returns a DataFrame with tickers as columns and dates as index.
+        """
+        if self.provider == "ffn":
+            return self._fetch_history_ffn(tickers, start_date, end_date)
+        else:
+            return self._fetch_history_yfinance(tickers, start_date, end_date)
 
     def _update_security_price(
         self, security: Security, portfolio_currency: str
@@ -92,6 +105,16 @@ class MarketService:
             logging.error(f"yfinance error for {ticker_symbol}: {e}")
             return None, None, None
 
+    def _fetch_history_yfinance(
+        self, tickers: List[str], start_date: str, end_date: str
+    ) -> pd.DataFrame:
+        # Use bt.get for convenience as it handles cleaning and aligning yfinance data well
+        # Alternatively use yf.download directly.
+        # Given BacktestService uses bt, using bt.get here ensures compatibility format.
+        import bt
+
+        return bt.get(tickers, start=start_date, end=end_date)
+
     def _fetch_ffn(self, ticker_symbol: str):
         try:
             import ffn
@@ -111,3 +134,19 @@ class MarketService:
         except Exception as e:
             logging.error(f"ffn error for {ticker_symbol}: {e}")
             return None, None, None
+
+    def _fetch_history_ffn(
+        self, tickers: List[str], start_date: str, end_date: str
+    ) -> pd.DataFrame:
+        try:
+            import ffn
+
+            # ffn.get accepts comma separated string or list
+            data = ffn.get(tickers, start=start_date, end=end_date)
+            return data
+        except ImportError:
+            logging.error("ffn is not installed.")
+            raise
+        except Exception as e:
+            logging.error(f"ffn history fetch error: {e}")
+            raise

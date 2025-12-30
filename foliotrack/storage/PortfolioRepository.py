@@ -1,6 +1,5 @@
 import json
 import logging
-from dataclasses import asdict
 from typing import Dict, Any
 from foliotrack.domain.Portfolio import Portfolio
 from foliotrack.domain.Security import Security
@@ -30,15 +29,12 @@ class PortfolioRepository:
             return self._from_dict(data)
         except Exception as e:
             logging.error(f"Error loading portfolio from JSON: {e}")
-            # Reraise or return empty? Legacy returned empty.
-            # Better to raise in valid repository pattern but for continuity:
-            return Portfolio()  # Return empty portfolio on failure, logged error.
+            raise
 
     def _to_dict(self, portfolio: Portfolio) -> Dict[str, Any]:
         securities_dict = {}
         for ticker, security in portfolio.securities.items():
             # Get base security data
-            # Security.get_info() returns asdict + symbol
             security_info = security.get_info()
 
             # Get share data

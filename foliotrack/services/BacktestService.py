@@ -2,13 +2,26 @@ import bt
 import pandas as pd
 from foliotrack.domain.Portfolio import Portfolio
 
+# Avoid circular import if type hinting MarketService by using TYPE_CHECKING or string
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from foliotrack.services.MarketService import MarketService
+
 
 class BacktestService:
-    def run_backtest(self, portfolio: Portfolio, start_date, end_date):
+    def run_backtest(
+        self,
+        portfolio: Portfolio,
+        market_service: "MarketService",
+        start_date,
+        end_date,
+    ):
         """Run a backtest for the given portfolio.
 
         Args:
             portfolio (Portfolio): Portfolio containing securities and allocation info.
+            market_service (MarketService): Service to fetch historical data.
             start_date (str or datetime): Start date for historical data (inclusive).
             end_date (str or datetime): End date for historical data (inclusive).
 
@@ -20,40 +33,38 @@ class BacktestService:
         if not tickers:
             raise ValueError("Portfolio contains no securities to backtest.")
 
-        # Data fetching (bt handles its own fetching, usually from Yahoo Finance)
-        # In a stricter system, we might inject data here.
-        historical_data = bt.get(tickers, start=start_date, end=end_date)
+        # Fetch data using injected service
+        historical_data = market_service.get_historical_data(
+            tickers, start_date=start_date, end_date=end_date
+        )
 
         # Get portfolio security target shares
         target_shares = self._get_list_target_shares(portfolio)
+        if len(target_shares) != len(historical_data.columns):
+            raise ValueError(
+                "Number of target shares does not match number of tickers/data columns."
+            )
 
-        # Validation checks on data alignment
-        # (This logic assumes tickers in portfolio match columns in data)
-        # bt.get returns columns in sorted order or specific order?
-        # Usually bt.get(tickers) returns DataFrame with columns=tickers.
-        # But if we rely on order, we must be careful.
-        # Original code used zip(historical_data.columns, target_shares) assuming alignment.
-        # Assuming original code worked, but columns are usually sorted alphabetically by bt?
-        # Let's verify or trust original Logic.
-        # bt.get returns data for passed tickers. ORDER MATTERS for zip.
-        # Original code:
-        # tickers derived from portfolio.securities (iteration order)
-        # target_shares derived from portfolio.securities (iteration order)
-        # historical_data columns might be sorted by bt?
-        # If bt sorts columns, and portfolio isn't sorted, we have a Mismatch Bug in original code?
-        # I should probably fix this by matching columns to tickers explicitly.
+        # bt.get often normalizes tickers (e.g., "AIR.PA" becomes "airpa").
+        # To match them safely, we create a mapping from slugified ticker to target share.
+        import re
 
-        # Safe implementation:
+        def slugify(s):
+            return re.sub(r"[^a-z0-9]", "", s.lower())
+
+        slug_to_share = {slugify(t): portfolio._get_share(t).target for t in tickers}
+
+        # Build weights mapping columns from historical_data to their target shares
         weights_dict = {}
-        for ticker in tickers:
-            share = portfolio._get_share(ticker).target
-            if ticker in historical_data.columns:
-                weights_dict[ticker] = share
+        for col in historical_data.columns:
+            weights_dict[col] = slug_to_share.get(slugify(col), 0.0)
 
-        # If any ticker failed to load data, we might need to handle it.
-        # But constructing weights dataframe:
+        # Build the weights DataFrame
         weights = pd.DataFrame(
-            {col: weights_dict.get(col, 0.0) for col in historical_data.columns},
+            {
+                col: [weights_dict[col]] * len(historical_data)
+                for col in historical_data.columns
+            },
             index=historical_data.index,
         )
 

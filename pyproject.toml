@@ -21,8 +21,8 @@ dependencies = [
     "pytest",
     "bt",
 ]
-license = "Apache License 2.0"
-license-file = "LICENSE"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 
 [project.urls]
 "Homepage" = "https://github.com/PhDFlo/foliotrack"

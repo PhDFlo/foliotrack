@@ -80,15 +80,6 @@ class Security:
             )
         self.volume -= volume
         self.value = self.volume * self.price_in_portfolio_currency
-        # Logic for volume_to_buy update on sell?
-        # Original: self.volume_to_buy -= self.volume_to_buy - volume (Evaluates to volume?)
-        # Original code: self.volume_to_buy -= self.volume_to_buy - volume
-        # => self.volume_to_buy = self.volume_to_buy - (self.volume_to_buy - volume) = volume
-        # That looks weird in original code, but preserving logic for now or fixing if obvious bug.
-        # Actually it looks like it sets volume_to_buy = volume ?
-        # Let's keep it simple: usually selling doesn't affect 'to buy' unless we are undoing a planned buy.
-        # But 'volume_to_buy' is populated by Equilibrate.
-        # I'll preserve original behavior exactly for now.
         self.volume_to_buy -= self.volume_to_buy - volume
 
         return {
