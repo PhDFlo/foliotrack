@@ -50,6 +50,7 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 ### Core Modules
 
 - `main.py`: Example usage and entry point with portfolio creation and management examples.
+- `foliotrack/Backtest.py`: Backtest computation using the bt library.
 - `foliotrack/Currency.py`: Currency management with symbol resolution, exchange rates, and ECB data integration.
 - `foliotrack/Security.py`: Security class with real-time price updates, trading operations, and market data integration.
 - `foliotrack/Portfolio.py`: Portfolio management with multi-currency support, security tracking, and allocation management.
@@ -64,6 +65,7 @@ Ideal for investors, financial advisors, and algorithmic traders seeking to:
 ### Tests
 
 - `tests/foliotrack/`: Comprehensive test suite.
+  - `test_backtest.py`: Backtest computation tests.
   - `test_currency.py`: Currency operations and exchange rate tests.
   - `test_portfolio.py`: Portfolio management and serialization tests.
   - `test_security.py`: Security operations and market data tests.
