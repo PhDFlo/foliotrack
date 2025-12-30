@@ -6,7 +6,7 @@
 
 **FolioTrack** is a robust, modular Python library for modern portfolio management. It helps you **manage**, **optimize**, **rebalance**, and **backtest** multi-currency investment portfolios with ease.
 
-Whether you are an algorithmic trader, a financial advisor, or a DIY investor, FolioTrack provides the mathematical rigor and architectural flexibility you need to maintain your target asset allocation.
+Designed primarily for **DIY passive investors**, FolioTrack automates the mathematical heavy lifting of maintaining a "lazy" portfolio. It ensures your asset allocation remains perfectly balanced with minimal effort, helping you stick to your long-term strategy without the spreadsheet headaches.
 
 ---
 
@@ -128,4 +128,4 @@ uv run pytest
 
 ## 📄 License
 
-MIT License. See `LICENSE` for details.
+Apache License 2.0. See `LICENSE` for details.
