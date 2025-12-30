@@ -1,6 +1,6 @@
 import pytest
-from foliotrack.Equilibrate import solve_equilibrium
-from foliotrack.Portfolio import Portfolio
+from foliotrack.services.OptimizationService import OptimizationService
+from foliotrack.domain.Portfolio import Portfolio
 
 
 def test_solve_equilibrium():
@@ -15,7 +15,8 @@ def test_solve_equilibrium():
     portfolio.set_target_share("SEC2", 0.4)
 
     # Solve for equilibrium
-    security_counts, total_to_invest, final_shares = solve_equilibrium(
+    optimizer = OptimizationService()
+    security_counts, total_to_invest, final_shares = optimizer.solve_equilibrium(
         portfolio, investment_amount=1000
     )
 
@@ -27,7 +28,7 @@ def test_solve_equilibrium():
     assert final_shares[1] == pytest.approx(0.4, 0.01)
 
     # Test with max_different_securities
-    security_counts, total_to_invest, final_shares = solve_equilibrium(
+    security_counts, total_to_invest, final_shares = optimizer.solve_equilibrium(
         portfolio, investment_amount=1000, max_different_securities=1
     )
     assert security_counts[0] == 10  # 10 units of Security1
