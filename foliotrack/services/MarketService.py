@@ -16,7 +16,9 @@ class MarketService:
     def __init__(self, provider: str = "yfinance"):
         self.provider = provider.lower()
         if self.provider not in ["yfinance", "ffn"]:
-            logging.warning(f"Unknown provider '{provider}', defaulting to 'yfinance'")
+            logging.warning(
+                f"Unknown provider '{self.provider}', defaulting to 'yfinance'"
+            )
             self.provider = "yfinance"
 
     def update_prices(self, portfolio: Portfolio) -> None:
@@ -125,6 +127,9 @@ class MarketService:
             latest_price = prices.iloc[-1].item()
             # ffn might not provide currency/name easily in same call without extra metadata lookup
             # defaulting to None for metadata
+            logging.warning(
+                "ffn does not provide currency and name, thus existing or default values will be used"
+            )
             return latest_price, None, None
         except ImportError:
             logging.error(

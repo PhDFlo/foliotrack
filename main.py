@@ -12,9 +12,10 @@ logging.basicConfig(level=logging.INFO)
 repo = PortfolioRepository()
 optimizer = OptimizationService()
 backtester = BacktestService()
+market_service = MarketService()
 
 
-def portfolio_from_scratch(market_service: MarketService):
+def portfolio_from_scratch():
     logging.info("--- Creating Portfolio From Scratch ---")
     # Create a Portfolio instance
     portfolio = Portfolio("Example Portfolio", currency="EUR")
@@ -63,9 +64,7 @@ def portfolio_from_scratch(market_service: MarketService):
     _log_portfolio_info(portfolio, "Portfolio info from scratch:")
 
 
-def use_existing_portfolio(
-    market_service: MarketService, path: str = "Portfolios/investment_example.json"
-):
+def use_existing_portfolio(path: str = "Portfolios/investment_example.json"):
     logging.info(f"--- Using Existing Portfolio from {path} ---")
 
     # Load
@@ -116,12 +115,6 @@ def _log_portfolio_info(portfolio, title):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FolioTrack CLI")
     parser.add_argument(
-        "--provider",
-        type=str,
-        default="yfinance",
-        help="Market data provider (yfinance or ffn)",
-    )
-    parser.add_argument(
         "--action",
         type=str,
         default="all",
@@ -131,10 +124,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    market_service = MarketService(provider=args.provider)
-
     if args.action in ["scratch", "all"]:
-        portfolio_from_scratch(market_service)
+        portfolio_from_scratch()
 
     if args.action in ["existing", "all"]:
-        use_existing_portfolio(market_service)
+        use_existing_portfolio()
