@@ -38,7 +38,7 @@ class Security:
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
         )
-        self.value = self.volume * self.price_in_portfolio_currency
+        self.value = round(self.volume * self.price_in_portfolio_currency, 2)
 
     def get_info(self) -> Dict[str, Any]:
         """
@@ -60,7 +60,7 @@ class Security:
         if date is None:
             date = datetime.datetime.now().strftime("%Y-%m-%d")
         self.volume += volume
-        self.value = self.volume * self.price_in_portfolio_currency
+        self.value = round(self.volume * self.price_in_portfolio_currency, 2)
         self.volume_to_buy = (
             self.volume_to_buy - volume if self.volume_to_buy > volume else 0
         )
@@ -85,7 +85,7 @@ class Security:
                 f"Cannot sell {volume} units; only {self.volume} available."
             )
         self.volume -= volume
-        self.value = self.volume * self.price_in_portfolio_currency
+        self.value = round(self.volume * self.price_in_portfolio_currency, 2)
         self.volume_to_buy -= self.volume_to_buy - volume
 
         return {
