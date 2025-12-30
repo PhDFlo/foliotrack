@@ -2,9 +2,9 @@
   <img src="images/logo.jpg" alt="foliotrack Logo" width="50%">
 </p>
 
-[![Build Status](https://github.com/pmorissette/ffn/workflows/Build%20Status/badge.svg)](https://github.com/PhDFlo/foliotrack/actions/)
-[![PyPI Version](https://img.shields.io/pypi/v/ffn)](https://pypi.org/project/foliotrack/)
-[![PyPI License](https://img.shields.io/pypi/l/ffn)](https://pypi.org/project/foliotrack/)
+[![Build Status](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml)
+[![PyPI Version](https://img.shields.io/pypi/v/foliotrack)](https://pypi.org/project/foliotrack/)
+[![PyPI License](https://img.shields.io/pypi/l/foliotrack)](https://pypi.org/project/foliotrack/)
 
 # FolioTrack
 
