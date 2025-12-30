@@ -2,7 +2,6 @@ from foliotrack.domain.Portfolio import Portfolio
 from foliotrack.storage.PortfolioRepository import PortfolioRepository
 import json
 import os
-import pytest
 
 # verify_target_share_sum was removed from domain entity as it is a validation rule
 # usually handled by optimization or specific validators.

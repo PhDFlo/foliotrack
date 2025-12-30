@@ -1,4 +1,3 @@
-from foliotrack.domain.Security import Security
 from foliotrack.domain.Portfolio import Portfolio
 from foliotrack.services.MarketService import MarketService
 import logging
