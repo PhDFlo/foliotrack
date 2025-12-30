@@ -9,7 +9,6 @@ from foliotrack.storage.PortfolioRepository import PortfolioRepository
 logging.basicConfig(level=logging.INFO)
 
 # Instantiating Services and Repository
-# In a larger app, this would be a dependency injection container.
 repo = PortfolioRepository()
 optimizer = OptimizationService()
 backtester = BacktestService()
