@@ -1,5 +1,6 @@
 import bt
 import pandas as pd
+import re
 from foliotrack.domain.Portfolio import Portfolio
 
 # Avoid circular import if type hinting MarketService by using TYPE_CHECKING or string
@@ -47,17 +48,14 @@ class BacktestService:
 
         # bt.get often normalizes tickers (e.g., "AIR.PA" becomes "airpa").
         # To match them safely, we create a mapping from slugified ticker to target share.
-        import re
-
-        def slugify(s):
-            return re.sub(r"[^a-z0-9]", "", s.lower())
-
-        slug_to_share = {slugify(t): portfolio._get_share(t).target for t in tickers}
+        slug_to_share = {
+            self._slugify(t): portfolio._get_share(t).target for t in tickers
+        }
 
         # Build weights mapping columns from historical_data to their target shares
         weights_dict = {}
         for col in historical_data.columns:
-            weights_dict[col] = slug_to_share.get(slugify(col), 0.0)
+            weights_dict[col] = slug_to_share.get(self._slugify(col), 0.0)
 
         # Build the weights DataFrame
         weights = pd.DataFrame(
@@ -92,3 +90,6 @@ class BacktestService:
 
     def _get_list_tickers(self, portfolio: Portfolio):
         return list(portfolio.securities.keys())
+
+    def _slugify(self, s):
+        return re.sub(r"[^a-z0-9]", "", s.lower())

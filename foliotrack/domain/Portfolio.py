@@ -20,11 +20,17 @@ class Portfolio:
     history: List[Dict[str, Any]] = field(default_factory=list)
     currency: str = "EUR"
     total_invested: float = field(init=False)
-    symbol: str = field(init=False)
+
+    @property
+    def symbol(self) -> str:
+        """
+        Get the portfolio currency symbol based on current currency code.
+        """
+        return get_symbol(self.currency) or ""
 
     def __post_init__(self):
-        self.symbol = get_symbol(self.currency) or ""
         self.total_invested = 0.0
+
         # Initialize shares entries for any pre-existing securities
         for ticker in self.securities:
             if ticker not in self.shares:

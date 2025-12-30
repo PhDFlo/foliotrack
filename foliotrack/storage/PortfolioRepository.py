@@ -15,8 +15,9 @@ class PortfolioRepository:
     def save_to_json(self, portfolio: Portfolio, filepath: str) -> None:
         try:
             data = self._to_dict(portfolio)
-            with open(filepath, "w") as f:
-                json.dump(data, f, indent=4)
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+
             logging.info(f"Portfolio saved to {filepath}")
         except Exception as e:
             logging.error(f"Error saving portfolio to JSON: {e}")
@@ -48,6 +49,7 @@ class PortfolioRepository:
         return {
             "name": portfolio.name,
             "currency": portfolio.currency,
+            "symbol": portfolio.symbol,
             "securities": securities_dict,
             "history": portfolio.history,
         }
@@ -91,10 +93,13 @@ class PortfolioRepository:
                     name=security_data.get("name", "Unnamed Security"),
                     ticker=security_data.get("ticker", "DCAM"),
                     currency=security_data.get("currency", "EUR"),
+                    exchange_rate=float(security_data.get("exchange_rate", 1.0)),
                     price_in_security_currency=float(
                         security_data.get("price_in_security_currency", 500.0)
                     ),
                     volume=float(security_data.get("volume", 0.0)),
+                    volume_to_buy=float(security_data.get("volume_to_buy", 0.0)),
+                    amount_to_invest=float(security_data.get("amount_to_invest", 0.0)),
                     fill=bool(security_data.get("fill", True)),
                 )
 

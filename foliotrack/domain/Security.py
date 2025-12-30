@@ -14,7 +14,6 @@ class Security:
     name: str = "Unnamed security"
     ticker: str = "DCAM"
     currency: str = "EUR"
-    symbol: str = field(init=False)
     exchange_rate: float = 1.0
     price_in_security_currency: float = 500.0
     price_in_portfolio_currency: float = field(init=False)
@@ -24,11 +23,17 @@ class Security:
     value: float = field(init=False)
     fill: bool = True  # Metadata tag, not logic trigger anymore
 
+    @property
+    def symbol(self) -> str:
+        """
+        Get the currency symbol based on current currency code.
+        """
+        return get_symbol(self.currency) or ""
+
     def __post_init__(self):
         """
         Initialize derived attributes.
         """
-        self.symbol = get_symbol(self.currency) or ""
         # Initialize price in portfolio currency based on default/initial exchange rate
         self.price_in_portfolio_currency = round(
             self.price_in_security_currency * self.exchange_rate, 2
@@ -40,6 +45,7 @@ class Security:
         Get a dictionary containing the Security's information and all attributes.
         """
         info = asdict(self)
+        # asdict does not include properties
         info["symbol"] = self.symbol
         return info
 
