@@ -25,3 +25,13 @@ def test_solve_equilibrium():
     assert total_to_invest == 1000
     assert final_shares[0] == pytest.approx(0.6, 0.01)
     assert final_shares[1] == pytest.approx(0.4, 0.01)
+
+    # Test with max_different_securities
+    security_counts, total_to_invest, final_shares = solve_equilibrium(
+        portfolio, investment_amount=1000, max_different_securities=1
+    )
+    assert security_counts[0] == 10  # 10 units of Security1
+    assert security_counts[1] == 0  # 0 units of Security2
+    assert total_to_invest == 1000
+    assert final_shares[0] == pytest.approx(1.0, 0.01)
+    assert final_shares[1] == pytest.approx(0.0, 0.01)

@@ -15,6 +15,7 @@ class Equilibrate:
         portfolio: Portfolio,
         investment_amount: float = 1000.0,
         min_percent_to_invest: float = 0.99,
+        max_different_securities: int = None,
         selling: bool = False,
     ) -> Tuple[np.ndarray, float, np.ndarray]:
         """
@@ -23,14 +24,10 @@ class Equilibrate:
         final share. Returns the solution and logs results.
 
         Args:
-            securities (List[Any]): List of Security objects. Each Security must have attributes:
-                - price (float)
-                - value (float)
-                - target_share (float)
-                - name (str)
-                - symbol (str)
+            portfolio (Portfolio): Portfolio object containing the securities to be optimized.
             investment_amount (float, optional): Amount to invest. Defaults to 1000.0.
             min_percent_to_invest (float, optional): Minimum percentage of the total investment to consider. Defaults to 0.99.
+            max_different_securities (int, optional): Maximum number of different securities to consider. Defaults to size of the portfolio.
             selling (bool, optional): Whether selling is allowed. Maximizes target shares but not investment. Defaults to False.
 
         Returns:
@@ -51,6 +48,10 @@ class Equilibrate:
             logging.error("Portfolio is empty.")
             raise ValueError("Portfolio is empty.")
 
+        # Set default value for max_different_securities to size of the portfolio
+        if max_different_securities is None:
+            max_different_securities = n
+
         # Validate Security attributes
         self.validate_securities(securities)
 
@@ -61,7 +62,12 @@ class Equilibrate:
 
         # Set up constraints
         constraints = self.setup_constraints(
-            investments, price_matrix, investment_amount, min_percent_to_invest, selling
+            investments,
+            price_matrix,
+            investment_amount,
+            min_percent_to_invest,
+            max_different_securities,
+            selling,
         )
 
         # Define the optimization objective
@@ -150,6 +156,7 @@ class Equilibrate:
         price_matrix: np.ndarray,
         investment_amount: float,
         min_percent_to_invest: float,
+        max_non_zero: int,
         selling: bool,
     ) -> list:
         """
@@ -160,37 +167,50 @@ class Equilibrate:
             price_matrix (np.ndarray): Price matrix.
             investment_amount (float): Amount to invest.
             min_percent_to_invest (float): Minimum percentage of the total investment to consider.
+            max_non_zero (integer): Maximum number of elements that can be non zero.
             selling (bool): Whether selling is allowed.
 
         Returns:
             list: List of optimization constraints.
         """
-        return (
-            [
-                investments >= 0,
-                cp.sum(price_matrix @ investments)
-                >= min_percent_to_invest * investment_amount,
-                cp.sum(price_matrix @ investments) <= investment_amount,
-            ]
-            if not selling
-            else [
-                cp.sum(price_matrix @ investments)
-                >= min_percent_to_invest * investment_amount,
-                cp.sum(price_matrix @ investments) <= investment_amount,
-            ]
-        )
-        constrains = [
-            cp.sum(price_matrix @ investments)
-            >= min_percent_to_invest * investment_amount,
-            cp.sum(price_matrix @ investments) <= investment_amount,
+        num_securities = investments.shape[0]
+        z = cp.Variable(num_securities, boolean=True)
+        
+        # Extract prices from the diagonal of the price matrix
+        prices = np.diag(price_matrix)
+        
+        # Calculate Big-M bounds
+        # For buying, the max we can buy is investment_amount / price
+        # We add a small buffer for numerical stability if needed, though integer constraints usually handle it.
+        # Ensure we don't divide by zero if price is 0 (should shouldn't happen in valid portfolio)
+        safe_prices = np.where(prices > 0, prices, 1e-9)
+        upper_bound = investment_amount / safe_prices
+
+        # Base constraints
+        base_constraints = [
+            cp.sum(z) <= max_non_zero,
         ]
 
-        # If not selling, ensure we only buy (no negative investments)
         if not selling:
-            constrains.insert(0, investments >= 0)
-
-        print(constrains)
-        return constrains
+            # Buying only
+            return base_constraints + [
+                investments >= 0,
+                investments <= cp.multiply(z, upper_bound),
+                cp.sum(price_matrix @ investments) >= min_percent_to_invest * investment_amount,
+                cp.sum(price_matrix @ investments) <= investment_amount,
+            ]
+        else:
+            # Selling allowed
+            # We need a large M for lower/upper bound when selling is allowed since we don't assume holdings here.
+            # Using a sufficiently large number, or perhaps derived from total portfolio value if available.
+            # Since we lack context, we'll use a large constant relative to investment or just a fixed large M.
+            large_M = 1e6  # Arbitrary large bound for selling context
+            return base_constraints + [
+               investments <= cp.multiply(z, large_M),
+               investments >= -cp.multiply(z, large_M),
+               cp.sum(price_matrix @ investments) >= min_percent_to_invest * investment_amount,
+               cp.sum(price_matrix @ investments) <= investment_amount,
+            ]
 
     def solve_optimization_problem(
         self, objective: cp.Minimize, constraints: list
