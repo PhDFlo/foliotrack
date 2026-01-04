@@ -1,14 +1,28 @@
 import bt
 import pandas as pd
-from .Portfolio import Portfolio
+import re
+from foliotrack.domain.Portfolio import Portfolio
+
+# Avoid circular import if type hinting MarketService by using TYPE_CHECKING or string
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from foliotrack.services.MarketService import MarketService
 
 
-class Backtest:
-    def run_backtest(self, portfolio: Portfolio, start_date, end_date):
+class BacktestService:
+    def run_backtest(
+        self,
+        portfolio: Portfolio,
+        market_service: "MarketService",
+        start_date,
+        end_date,
+    ):
         """Run a backtest for the given portfolio.
 
         Args:
             portfolio (Portfolio): Portfolio containing securities and allocation info.
+            market_service (MarketService): Service to fetch historical data.
             start_date (str or datetime): Start date for historical data (inclusive).
             end_date (str or datetime): End date for historical data (inclusive).
 
@@ -20,8 +34,10 @@ class Backtest:
         if not tickers:
             raise ValueError("Portfolio contains no securities to backtest.")
 
-        # Data fetching
-        historical_data = bt.get(tickers, start=start_date, end=end_date)
+        # Fetch data using injected service
+        historical_data = market_service.get_historical_data(
+            tickers, start_date=start_date, end_date=end_date
+        )
 
         # Get portfolio security target shares
         target_shares = self._get_list_target_shares(portfolio)
@@ -30,11 +46,22 @@ class Backtest:
                 "Number of target shares does not match number of tickers/data columns."
             )
 
-        # Build a DataFrame where each column is a constant series equal to the target share
+        # bt.get often normalizes tickers (e.g., "AIR.PA" becomes "airpa").
+        # To match them safely, we create a mapping from slugified ticker to target share.
+        slug_to_share = {
+            self._slugify(t): portfolio._get_share(t).target for t in tickers
+        }
+
+        # Build weights mapping columns from historical_data to their target shares
+        weights_dict = {}
+        for col in historical_data.columns:
+            weights_dict[col] = slug_to_share.get(self._slugify(col), 0.0)
+
+        # Build the weights DataFrame
         weights = pd.DataFrame(
             {
-                col: weight
-                for col, weight in zip(historical_data.columns, target_shares)
+                col: [weights_dict[col]] * len(historical_data)
+                for col in historical_data.columns
             },
             index=historical_data.index,
         )
@@ -59,28 +86,10 @@ class Backtest:
         return result
 
     def _get_list_target_shares(self, portfolio: Portfolio):
-        """Return the list of target share (weight) values for the portfolio's securities.
-
-        Args:
-            portfolio (Portfolio): Portfolio from which to extract target shares.
-
-        Returns:
-            List[float]: Target shares in the same order as portfolio.securities.
-        """
         return [portfolio._get_share(ticker).target for ticker in portfolio.securities]
 
     def _get_list_tickers(self, portfolio: Portfolio):
-        """Return a list of ticker identifiers for the portfolio.
+        return list(portfolio.securities.keys())
 
-        Args:
-            portfolio (Portfolio): Portfolio whose security tickers are returned.
-
-        Returns:
-            List[str]: Ticker symbols in the same order as portfolio.securities.
-        """
-        return [ticker for ticker in portfolio.securities]
-
-
-_BACKTEST = Backtest()
-
-run_backtest = _BACKTEST.run_backtest
+    def _slugify(self, s):
+        return re.sub(r"[^a-z0-9]", "", s.lower())

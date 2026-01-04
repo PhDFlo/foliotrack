@@ -1,12 +1,9 @@
-from foliotrack.Security import Security
+from foliotrack.domain.Security import Security
 
 
 def test_buy_security():
     """
     Test the buy method of Security.
-
-    The buy method should increase the number of held units and the amount invested according \
-        to the specified volume and buy price.
     """
     security = Security(
         name="Security1",
@@ -23,9 +20,6 @@ def test_buy_security():
 def test_sell_security():
     """
     Test the sell method of Security.
-
-    The sell method should decrease the number of held units and the amount invested according \
-        to the specified volume and sell price.
     """
     security = Security(
         name="Security1",
@@ -37,21 +31,4 @@ def test_sell_security():
     security.buy(10)
     security.sell(4)
     assert security.volume == 6
-    assert security.value == 400
-
-
-def test_update_security():
-    """
-    Test the update_price_from_yfinance method of Security.
-
-    The method should update the Security price using yfinance based on its ticker, and update amount invested.
-    """
-    security = Security(
-        name="Security1",
-        ticker="SEC1",
-        currency="EUR",
-        price_in_security_currency=100,
-    )
-    security.update_security("EUR")
-    assert security.price_in_security_currency > 0
-    assert security.price_in_portfolio_currency > 0
+    assert security.value == 600

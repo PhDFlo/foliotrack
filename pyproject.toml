@@ -1,6 +1,6 @@
 [project]
 name = "foliotrack"
-version = "0.0.6"
+version = "0.0.7"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
 keywords = [
@@ -21,6 +21,8 @@ dependencies = [
     "pytest",
     "bt",
 ]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 
 [project.urls]
 "Homepage" = "https://github.com/PhDFlo/foliotrack"
