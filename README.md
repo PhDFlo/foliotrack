@@ -2,7 +2,7 @@
   <img src="images/logo.jpg" alt="foliotrack Logo" width="50%">
 </p>
 
-[![Build Status](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml)
+[![Build](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml/badge.svg)](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/foliotrack)](https://pypi.org/project/foliotrack/)
 [![PyPI License](https://img.shields.io/pypi/l/foliotrack)](https://pypi.org/project/foliotrack/)
 
@@ -25,11 +25,13 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 ## ✨ Features
 
 - **Portfolio Management**
+
   - Track stocks, ETFs, and other securities.
   - JSON-based persistence for easy saving/loading.
   - Transaction history logging.
 
 - **Advanced Rebalancing**
+
   - Set target weights (e.g., "60% Stocks, 40% Bonds").
   - Mathematical solver finds the optimal trades to minimize tracking error.
   - **New**: Cardinality constraints (limit number of positions).
