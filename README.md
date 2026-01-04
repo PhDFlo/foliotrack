@@ -25,13 +25,11 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 ## ✨ Features
 
 - **Portfolio Management**
-
   - Track stocks, ETFs, and other securities.
   - JSON-based persistence for easy saving/loading.
   - Transaction history logging.
 
 - **Advanced Rebalancing**
-
   - Set target weights (e.g., "60% Stocks, 40% Bonds").
   - Mathematical solver finds the optimal trades to minimize tracking error.
   - **New**: Cardinality constraints (limit number of positions).
