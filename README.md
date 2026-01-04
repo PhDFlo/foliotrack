@@ -16,7 +16,7 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 
 ## 🚀 Why FolioTrack?
 
-- **🧠 Smart Optimization**: Uses **Mixed-Integer Quadratic Programming (MIQP)** to calculate the *exact* integer number of shares to buy/sell to reach your target allocation, respecting constraints like minimum order size or maximum position count.
+- **🧠 Smart Optimization**: Uses **Mixed-Integer Quadratic Programming (MIQP)** to calculate the best integer number of shares to buy/sell to reach your target allocation, respecting constraints like minimum order size or maximum position count.
 - **🌍 Multi-Currency Native**: Seamlessly handles portfolios with assets in different currencies (USD, EUR, GBP, etc.). Real-time exchange rates (ECB) ensure your valuations are always accurate.
 - **🏗️ Clean Architecture**: Built with Domain-Driven Design principles. Your core portfolio logic is decoupled from external data providers, making the system testable and extensible.
 - **🔌 Pluggable Data**: Comes with support for **yfinance** and **ffn**, but you can easily plug in your own market data provider.
@@ -25,11 +25,13 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 ## ✨ Features
 
 - **Portfolio Management**
+
   - Track stocks, ETFs, and other securities.
   - JSON-based persistence for easy saving/loading.
   - Transaction history logging.
 
 - **Advanced Rebalancing**
+
   - Set target weights (e.g., "60% Stocks, 40% Bonds").
   - Mathematical solver finds the optimal trades to minimize tracking error.
   - **New**: Cardinality constraints (limit number of positions).
