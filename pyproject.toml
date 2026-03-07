@@ -15,7 +15,7 @@ dependencies = [
     "numpy",
     "pyscipopt",
     "cvxpy",
-    "pandas==2.3.3",
+    "pandas",
     "yfinance",
     "ecbdata",
     "pytest",
