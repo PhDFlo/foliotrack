@@ -1,6 +1,6 @@
 [project]
 name = "foliotrack"
-version = "0.0.8"
+version = "0.0.9"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
 keywords = [
@@ -20,9 +20,25 @@ dependencies = [
     "ecbdata",
     "pytest",
     "bt",
+    "ipykernel>=7.2.0",
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Office/Business :: Financial :: Investment",
+  "Topic :: System :: Benchmark",
+  "Topic :: Software Development :: Libraries",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/PhDFlo/foliotrack"

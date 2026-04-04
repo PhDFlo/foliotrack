@@ -5,6 +5,7 @@
 [![Build](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml/badge.svg)](https://github.com/PhDFlo/foliotrack/actions/workflows/python-package.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/foliotrack)](https://pypi.org/project/foliotrack/)
 [![PyPI License](https://img.shields.io/pypi/l/foliotrack)](https://pypi.org/project/foliotrack/)
+[![Python versions](https://img.shields.io/pypi/pyversions/foliotrack)](https://pypi.org/project/foliotrack/)
 
 # FolioTrack
 
