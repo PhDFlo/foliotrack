@@ -10,12 +10,12 @@ from foliotrack.utils.Currency import get_rate_between
 class MarketService:
     """
     Service to fetch market data and update portfolio securities.
-    Supports pluggable providers (yfinance, ffn).
+    Supports pluggable providers (yfinance).
     """
 
     def __init__(self, provider: str = "yfinance"):
         self.provider = provider.lower()
-        if self.provider not in ["yfinance", "ffn"]:
+        if self.provider not in ["yfinance"]:
             logging.warning(
                 f"Unknown provider '{self.provider}', defaulting to 'yfinance'"
             )
@@ -43,10 +43,15 @@ class MarketService:
         Fetch historical closing prices for a list of tickers.
         Returns a DataFrame with tickers as columns and dates as index.
         """
-        if self.provider == "ffn":
-            return self._fetch_history_ffn(tickers, start_date, end_date)
-        else:
-            return self._fetch_history_yfinance(tickers, start_date, end_date)
+
+        match self.provider:
+            case "yfinance":
+                return self._fetch_history_yfinance(tickers, start_date, end_date)
+            case _:
+                logging.warning(
+                    f"Unknown provider '{self.provider}', defaulting to yfinance for historical data."
+                )
+                return self._fetch_history_yfinance(tickers, start_date, end_date)
 
     def _update_security_price(
         self, security: Security, portfolio_currency: str
@@ -88,10 +93,14 @@ class MarketService:
         """
         Returns (price, currency, name).
         """
-        if self.provider == "ffn":
-            return self._fetch_ffn(ticker)
-        else:
-            return self._fetch_yfinance(ticker)
+        match self.provider:
+            case "yfinance":
+                return self._fetch_yfinance(ticker)
+            case _:
+                logging.warning(
+                    f"Unknown provider '{self.provider}', defaulting to yfinance for market data."
+                )
+                return self._fetch_yfinance(ticker)
 
     def _fetch_yfinance(self, ticker_symbol: str):
         try:
@@ -110,48 +119,10 @@ class MarketService:
     def _fetch_history_yfinance(
         self, tickers: List[str], start_date: str, end_date: str
     ) -> pd.DataFrame:
-        # Use bt.get for convenience as it handles cleaning and aligning yfinance data well
-        # Alternatively use yf.download directly.
-        # Given BacktestService uses bt, using bt.get here ensures compatibility format.
-        import bt
 
-        return bt.get(tickers, start=start_date, end=end_date)
+        stock = yf.Tickers(tickers)
+        hist = stock.history(start=start_date, period="max", interval="1d")
 
-    def _fetch_ffn(self, ticker_symbol: str):
-        try:
-            import ffn
-
-            # simple implementation assuming ffn.get returning a Series
-            # usually ffn.get(ticker) returns a DataFrame of prices
-            prices = ffn.get(ticker_symbol)
-            latest_price = prices.iloc[-1].item()
-            # ffn might not provide currency/name easily in same call without extra metadata lookup
-            # defaulting to None for metadata
-            logging.warning(
-                "ffn does not provide currency and name, thus existing or default values will be used"
-            )
-            return latest_price, None, None
-        except ImportError:
-            logging.error(
-                "ffn is not installed. Please install it to use 'ffn' provider."
-            )
-            return None, None, None
-        except Exception as e:
-            logging.error(f"ffn error for {ticker_symbol}: {e}")
-            return None, None, None
-
-    def _fetch_history_ffn(
-        self, tickers: List[str], start_date: str, end_date: str
-    ) -> pd.DataFrame:
-        try:
-            import ffn
-
-            # ffn.get accepts comma separated string or list
-            data = ffn.get(tickers, start=start_date, end=end_date)
-            return data
-        except ImportError:
-            logging.error("ffn is not installed.")
-            raise
-        except Exception as e:
-            logging.error(f"ffn history fetch error: {e}")
-            raise
+        # Fill missing data with values from previous dates
+        hist.ffill(inplace=True)
+        return hist
