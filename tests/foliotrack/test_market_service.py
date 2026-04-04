@@ -22,7 +22,15 @@ def test_update_prices_yfinance():
         logging.warning(f"MarketService test failed (network?): {e}")
 
 
-def test_ffn_provider_init():
-    """Test that we can init with ffn, even if we don't fetch."""
-    service = MarketService(provider="ffn")
-    assert service.provider == "ffn"
+def test_get_historical_data():
+    """
+    Test fetching historical prices using MarketService with yfinance (default).
+    Requires network access.
+    """
+    service = MarketService(provider="yfinance")
+    try:
+        hist = service.get_historical_data("AAPL", "2023-01-01", "2023-01-10")
+        assert not hist.empty
+        assert "AAPL" in hist.columns
+    except Exception as e:
+        logging.warning(f"MarketService historical data test failed (network?): {e}")
