@@ -23,7 +23,11 @@ def test_run_backtest():
     dates = pd.date_range(start="2020-01-01", end="2021-01-01", freq="D")
     # Linear increase from 100 to 200
     prices = [100.0 + (i * 100.0 / (len(dates) - 1)) for i in range(len(dates))]
-    data = pd.DataFrame({"AAPL": prices}, index=dates)
+    data = pd.DataFrame(
+        prices,
+        index=dates,
+        columns=pd.MultiIndex.from_tuples([("Close", "AAPL")]),
+    )
     market_service.get_historical_data.return_value = data
 
     backtester = BacktestService()
@@ -39,11 +43,12 @@ def test_run_backtest():
     # bt.Result.stats is a DataFrame
     total_return = result.stats.loc["total_return"].iloc[0]
     assert total_return > 0
-    assert total_return == pytest.approx(1.0, 0.05)  # Doubling should be ~100% return
+    assert total_return == pytest.approx(1.0, 0.05)
 
     # Check that it has some stats
     assert "total_return" in result.stats.index
     assert "cagr" in result.stats.index
 
-    # Verify call
-    market_service.get_historical_data.assert_called_once()
+    market_service.get_historical_data.assert_called_once_with(
+        ["AAPL"], start_date="2020-01-01", end_date="2021-01-01"
+    )
