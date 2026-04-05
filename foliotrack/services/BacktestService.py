@@ -39,6 +39,9 @@ class BacktestService:
             tickers, start_date=start_date, end_date=end_date
         )
 
+        # Keep only the 'Close' price for backtesting
+        historical_data = historical_data["Close"]
+
         # Get portfolio security target shares
         target_shares = self._get_list_target_shares(portfolio)
         if len(target_shares) != len(historical_data.columns):
@@ -51,12 +54,10 @@ class BacktestService:
         slug_to_share = {
             self._slugify(t): portfolio._get_share(t).target for t in tickers
         }
-
         # Build weights mapping columns from historical_data to their target shares
         weights_dict = {}
         for col in historical_data.columns:
             weights_dict[col] = slug_to_share.get(self._slugify(col), 0.0)
-
         # Build the weights DataFrame
         weights = pd.DataFrame(
             {
