@@ -1,6 +1,6 @@
 [project]
 name = "foliotrack"
-version = "0.0.9"
+version = "0.0.10"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
 keywords = [
@@ -34,6 +34,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3 :: Only",
   "Topic :: Office/Business :: Financial :: Investment",
   "Topic :: System :: Benchmark",
