@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 from pathlib import Path
 import pytest
@@ -59,8 +60,8 @@ def test_optimize_portfolio(page_file, original_dir):
     at.run()
 
     # Change investment amount and minimum percentage
-    at.number_input(key="investment_amount").set_value(1000.0).run()
-    at.number_input(key="min_percent").set_value(0.95).run()
+    at.number_input(key="investment_amount").set_value(500.0).run()
+    at.number_input(key="min_percent").set_value(0.99).run()
     at.number_input(key="max_diff_sec").set_value(3).run()
 
     # Click on the "Optimize Portfolio" button
@@ -68,7 +69,7 @@ def test_optimize_portfolio(page_file, original_dir):
 
     expected_df = pd.DataFrame(
         {
-            "Volume to buy": [1, 1, 1],
+            "Volume to buy": [22, 0, 2],
         }
     )
 
