@@ -40,6 +40,7 @@ jobs:
 
     - name: Install the project
       run: |
+        uv cache clean
         uv sync --locked --all-extras --dev
 
     - name: Auto-fix with Ruff
@@ -91,6 +92,7 @@ jobs:
 
     - name: Install the project
       run: |
+        uv cache clean
         uv sync --locked --all-extras --dev
 
     - name: Test with pytest
