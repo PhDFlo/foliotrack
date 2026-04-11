@@ -106,7 +106,7 @@ class OptimizationService:
 
         # Build and solve the MIQP problem
         problem = cp.Problem(objective, constraints)
-        problem.solve()
+        problem.solve(solver=cp.SCIP)
 
         logging.info(f"Optimisation status: {problem.status}")
         if investments.value is None:

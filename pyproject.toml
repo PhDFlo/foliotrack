@@ -1,6 +1,6 @@
 [project]
 name = "foliotrack"
-version = "0.0.10"
+version = "0.0.11"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
 keywords = [
@@ -10,17 +10,15 @@ keywords = [
     "track",
     "investment",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "numpy",
     "pyscipopt",
-    "cvxpy",
+    "cvxpy[scip]",
     "pandas",
     "yfinance",
     "ecbdata",
-    "pytest",
     "bt",
-    "ipykernel>=7.2.0",
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -31,6 +29,7 @@ classifiers = [
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -63,3 +62,9 @@ where = ["."]
 
 [tool.pytest.ini_options]
 pythonpath = "."
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "pytest>=8.3.5",
+]

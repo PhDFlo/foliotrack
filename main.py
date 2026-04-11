@@ -28,7 +28,7 @@ def portfolio_from_scratch():
         "NVDA", volume=1.0, price=600.0, date="2024-05-09", fill=True
     )
     portfolio.buy_security(
-        "MC.PA", volume=1.0, price=300.0, date="2025-08-01", fill=True
+        "LEM.PA", volume=1.0, price=10.0, date="2025-08-01", fill=True
     )
 
     # Fetch data to fill details (Service logic)
@@ -40,7 +40,7 @@ def portfolio_from_scratch():
     # Set target shares
     portfolio.set_target_share("AIR.PA", 0.5)
     portfolio.set_target_share("NVDA", 0.2)
-    portfolio.set_target_share("MC.PA", 0.3)
+    portfolio.set_target_share("LEM.PA", 0.3)
 
     # Run backtest
     # Note: Backtest might need data. If BacktestService handles fetching, it's fine.
@@ -73,12 +73,12 @@ def use_existing_portfolio(path: str = "Portfolios/investment_example.json"):
     # Update Market Data
     market_service.update_prices(portfolio)
 
-    portfolio.buy_security("NVDA", volume=1000.0, price=300.0)
+    portfolio.buy_security("NVDA", volume=1.0, price=300.0)
 
     # Solve for equilibrium
     optimizer.solve_equilibrium(
         portfolio,
-        investment_amount=1000.0,
+        investment_amount=2000.0,
         min_percent_to_invest=0.99,
         max_different_securities=1,
         selling=False,
@@ -86,12 +86,12 @@ def use_existing_portfolio(path: str = "Portfolios/investment_example.json"):
 
     # Buy additional securities
     try:
-        portfolio.sell_security("AIR.PA", volume=17.0, date="2024-06-11")
+        portfolio.sell_security("AIR.PA", volume=5.0, date="2024-06-11")
     except ValueError as e:
         logging.warning(f"Could not sell AIR.PA: {e}")
 
     portfolio.buy_security("NVDA", volume=1.0, price=300.0, date="2024-06-12")
-    portfolio.buy_security("MC.PA", volume=2.0, price=200.0, date="2024-06-13")
+    portfolio.buy_security("LEM.PA", volume=2.0, price=15.0, date="2024-06-13")
 
     # Update stats after trades
     portfolio.recalculate_shares()
