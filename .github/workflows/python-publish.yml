@@ -1,10 +1,8 @@
 name: "Publish on PyPI"
 
 on:
-  push:
-    tags:
-      # Publish on any tag starting with a `v`, e.g., v0.1.0
-      - v*
+  release:
+    types: [published]
 
 jobs:
   run:
@@ -18,6 +16,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+
+      - name: Verify tag matches commit
+        run: |
+          echo "Release tag: ${{ github.event.release.tag_name }}"
+          git fetch --tags
+          git checkout ${{ github.event.release.tag_name }}
+          git log -1 --oneline
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -30,10 +38,10 @@ jobs:
 
       # Check that basic features work and we didn't miss to include crucial files
       - name: pytest (wheel)
-        run: uv run --isolated --dev --no-project --with dist/*.whl pytest
+        run: uv run --isolated --dev --with dist/*.whl pytest
 
       - name: pytest (source distribution)
-        run: uv run --isolated --dev --no-project --with dist/*.tar.gz pytest
+        run: uv run --isolated --dev --with dist/*.tar.gz pytest
 
       - name: Publish
         run: uv publish
