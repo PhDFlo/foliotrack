@@ -3,7 +3,10 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 
-from foliotrack.dashboard.utils.simulation import simulate_contract, compute_after_tax_curve
+from foliotrack.dashboard.utils.simulation import (
+    simulate_contract,
+    compute_after_tax_curve,
+)
 from foliotrack.dashboard.utils.contract_form import create_contract_form
 
 plotly_colors = px.colors.qualitative.Plotly

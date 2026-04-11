@@ -41,7 +41,7 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
   - `ffn` support for straightforward financial time series.
   - Extensible `MarketService` architecture.
 
-- **Interactive Dashboard** *(optional)*
+- **Interactive Dashboard** _(optional)_
   - Load, save, and manage portfolios visually.
   - Update live security prices from the UI.
   - Run portfolio optimization and view recommended trades.
@@ -105,14 +105,14 @@ dash
 
 This starts a Streamlit application in your browser with the following pages:
 
-| Page | Description |
-|------|-------------|
+| Page                          | Description                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------------- |
 | **Portfolio & Update Prices** | Load/save portfolio JSON files, view holdings, update live prices, buy/sell securities |
-| **Equilibrium, Buy & Export** | Configure optimization parameters, run MIQP solver, view recommended trades |
-| **Display Portfolio** | Visualize portfolio with candlestick charts, pie charts (target vs actual allocation) |
-| **Compare Securities** | Compare investment contracts with different fees and tax regimes |
-| **Exchange Rates** | Look up ECB exchange rates and convert currencies |
-| **Backtest Simulation** | Run historical backtests with equity curves, statistics, and return analysis |
+| **Equilibrium, Buy & Export** | Configure optimization parameters, run MIQP solver, view recommended trades            |
+| **Display Portfolio**         | Visualize portfolio with candlestick charts, pie charts (target vs actual allocation)  |
+| **Compare Securities**        | Compare investment contracts with different fees and tax regimes                       |
+| **Exchange Rates**            | Look up ECB exchange rates and convert currencies                                      |
+| **Backtest Simulation**       | Run historical backtests with equity curves, statistics, and return analysis           |
 
 > **Note:** Run `dash` from the directory containing your `Portfolios/` folder so the dashboard can find your portfolio JSON files.
 
@@ -163,7 +163,7 @@ FolioTrack follows a **clean, layered architecture**:
   - `OptimizationService`: Runs the solver.
   - `BacktestService`: Runs simulations.
 - **`storage/`**: Handles file persistence (`PortfolioRepository`).
-- **`dashboard/`**: Interactive Streamlit web application *(optional)*.
+- **`dashboard/`**: Interactive Streamlit web application _(optional)_.
   - `app.py`: Main Streamlit entry point with sidebar navigation.
   - `pages/`: Individual dashboard pages (load, optimize, display, compare, exchange, backtest).
   - `utils/`: Dashboard-specific helpers (plots, formatting, file operations, simulation).

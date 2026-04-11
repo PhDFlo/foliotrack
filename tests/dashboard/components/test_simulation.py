@@ -1,5 +1,8 @@
 import numpy as np
-from foliotrack.dashboard.utils.simulation import simulate_contract, compute_after_tax_curve
+from foliotrack.dashboard.utils.simulation import (
+    simulate_contract,
+    compute_after_tax_curve,
+)
 
 
 def test_simulate_contract():
