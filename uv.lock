@@ -700,7 +700,7 @@ wheels = [
 
 [[package]]
 name = "foliotrack"
-version = "0.0.10"
+version = "0.0.11"
 source = { editable = "." }
 dependencies = [
     { name = "bt" },
