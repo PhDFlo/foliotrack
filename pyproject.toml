@@ -1,6 +1,6 @@
 [project]
 name = "foliotrack"
-version = "0.0.11"
+version = "0.1.0"
 description = "Tool to keep balance a portfolio of securities while investing."
 readme = "README.md"
 keywords = [
@@ -40,6 +40,16 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
 ]
 
+[project.optional-dependencies]
+dashboard = [
+    "streamlit>=1.50.0",
+    "plotly>=6.3.0",
+    "streamlit-option-menu>=0.4.0",
+]
+
+[project.scripts]
+dash = "foliotrack.dashboard:main"
+
 [project.urls]
 "Homepage" = "https://github.com/PhDFlo/foliotrack"
 "Bug Tracker" = "https://github.com/PhDFlo/foliotrack/issues"
@@ -67,4 +77,7 @@ pythonpath = "."
 dev = [
     "ipykernel>=6.29.5",
     "pytest>=8.3.5",
+    "streamlit>=1.50.0",
+    "plotly>=6.3.0",
+    "streamlit-option-menu>=0.4.0",
 ]

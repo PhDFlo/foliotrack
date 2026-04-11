@@ -22,6 +22,7 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 - **🏗️ Clean Architecture**: Built with Domain-Driven Design principles. Your core portfolio logic is decoupled from external data providers, making the system testable and extensible.
 - **🔌 Pluggable Data**: Comes with support for **yfinance** and **ffn**, but you can easily plug in your own market data provider.
 - **📈 Built-in Backtesting**: Validate your strategies against historical data before investing a cent.
+- **📊 Interactive Dashboard**: A full-featured Streamlit web dashboard for visual portfolio management, optimization, and analysis.
 
 ## ✨ Features
 
@@ -33,12 +34,21 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 - **Advanced Rebalancing**
   - Set target weights (e.g., "60% Stocks, 40% Bonds").
   - Mathematical solver finds the optimal trades to minimize tracking error.
-  - **New**: Cardinality constraints (limit number of positions).
+  - Cardinality constraints (limit number of positions).
 
 - **Data Sources**
   - `yfinance` (Yahoo Finance) support out of the box.
   - `ffn` support for straightforward financial time series.
   - Extensible `MarketService` architecture.
+
+- **Interactive Dashboard** *(optional)*
+  - Load, save, and manage portfolios visually.
+  - Update live security prices from the UI.
+  - Run portfolio optimization and view recommended trades.
+  - Display portfolio composition with pie charts and candlestick evolution.
+  - Compare investment contracts (fees, taxes) with interactive simulations.
+  - View ECB exchange rates with currency conversion.
+  - Run backtests with equity curves, monthly return histograms, and per-security bar charts.
 
 ## 🛠️ Installation
 
@@ -54,6 +64,18 @@ uv sync
 
 # Activate environment
 source .venv/bin/activate
+```
+
+### Installing the Dashboard
+
+The dashboard has additional dependencies (Streamlit, Plotly) that are optional. Install them with:
+
+```bash
+# Using pip
+pip install foliotrack[dashboard]
+
+# Using uv (development)
+uv sync --group dev
 ```
 
 ## ⚡ Quick Start
@@ -73,9 +95,30 @@ uv run main.py --action existing
 uv run main.py --provider ffn
 ```
 
-### 2. Python API
+### 2. Interactive Dashboard
 
-FolioTrack's new modular API is intuitive. Here is a classic "60/40" portfolio example:
+Launch the full web dashboard with a single command:
+
+```bash
+dash
+```
+
+This starts a Streamlit application in your browser with the following pages:
+
+| Page | Description |
+|------|-------------|
+| **Portfolio & Update Prices** | Load/save portfolio JSON files, view holdings, update live prices, buy/sell securities |
+| **Equilibrium, Buy & Export** | Configure optimization parameters, run MIQP solver, view recommended trades |
+| **Display Portfolio** | Visualize portfolio with candlestick charts, pie charts (target vs actual allocation) |
+| **Compare Securities** | Compare investment contracts with different fees and tax regimes |
+| **Exchange Rates** | Look up ECB exchange rates and convert currencies |
+| **Backtest Simulation** | Run historical backtests with equity curves, statistics, and return analysis |
+
+> **Note:** Run `dash` from the directory containing your `Portfolios/` folder so the dashboard can find your portfolio JSON files.
+
+### 3. Python API
+
+FolioTrack's modular API is intuitive. Here is a classic "60/40" portfolio example:
 
 ```python
 from foliotrack.domain.Portfolio import Portfolio
@@ -120,8 +163,26 @@ FolioTrack follows a **clean, layered architecture**:
   - `OptimizationService`: Runs the solver.
   - `BacktestService`: Runs simulations.
 - **`storage/`**: Handles file persistence (`PortfolioRepository`).
+- **`dashboard/`**: Interactive Streamlit web application *(optional)*.
+  - `app.py`: Main Streamlit entry point with sidebar navigation.
+  - `pages/`: Individual dashboard pages (load, optimize, display, compare, exchange, backtest).
+  - `utils/`: Dashboard-specific helpers (plots, formatting, file operations, simulation).
 
 This structure ensures that your portfolio data remains safe and stable, regardless of how market APIs or file formats change over time.
+
+## 🧪 Testing
+
+Run the full test suite (core + dashboard):
+
+```bash
+uv run pytest
+```
+
+Tests are organized as:
+
+- `tests/foliotrack/` — Core library unit tests (portfolio, security, optimization, backtest, market, currency).
+- `tests/dashboard/components/` — Dashboard utility tests (formatting, file helpers, simulation).
+- `tests/dashboard/ui/` — Streamlit UI tests using `AppTest` harness (page loading, interactions).
 
 ## 🤝 Contributing
 
