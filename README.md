@@ -17,11 +17,11 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 
 ## 🚀 Why FolioTrack?
 
-- **🧠 Smart Optimization**: Uses **Mixed-Integer Quadratic Programming (MIQP)** to calculate the best integer number of shares to buy/sell to reach your target allocation, respecting constraints like minimum order size or maximum position count.
-- **🌍 Multi-Currency Native**: Seamlessly handles portfolios with assets in different currencies (USD, EUR, GBP, etc.). Real-time exchange rates (ECB) ensure your valuations are always accurate.
+- **🧠 Smart Optimization**: Uses **Mixed-Integer Quadratic Programming (MIQP)** to calculate the best integer number of shares to buy/sell to reach your target allocation, respecting constraints like minimum order size or maximum number of positions to buy.
+- **🌍 Multi-Currency Native**: Seamlessly handles portfolios with assets in different currencies (USD, EUR, GBP, etc.). Real-time exchange rates, taken from the European Central Bank (ECB) API, ensure your valuations are always accurate.
 - **🏗️ Clean Architecture**: Built with Domain-Driven Design principles. Your core portfolio logic is decoupled from external data providers, making the system testable and extensible.
-- **🔌 Pluggable Data**: Comes with support for **yfinance** and **ffn**, but you can easily plug in your own market data provider.
-- **📈 Built-in Backtesting**: Validate your strategies against historical data before investing a cent.
+- **🔌 Pluggable Data**: Comes with support for [**yfinance**](https://github.com/ranaroussi/yfinance) and [**ffn**](https://github.com/pmorissette/ffn), but you can easily plug in your own market data provider.
+- **📈 Built-in Backtesting**: Validate your strategies against historical data before investing a cent using [**bt**](https://github.com/pmorissette/bt).
 - **📊 Interactive Dashboard**: A full-featured Streamlit web dashboard for visual portfolio management, optimization, and analysis.
 
 ## ✨ Features
@@ -39,6 +39,7 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 - **Data Sources**
   - `yfinance` (Yahoo Finance) support out of the box.
   - `ffn` support for straightforward financial time series.
+  - `bt`support for backtest simulations.
   - Extensible `MarketService` architecture.
 
 - **Interactive Dashboard** _(optional)_
@@ -52,18 +53,12 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 
 ## 🛠️ Installation
 
-FolioTrack uses **[uv](https://github.com/astral-sh/uv)** for fast, reliable dependency management.
-
 ```bash
-# Clone the repository
-git clone git@github.com:PhDFlo/foliotrack.git
-cd foliotrack
+# Using pip
+pip install foliotrack
 
-# Sync dependencies and create virtual env
-uv sync
-
-# Activate environment
-source .venv/bin/activate
+# Using uv
+uv pip install foliotrack
 ```
 
 ### Installing the Dashboard
@@ -75,49 +70,14 @@ The dashboard has additional dependencies (Streamlit, Plotly) that are optional.
 pip install foliotrack[dashboard]
 
 # Using uv (development)
-uv sync --group dev
+uv pip install foliotrack[dashboard]
 ```
 
 ## ⚡ Quick Start
 
-### 1. Command Line Interface (CLI)
+### 1. Python API
 
-You can run the included `main.py` entry point to see Foliotrack in action immediately:
-
-```bash
-# Create a portfolio from scratch, optimize it, and backtest it
-uv run main.py --action scratch
-
-# Use an existing portfolio JSON file
-uv run main.py --action existing
-
-# Use a different data provider (if installed)
-uv run main.py --provider ffn
-```
-
-### 2. Interactive Dashboard
-
-Launch the full web dashboard with a single command:
-
-```bash
-dash
-```
-
-This starts a Streamlit application in your browser with the following pages:
-
-| Page                          | Description                                                                            |
-| ----------------------------- | -------------------------------------------------------------------------------------- |
-| **Portfolio & Update Prices** | Load/save portfolio JSON files, view holdings, update live prices, buy/sell securities |
-| **Equilibrium, Buy & Export** | Configure optimization parameters, run MIQP solver, view recommended trades            |
-| **Display Portfolio**         | Visualize portfolio with candlestick charts, pie charts (target vs actual allocation)  |
-| **Compare Securities**        | Compare investment contracts with different fees and tax regimes                       |
-| **Exchange Rates**            | Look up ECB exchange rates and convert currencies                                      |
-| **Backtest Simulation**       | Run historical backtests with equity curves, statistics, and return analysis           |
-
-> **Note:** Run `dash` from the directory containing your `Portfolios/` folder so the dashboard can find your portfolio JSON files.
-
-### 3. Python API
-
+Open the `portfolio_from_scratch.ipynb` in your favorite code editor to get an overview of the library features.
 FolioTrack's modular API is intuitive. Here is a classic "60/40" portfolio example:
 
 ```python
@@ -153,6 +113,27 @@ optimizer.solve_equilibrium(portfolio, investment_amount=5000.0)
 repo.save_to_json(portfolio, "my_portfolio.json")
 ```
 
+### 2. Interactive Dashboard
+
+Launch the full web dashboard with a single command:
+
+```bash
+dash
+```
+
+This starts a Streamlit application in your browser with the following pages:
+
+| Page                          | Description                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------------- |
+| **Portfolio & Update Prices** | Load/save portfolio JSON files, view holdings, update live prices, buy/sell securities |
+| **Equilibrium, Buy & Export** | Configure optimization parameters, run MIQP solver, view recommended trades            |
+| **Display Portfolio**         | Visualize portfolio with candlestick charts, pie charts (target vs actual allocation)  |
+| **Compare Securities**        | Compare investment contracts with different fees and tax regimes                       |
+| **Exchange Rates**            | Look up ECB exchange rates and convert currencies                                      |
+| **Backtest Simulation**       | Run historical backtests with equity curves, statistics, and return analysis           |
+
+> **Note:** Run `dash` from the directory containing your `Portfolios/` folder so the dashboard can find your portfolio JSON files.
+
 ## 🏛️ Architecture
 
 FolioTrack follows a **clean, layered architecture**:
@@ -170,9 +151,23 @@ FolioTrack follows a **clean, layered architecture**:
 
 This structure ensures that your portfolio data remains safe and stable, regardless of how market APIs or file formats change over time.
 
-## 🧪 Testing
+## 🤝 Contributing
 
-Run the full test suite (core + dashboard):
+Contributions are welcome! FolioTrack uses **[uv](https://github.com/astral-sh/uv)** for fast, reliable dependency management.
+
+```bash
+# Clone the repository
+git clone git@github.com:PhDFlo/foliotrack.git
+cd foliotrack
+
+# Sync dependencies and create virtual env
+uv sync
+
+# Activate environment
+source .venv/bin/activate
+```
+
+Please run the test suite (core + dashboard) before submitting a PR:
 
 ```bash
 uv run pytest
@@ -183,14 +178,6 @@ Tests are organized as:
 - `tests/foliotrack/` — Core library unit tests (portfolio, security, optimization, backtest, market, currency).
 - `tests/dashboard/components/` — Dashboard utility tests (formatting, file helpers, simulation).
 - `tests/dashboard/ui/` — Streamlit UI tests using `AppTest` harness (page loading, interactions).
-
-## 🤝 Contributing
-
-Contributions are welcome! Please run the test suite before submitting a PR:
-
-```bash
-uv run pytest
-```
 
 ## 📄 License
 
