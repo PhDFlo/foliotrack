@@ -134,6 +134,12 @@ This starts a Streamlit application in your browser with the following pages:
 
 > **Note:** Run `dash` from the directory containing your `Portfolios/` folder so the dashboard can find your portfolio JSON files.
 
+<p align="center">
+  <img src="images/dash_prices.png" alt="Dashboard prices" width="50%">
+  <img src="images/dash_equilibrium.png" alt="Dashboard equilibrium" width="50%">
+  <img src="images/dash_display.png" alt="Dashboard display" width="50%">
+</p>
+
 ## 🏛️ Architecture
 
 FolioTrack follows a **clean, layered architecture**:
