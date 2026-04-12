@@ -77,7 +77,7 @@ uv pip install foliotrack[dashboard]
 
 ### 1. Python API
 
-Open the `portfolio_from_scratch.ipynb` in your favorite code editor to get an overview of the library features.
+Open the `examples/portfolio_from_scratch.ipynb` in your favorite code editor to get an overview of the library features.
 FolioTrack's modular API is intuitive. Here is a classic "60/40" portfolio example:
 
 ```python
@@ -132,8 +132,6 @@ This starts a Streamlit application in your browser with the following pages:
 | **Exchange Rates**            | Look up ECB exchange rates and convert currencies                                      |
 | **Backtest Simulation**       | Run historical backtests with equity curves, statistics, and return analysis           |
 
-> **Note:** Run `dash` from the directory containing your `Portfolios/` folder so the dashboard can find your portfolio JSON files.
-
 <p align="center">
   <img src="images/dash_prices.png" alt="Dashboard prices" width="100%">
   <img src="images/dash_equilibrium.png" alt="Dashboard equilibrium" width="100%">
@@ -154,6 +152,7 @@ FolioTrack follows a **clean, layered architecture**:
   - `app.py`: Main Streamlit entry point with sidebar navigation.
   - `pages/`: Individual dashboard pages (load, optimize, display, compare, exchange, backtest).
   - `utils/`: Dashboard-specific helpers (plots, formatting, file operations, simulation).
+- **`examples/`**: Jupyter notebook examples files
 
 This structure ensures that your portfolio data remains safe and stable, regardless of how market APIs or file formats change over time.
 
