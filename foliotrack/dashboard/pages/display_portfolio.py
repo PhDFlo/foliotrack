@@ -64,7 +64,7 @@ if ticker_list:
                 # Get historical data for all tickers in portfolio
                 with st.spinner("Fetching historical data..."):
                     hist_tickers = market_service.get_historical_data(
-                        ticker_list, start_date=start_date, end_date="2026-04-04"
+                        ticker_list, start_date=start_date
                     )
 
                 if not hist_tickers.empty:
