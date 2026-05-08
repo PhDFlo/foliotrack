@@ -36,9 +36,7 @@ class MarketService:
         # After prices are updated, recalculate portfolio stats
         portfolio.recalculate_shares()
 
-    def get_historical_data(
-        self, tickers: List[str], start_date: str, end_date: str
-    ) -> pd.DataFrame:
+    def get_historical_data(self, tickers: List[str], start_date: str) -> pd.DataFrame:
         """
         Fetch historical closing prices for a list of tickers.
         Returns a DataFrame with tickers as columns and dates as index.
@@ -46,12 +44,12 @@ class MarketService:
 
         match self.provider:
             case "yfinance":
-                return self._fetch_history_yfinance(tickers, start_date, end_date)
+                return self._fetch_history_yfinance(tickers, start_date)
             case _:
                 logging.warning(
                     f"Unknown provider '{self.provider}', defaulting to yfinance for historical data."
                 )
-                return self._fetch_history_yfinance(tickers, start_date, end_date)
+                return self._fetch_history_yfinance(tickers, start_date)
 
     def _update_security_price(
         self, security: Security, portfolio_currency: str
@@ -117,7 +115,7 @@ class MarketService:
             return None, None, None
 
     def _fetch_history_yfinance(
-        self, tickers: List[str], start_date: str, end_date: str
+        self, tickers: List[str], start_date: str
     ) -> pd.DataFrame:
 
         stock = yf.Tickers(tickers)
@@ -125,4 +123,8 @@ class MarketService:
 
         # Fill missing data with values from previous dates
         hist.ffill(inplace=True)
+
+        # Remove date where at least one ticker has no data (e.g., due to IPO or delisting)
+        hist.dropna(inplace=True)
+
         return hist
