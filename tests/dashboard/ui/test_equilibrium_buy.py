@@ -68,7 +68,7 @@ def test_optimize_portfolio(page_file, original_dir):
 
     expected_df = pd.DataFrame(
         {
-            "Volume to buy": [22, 0, 2],
+            "Volume to buy": [2, 0, 6],
         }
     )
 

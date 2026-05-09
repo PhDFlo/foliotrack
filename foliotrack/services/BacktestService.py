@@ -16,7 +16,6 @@ class BacktestService:
         portfolio: Portfolio,
         market_service: "MarketService",
         start_date,
-        end_date,
     ):
         """Run a backtest for the given portfolio.
 
@@ -24,7 +23,6 @@ class BacktestService:
             portfolio (Portfolio): Portfolio containing securities and allocation info.
             market_service (MarketService): Service to fetch historical data.
             start_date (str or datetime): Start date for historical data (inclusive).
-            end_date (str or datetime): End date for historical data (inclusive).
 
         Returns:
             bt.Result: Result object returned by bt.run containing backtest results.
@@ -36,7 +34,7 @@ class BacktestService:
 
         # Fetch data using injected service
         historical_data = market_service.get_historical_data(
-            tickers, start_date=start_date, end_date=end_date
+            tickers, start_date=start_date
         )
 
         # Keep only the 'Close' price for backtesting

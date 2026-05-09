@@ -33,7 +33,9 @@ def test_run_backtest():
     backtester = BacktestService()
 
     result = backtester.run_backtest(
-        portfolio, market_service, start_date="2020-01-01", end_date="2021-01-01"
+        portfolio,
+        market_service,
+        start_date="2020-01-01",
     )
 
     assert result is not None
@@ -50,5 +52,5 @@ def test_run_backtest():
     assert "cagr" in result.stats.index
 
     market_service.get_historical_data.assert_called_once_with(
-        ["AAPL"], start_date="2020-01-01", end_date="2021-01-01"
+        ["AAPL"], start_date="2020-01-01"
     )
