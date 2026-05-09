@@ -30,8 +30,8 @@ def test_backtest_load(page_file, original_dir):
     at.session_state["portfolio"] = Portfolio()
     at.run()
 
-    # Check for date inputs (Start Date, End Date)
-    assert len(at.date_input) >= 2
+    # Check for date inputs (Start Date)
+    assert len(at.date_input) == 1
 
     # Check for Simulation button (it's inside render_backtest_view)
     # The backtest_view fragment should render if portfolio is in session_state.
