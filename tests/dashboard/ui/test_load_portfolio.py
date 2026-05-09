@@ -50,8 +50,8 @@ def test_select_and_load_file(page_file, original_dir):
             ],
             "Ticker": ["LEM.PA", "CW8.PA", "PANX.PA"],
             "Currency": ["EUR", "EUR", "EUR"],
-            "Price": [16.7510, 614.9982, 65.177],
-            "Actual Share": [0.0252, 0.9257, 0.0491],
+            "Price": [18.650, 650.651, 76.360],
+            "Actual Share": [0.0264, 0.9197, 0.0540],
             "Target Share": [0.3, 0.5, 0.2],
             "Volume": [10.0, 10.0, 5.0],
         }

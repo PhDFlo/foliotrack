@@ -1,9 +1,7 @@
+# Paths — resolve Portfolios/ relative to the project root (the folder containing pyproject.toml)
 from pathlib import Path
-import os
 
-# Paths — resolve Portfolios/ relative to the current working directory
-# so users can run `dash` from their project root.
-PROJECT_ROOT = Path(os.getcwd())
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 PORTFOLIOS_DIR = PROJECT_ROOT / "Portfolios"
 
 # Defaults
