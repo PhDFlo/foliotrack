@@ -31,6 +31,12 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
   - JSON-based persistence for easy saving/loading.
   - Transaction history logging.
 
+- **Performance Statistics**
+  - Compute Time-Weighted Return (TWR) resolving external cash-flows.
+  - Generates 10+ standard metrics (CAGR, Sharpe, Max Drawdown, Alpha, Beta, etc.).
+  - Compares Porfolio performance to benchmarks (S&P500, etc.)
+  - Easily extensible to custom statistics.
+
 - **Advanced Rebalancing**
   - Set target weights (e.g., "60% Stocks, 40% Bonds").
   - Mathematical solver finds the optimal trades to minimize tracking error.
@@ -85,7 +91,9 @@ from foliotrack.domain.Portfolio import Portfolio
 from foliotrack.services.MarketService import MarketService
 from foliotrack.services.OptimizationService import OptimizationService
 from foliotrack.services.BacktestService import BacktestService
+from foliotrack.services.StatisticsService import StatisticsService
 from foliotrack.storage.PortfolioRepository import PortfolioRepository
+from foliotrack.statistics import DEFAULT_METRICS
 
 # 1. Setup Services
 market_service = MarketService(provider="yfinance")
@@ -109,7 +117,12 @@ portfolio.set_target_share("AGGH.AS", 0.4)
 # Calculate optimal buys to invest an additional 5000 EUR
 optimizer.solve_equilibrium(portfolio, investment_amount=5000.0)
 
-# 5. Save Work
+# 5. Compute Statistics
+stats_service = StatisticsService(market_service)
+stats = stats_service.compute_statistics(portfolio, metrics=DEFAULT_METRICS)
+print(f"CAGR: {stats['CAGR']:.2%}, Sharpe: {stats['Annualized Sharpe Ratio']:.2f}")
+
+# 6. Save Work
 repo.save_to_json(portfolio, "my_portfolio.json")
 ```
 
@@ -127,7 +140,7 @@ This starts a Streamlit application in your browser with the following pages:
 | ----------------------------- | -------------------------------------------------------------------------------------- |
 | **Portfolio & Update Prices** | Load/save portfolio JSON files, view holdings, update live prices, buy/sell securities |
 | **Equilibrium, Buy & Export** | Configure optimization parameters, run MIQP solver, view recommended trades            |
-| **Display Portfolio**         | Visualize portfolio with candlestick charts, pie charts (target vs actual allocation)  |
+| **Display Portfolio**         | Visualize portfolio with charts and performance statistics                             |
 | **Compare Securities**        | Compare investment contracts with different fees and tax regimes                       |
 | **Exchange Rates**            | Look up ECB exchange rates and convert currencies                                      |
 | **Backtest Simulation**       | Run historical backtests with equity curves, statistics, and return analysis           |
@@ -147,6 +160,8 @@ FolioTrack follows a **clean, layered architecture**:
   - `MarketService`: Fetches prices.
   - `OptimizationService`: Runs the solver.
   - `BacktestService`: Runs simulations.
+  - `StatisticsService`: Computes Time-Weighted Returns and evaluates performance metrics.
+- **`statistics/`**: Modular definitions for performance metrics (CAGR, Sharpe, Beta, etc.).
 - **`storage/`**: Handles file persistence (`PortfolioRepository`).
 - **`dashboard/`**: Interactive Streamlit web application _(optional)_.
   - `app.py`: Main Streamlit entry point with sidebar navigation.

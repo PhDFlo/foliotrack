@@ -1,6 +1,13 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 from foliotrack.domain.Portfolio import Portfolio
+from importlib.metadata import version, PackageNotFoundError
+
+# Get version of installed package
+try:
+    __version__ = version("foliotrack")
+except PackageNotFoundError:
+    __version__ = "0.0.0-dev"
 
 # Configure page
 st.set_page_config(
@@ -89,4 +96,4 @@ pg.run()
 
 # Version footer at the bottom of the main page
 st.divider()
-st.caption("v0.1.0 - Built with foliotrack")
+st.caption(f"v{__version__} - Built with foliotrack")
