@@ -21,7 +21,7 @@ class StatisticsService:
         portfolio: Portfolio,
         metrics: Optional[List[PortfolioStatistic]] = None,
         start_date: Optional[str] = None,
-        benchmark_ticker: str = "^STOXX50E",
+        benchmark_ticker: str = "^GSPC",
     ) -> Dict[str, float]:
         """
         Computes the specified statistics for the given portfolio.
