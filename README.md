@@ -139,7 +139,7 @@ This starts a Streamlit application in your browser with the following pages:
 | ----------------------------- | -------------------------------------------------------------------------------------- |
 | **Portfolio & Update Prices** | Load/save portfolio JSON files, view holdings, update live prices, buy/sell securities |
 | **Equilibrium, Buy & Export** | Configure optimization parameters, run MIQP solver, view recommended trades            |
-| **Display Portfolio**         | Visualize portfolio with candlestick charts, pie charts (target vs actual allocation)  |
+| **Display Portfolio**         | Visualize portfolio with charts and performance statistics                             |
 | **Compare Securities**        | Compare investment contracts with different fees and tax regimes                       |
 | **Exchange Rates**            | Look up ECB exchange rates and convert currencies                                      |
 | **Backtest Simulation**       | Run historical backtests with equity curves, statistics, and return analysis           |
