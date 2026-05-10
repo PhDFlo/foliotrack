@@ -102,13 +102,14 @@ class DailySharpe(PortfolioStatistic):
     ) -> float:
         """
         Calculates the Sharpe Ratio on a daily basis.
-        Formula: Mean(Returns) / Standard_Deviation(Returns).
-        The risk-free rate is assumed to be 0 for simplicity.
+        Formula: (Mean(Returns) - Daily_Risk_Free_Rate) / Standard_Deviation(Returns).
         """
         if daily_returns.empty or daily_returns.std() == 0:
             return 0.0
-        # Risk free rate assumed 0 for simplicity
-        return float(daily_returns.mean() / daily_returns.std())
+        # Assuming 2% risk-free rate as a default
+        rf = kwargs.get("risk_free_rate", 0.02)
+        daily_rf = (1 + rf) ** (1 / 252) - 1
+        return float((daily_returns.mean() - daily_rf) / daily_returns.std())
 
 
 class AnnualizedSharpe(PortfolioStatistic):
@@ -122,12 +123,13 @@ class AnnualizedSharpe(PortfolioStatistic):
         """
         Calculates the annualized Sharpe Ratio.
         Uses ffn to extrapolate the daily Sharpe over a year (assuming 252 trading days).
-        The risk-free rate is assumed to be 0.
+        Considers the risk-free rate.
         """
         if daily_returns.empty or daily_returns.std() == 0:
             return 0.0
-        # ffn calculates annualized sharpe ratio by default assuming daily data (rf=0)
-        return float(daily_returns.calc_sharpe())
+        # Assuming 2% risk-free rate as a default
+        rf = kwargs.get("risk_free_rate", 0.02)
+        return float(daily_returns.calc_sharpe(rf=rf, nperiods=252))
 
 
 class BenchmarkAnnualizedSharpe(PortfolioStatistic):
@@ -141,7 +143,7 @@ class BenchmarkAnnualizedSharpe(PortfolioStatistic):
         """
         Calculates the annualized Sharpe Ratio of the benchmark.
         Aligned to the portfolio's dates.
-        The risk-free rate is assumed to be 0.
+        Considers the risk-free rate.
         """
         benchmark_returns = kwargs.get("benchmark_returns")
         if daily_returns.empty or benchmark_returns is None or benchmark_returns.empty:
@@ -152,8 +154,9 @@ class BenchmarkAnnualizedSharpe(PortfolioStatistic):
         ).dropna()
         if len(aligned) < 2 or aligned.iloc[:, 1].std() == 0:
             return 0.0
-
-        return float(aligned.iloc[:, 1].calc_sharpe())
+        # Assuming 2% risk-free rate as a default
+        rf = kwargs.get("risk_free_rate", 0.02)
+        return float(aligned.iloc[:, 1].calc_sharpe(rf=rf, nperiods=252))
 
 
 class SortinoRatio(PortfolioStatistic):
@@ -167,10 +170,13 @@ class SortinoRatio(PortfolioStatistic):
         """
         Calculates the Sortino Ratio.
         Uses ffn. Similar to Sharpe, but only penalizes downside volatility (negative returns).
+        Considers the risk-free rate.
         """
         if daily_returns.empty:
             return 0.0
-        return float(daily_returns.calc_sortino())
+        # Assuming 2% risk-free rate as a default
+        rf = kwargs.get("risk_free_rate", 0.02)
+        return float(daily_returns.calc_sortino(rf=rf, nperiods=252))
 
 
 class DailyMean(PortfolioStatistic):
@@ -355,11 +361,14 @@ class Alpha(PortfolioStatistic):
         self, daily_returns: pd.Series, daily_values: pd.Series = None, **kwargs
     ) -> float:
         """
-        Calculates annualized Alpha.
-        Measures the outperformance relative to the risk taken (Beta).
-        Formula: Portfolio_CAGR - (Beta * Benchmark_CAGR).
+        Calculates annualized Alpha (Jensen's Alpha).
+        Measures the outperformance relative to the risk taken (Beta) and the risk-free rate.
+        Formula: Portfolio_CAGR - (Risk_Free_Rate + Beta * (Benchmark_CAGR - Risk_Free_Rate)).
         """
         benchmark_returns = kwargs.get("benchmark_returns")
+        # Assuming 2% risk-free rate as a default
+        rf = kwargs.get("risk_free_rate", 0.02)
+
         if daily_returns.empty or benchmark_returns is None or benchmark_returns.empty:
             return 0.0
 
@@ -382,4 +391,4 @@ class Alpha(PortfolioStatistic):
         except Exception:
             return 0.0
 
-        return float(port_cagr - beta * bench_cagr)
+        return float(port_cagr - (rf + beta * (bench_cagr - rf)))

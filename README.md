@@ -34,6 +34,7 @@ Designed primarily for **DIY passive investors**, FolioTrack automates the mathe
 - **Performance Statistics**
   - Compute Time-Weighted Return (TWR) resolving external cash-flows.
   - Generates 10+ standard metrics (CAGR, Sharpe, Max Drawdown, Alpha, Beta, etc.).
+  - Compares Porfolio performance to benchmarks (S&P500, etc.)
   - Easily extensible to custom statistics.
 
 - **Advanced Rebalancing**
