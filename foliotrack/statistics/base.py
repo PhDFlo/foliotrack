@@ -19,11 +19,11 @@ class PortfolioStatistic(ABC):
     ) -> float:
         """
         Calculates the statistic.
-        
+
         Args:
             daily_returns (pd.Series): Time series of daily returns of the portfolio.
             daily_values (pd.Series, optional): Time series of daily values of the portfolio.
-            
+
         Returns:
             float: The calculated statistic.
         """
