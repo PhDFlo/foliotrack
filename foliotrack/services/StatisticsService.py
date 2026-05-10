@@ -1,6 +1,5 @@
 import pandas as pd
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+from typing import List, Dict, Optional
 
 from foliotrack.domain.Portfolio import Portfolio
 from foliotrack.services.MarketService import MarketService
@@ -46,10 +45,12 @@ class StatisticsService:
 
         # Fetch benchmark data
         first_date = daily_returns.index[0] if not daily_returns.empty else start_date
-        benchmark_data = self.market_service.get_historical_data([benchmark_ticker], first_date)
+        benchmark_data = self.market_service.get_historical_data(
+            [benchmark_ticker], first_date
+        )
         if "Close" in benchmark_data:
             benchmark_data = benchmark_data["Close"]
-        
+
         benchmark_returns = pd.Series(dtype=float)
         if not benchmark_data.empty:
             # Drop timezone if any
@@ -63,9 +64,9 @@ class StatisticsService:
         for metric in metrics:
             try:
                 results[metric.name] = metric.calculate(
-                    daily_returns=daily_returns, 
+                    daily_returns=daily_returns,
                     daily_values=daily_values,
-                    benchmark_returns=benchmark_returns
+                    benchmark_returns=benchmark_returns,
                 )
             except Exception as e:
                 import logging
@@ -98,14 +99,14 @@ class StatisticsService:
         else:
             # Depending on yfinance behavior when 1 ticker vs multiple, make sure we have Close prices
             pass
-            
+
         # If no data returned, return empty series
         if historical_prices.empty:
             return pd.Series(dtype=float), pd.Series(dtype=float)
 
         # Ensure index is datetime
         historical_prices.index = pd.to_datetime(historical_prices.index)
-        
+
         # We need to localize or remove timezone to match with transaction dates
         if historical_prices.index.tz is not None:
             historical_prices.index = historical_prices.index.tz_localize(None)
@@ -128,8 +129,10 @@ class StatisticsService:
             prices_t = historical_prices.loc[current_date].fillna(0)
 
             # 1. Calculate value of PREVIOUS day's holdings at CURRENT day's prices (Pre-trade value)
-            v_pre_trade = sum(holdings[ticker] * prices_t.get(ticker, 0) for ticker in tickers)
-            
+            v_pre_trade = sum(
+                holdings[ticker] * prices_t.get(ticker, 0) for ticker in tickers
+            )
+
             # 2. Get previous day's end value (Post-trade value of previous day)
             v_begin = daily_values[-1] if daily_values else 0.0
 
@@ -150,7 +153,9 @@ class StatisticsService:
                     holdings[tx["ticker"]] += tx["volume"]
 
             # 5. Calculate value of CURRENT holdings at CURRENT day's prices (Post-trade value)
-            v_end = sum(holdings[ticker] * prices_t.get(ticker, 0) for ticker in tickers)
+            v_end = sum(
+                holdings[ticker] * prices_t.get(ticker, 0) for ticker in tickers
+            )
             daily_values.append(v_end)
 
         returns_series = pd.Series(daily_returns, index=dates)
